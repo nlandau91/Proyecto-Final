@@ -29,3 +29,7 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+# OpenCV
+INCLUDEPATH += /usr/local/include/opencv4
+LIBS += `pkg-config --cflags --libs opencv4`
