@@ -20,10 +20,13 @@ public:
 private slots:
     void on_btn_ingresar_clicked();
 
+    void on_btn_verificar_clicked();
+
 private:
     Ui::MainWindow *ui;
 
-    cv::Mat preprocesar(cv::Mat &src);
     void mostrarImagen(cv::Mat &imagen);
+
+    std::vector<cv::Mat> database_descriptors;
 };
 #endif // MAINWINDOW_H
