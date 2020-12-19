@@ -13,6 +13,12 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    struct db_entry
+    {
+        std::string id;
+        std::vector<cv::Mat> huellas;
+    };
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -29,5 +35,6 @@ private:
     cv::Mat obtenerDescriptores(cv::Mat &src);
     cv::Mat preprocesar(cv::Mat &src);
     std::vector<cv::Mat> database_descriptors;
+    std::vector<db_entry> db;
 };
 #endif // MAINWINDOW_H

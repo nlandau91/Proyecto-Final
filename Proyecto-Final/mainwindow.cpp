@@ -199,6 +199,7 @@ void MainWindow::on_btn_ingresar_clicked()
             //obtenemos los descriptores
             cv::Mat descriptors = obtenerDescriptores(src);
             //ingresamos los descriptores a la base de datos
+            std::string id = ui->lineEdit->text().toStdString();
             ingresar(descriptors, database_descriptors);
             std::cout << "Huella ingresada" << std:: endl;
             std::cout << database_descriptors.size() << " huellas en la base de datos." << std::endl;
