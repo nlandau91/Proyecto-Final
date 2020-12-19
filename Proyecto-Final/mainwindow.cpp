@@ -87,9 +87,9 @@ void thinningIteration(cv::Mat& im, int iter)
             uchar p9 = im.at<uchar>(i-1, j-1);
 
             int A  = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
-                     (p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
-                     (p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
-                     (p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
+                    (p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
+                    (p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
+                    (p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
             int B  = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
             int m1 = iter == 0 ? (p2 * p4 * p6) : (p2 * p4 * p8);
             int m2 = iter == 0 ? (p4 * p6 * p8) : (p2 * p6 * p8);
@@ -129,11 +129,9 @@ cv::Mat MainWindow::preprocesar(cv::Mat &src)
     //pasamos la imagen de escala de gris a binario
     cv::Mat binary;
     cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
-    mostrarImagen(binary);
     //luego obtenemos el "esqueleto" de la imagen
     cv::Mat skeleton = binary.clone();
     thinning(skeleton);
-    mostrarImagen(skeleton);
     return skeleton;
 }
 
@@ -177,7 +175,6 @@ cv::Mat MainWindow::obtenerDescriptores(cv::Mat &src)
 {
     //preprocesamos la imagen para mejorar la extraccion de caracteristicas
     cv::Mat preprocesado = preprocesar(src);
-    //mostrarImagen(preprocesado);
     //buscamos los puntos minuciosos (minutae)
     std::vector<cv::KeyPoint> keypoints;
     keypoints = obtenerKeyPoints(preprocesado);
@@ -220,6 +217,19 @@ std::vector<std::vector<cv::DMatch>> obtenerMatches(cv::Mat &descriptors, std::v
         std::vector<cv::DMatch> matches;
         matcher.match(database_descriptors[entry],descriptors,matches);
         all_matches.push_back(matches);
+        // Loop over matches and multiply
+        // Return the matching certainty score
+        if(matches.size() > 0)
+        {
+            float score = 0.0;
+            float sum = 0.0;
+            for(long unsigned i=0; i < matches.size(); i++){
+                cv::DMatch current_match = matches[i];
+                sum = sum + current_match.distance;
+            }
+            score = sum/matches.size();
+            std::cerr << std::endl << "Current matching score = " << score << std::endl;
+        }
     }
     return all_matches;
 }
@@ -240,16 +250,6 @@ void MainWindow::on_btn_verificar_clicked()
             //obtenemos los matches entre los descriptores de la imagen ingresada, y los de la base de datos
             std::vector<std::vector<cv::DMatch>> matches = obtenerMatches(descriptors, database_descriptors);
             //analizamos los matches para intentar verificar
-            std::cout << "#############################" << std::endl;
-            for(std::vector<cv::DMatch> v : matches)
-            {
-                for(cv::DMatch m : v)
-                {
-                    std::cout << m.distance << std::endl;
-                }
-            }
-
-
 
         }
     }
