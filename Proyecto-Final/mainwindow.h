@@ -26,7 +26,7 @@ private:
     Ui::MainWindow *ui;
 
     void mostrarImagen(cv::Mat &imagen);
-
+    cv::Mat obtenerDescriptores(cv::Mat &src);
     std::vector<cv::Mat> database_descriptors;
 };
 #endif // MAINWINDOW_H

@@ -126,7 +126,7 @@ void thinning(cv::Mat& im)
 //preprocesamos la imagen
 cv::Mat preprocesar(cv::Mat &src)
 {
-    //primero pasamos la imagen de escala de gris a binario
+    //pasamos la imagen de escala de gris a binario
     cv::Mat binary;
     cv::threshold(src,binary,0,255,cv::THRESH_BINARY | cv::THRESH_OTSU);
     //luego obtenemos el "esqueleto" de la imagen
@@ -171,15 +171,15 @@ void ingresar(cv::Mat &descriptors, std::vector<cv::Mat> &database_descriptors)
 
 //a partir de una imagen en escala de gris, obtiene sus descriptores
 //pensado para huellas digitales
-cv::Mat obtenerDescriptores(cv::Mat &src)
+cv::Mat MainWindow::obtenerDescriptores(cv::Mat &src)
 {
     //preprocesamos la imagen para mejorar la extraccion de caracteristicas
-    cv::Mat preprocesado = src.clone();
-    preprocesar(preprocesado);
+    cv::Mat preprocesado = preprocesar(src);
+    //mostrarImagen(preprocesado);
     //buscamos los puntos minuciosos (minutae)
     std::vector<cv::KeyPoint> keypoints;
     keypoints = obtenerKeyPoints(preprocesado);
-    //obtenemos los descriptores
+    //obtenemos los descriptores alrededor de esos puntos
     cv::Ptr<cv::Feature2D> orb_descriptor = cv::ORB::create();
     cv::Mat descriptors;
     orb_descriptor->compute(preprocesado,keypoints,descriptors);
@@ -201,20 +201,33 @@ void MainWindow::on_btn_ingresar_clicked()
             cv::Mat descriptors = obtenerDescriptores(src);
             //ingresamos los descriptores a la base de datos
             ingresar(descriptors, database_descriptors);
+            std::cout << "Huella ingresada" << std:: endl;
+            std::cout << database_descriptors.size() << " huellas en la base de datos." << std::endl;
         }
     }
 }
 
-std::vector<std::vector<cv::DMatch>> obtenerMatches(cv::Mat &descriptors, std::vector<cv::Mat> &database_descriptors)
+//busca matches entre descriptores de una imagen y una base de datos de descriptores
+//utiliza el metodo del test del ratio de Lowe para quedarse solo con los matchs "buenos"
+std::vector<std::vector<cv::DMatch>> obtenerMatches(cv::Mat &descriptors, std::vector<cv::Mat> &database_descriptors, float ratio = 0.8)
 {
     // Create the matcher interface
-    cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE_HAMMING);
+    cv::BFMatcher matcher = cv::BFMatcher(cv::NORM_HAMMING);
+    //cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE_HAMMING);
     // Now loop over the database and start the matching
     std::vector< std::vector< cv::DMatch > > all_matches;
-    for(int entry=0; entry<database_descriptors.size();entry++){
-       std::vector< cv::DMatch > matches;
-       matcher->match(database_descriptors[entry],descriptors,matches);
-       all_matches.push_back(matches);
+    for(long unsigned entry=0; entry<database_descriptors.size();entry++){
+        std::vector<std::vector<cv::DMatch>> matches;
+        matcher.knnMatch(database_descriptors[entry],descriptors,matches,2);
+        std::vector<cv::DMatch> good_matches;
+        for (long unsigned i = 0; i < matches.size(); ++i)
+        {
+            if (matches[i][0].distance < ratio * matches[i][1].distance)
+            {
+                good_matches.push_back(matches[i][0]);
+            }
+        }
+        all_matches.push_back(good_matches);
     }
     return all_matches;
 }
@@ -233,8 +246,10 @@ void MainWindow::on_btn_verificar_clicked()
             //obtenemos los descriptores
             cv::Mat descriptors = obtenerDescriptores(src);
             //obtenemos los matches entre los descriptores de la imagen ingresada, y los de la base de datos
-             std::vector<std::vector<cv::DMatch>> matches = obtenerMatches(descriptors, database_descriptors);
+            std::vector<std::vector<cv::DMatch>> matches = obtenerMatches(descriptors, database_descriptors);
             //analizamos los matches para intentar verificar
+
+                std::cout << matches.size() << std::endl;
 
 
         }
