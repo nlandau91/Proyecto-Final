@@ -72,7 +72,7 @@ void MainWindow::mostrarImagen(cv::Mat &imagen)
 //realiza una iteracion de reduccion, la misma se debe repetir hasta que la imagen este esquelitizada
 void thinningIteration(cv::Mat& im, int iter)
 {
-    cv::Mat marker = cv::Mat::zeros(im.size(), CV_8UC1);
+    cv::Mat marker =cv::Mat::zeros(im.size(), CV_8UC1);
     for (int i = 1; i < im.rows-1; i++)
     {
         for (int j = 1; j < im.cols-1; j++)
@@ -86,19 +86,19 @@ void thinningIteration(cv::Mat& im, int iter)
             uchar p8 = im.at<uchar>(i, j-1);
             uchar p9 = im.at<uchar>(i-1, j-1);
 
-            int A = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
-                    (p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
-                    (p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
-                    (p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
-            int B = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
+            int A  = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
+                     (p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
+                     (p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
+                     (p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
+            int B  = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
             int m1 = iter == 0 ? (p2 * p4 * p6) : (p2 * p4 * p8);
             int m2 = iter == 0 ? (p4 * p6 * p8) : (p2 * p6 * p8);
 
             if (A == 1 && (B >= 2 && B <= 6) && m1 == 0 && m2 == 0)
-
                 marker.at<uchar>(i,j) = 1;
         }
     }
+
     im &= ~marker;
 }
 
@@ -124,14 +124,16 @@ void thinning(cv::Mat& im)
 }
 
 //preprocesamos la imagen
-cv::Mat preprocesar(cv::Mat &src)
+cv::Mat MainWindow::preprocesar(cv::Mat &src)
 {
     //pasamos la imagen de escala de gris a binario
     cv::Mat binary;
-    cv::threshold(src,binary,0,255,cv::THRESH_BINARY | cv::THRESH_OTSU);
+    cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+    mostrarImagen(binary);
     //luego obtenemos el "esqueleto" de la imagen
     cv::Mat skeleton = binary.clone();
     thinning(skeleton);
+    mostrarImagen(skeleton);
     return skeleton;
 }
 
@@ -208,26 +210,16 @@ void MainWindow::on_btn_ingresar_clicked()
 }
 
 //busca matches entre descriptores de una imagen y una base de datos de descriptores
-//utiliza el metodo del test del ratio de Lowe para quedarse solo con los matchs "buenos"
-std::vector<std::vector<cv::DMatch>> obtenerMatches(cv::Mat &descriptors, std::vector<cv::Mat> &database_descriptors, float ratio = 0.8)
+std::vector<std::vector<cv::DMatch>> obtenerMatches(cv::Mat &descriptors, std::vector<cv::Mat> &database_descriptors)
 {
     // Create the matcher interface
     cv::BFMatcher matcher = cv::BFMatcher(cv::NORM_HAMMING);
-    //cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE_HAMMING);
     // Now loop over the database and start the matching
     std::vector< std::vector< cv::DMatch > > all_matches;
     for(long unsigned entry=0; entry<database_descriptors.size();entry++){
-        std::vector<std::vector<cv::DMatch>> matches;
-        matcher.knnMatch(database_descriptors[entry],descriptors,matches,2);
-        std::vector<cv::DMatch> good_matches;
-        for (long unsigned i = 0; i < matches.size(); ++i)
-        {
-            if (matches[i][0].distance < ratio * matches[i][1].distance)
-            {
-                good_matches.push_back(matches[i][0]);
-            }
-        }
-        all_matches.push_back(good_matches);
+        std::vector<cv::DMatch> matches;
+        matcher.match(database_descriptors[entry],descriptors,matches);
+        all_matches.push_back(matches);
     }
     return all_matches;
 }
@@ -248,8 +240,15 @@ void MainWindow::on_btn_verificar_clicked()
             //obtenemos los matches entre los descriptores de la imagen ingresada, y los de la base de datos
             std::vector<std::vector<cv::DMatch>> matches = obtenerMatches(descriptors, database_descriptors);
             //analizamos los matches para intentar verificar
+            std::cout << "#############################" << std::endl;
+            for(std::vector<cv::DMatch> v : matches)
+            {
+                for(cv::DMatch m : v)
+                {
+                    std::cout << m.distance << std::endl;
+                }
+            }
 
-                std::cout << matches.size() << std::endl;
 
 
         }
