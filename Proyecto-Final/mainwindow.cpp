@@ -3,19 +3,13 @@
 
 #include <QFileDialog>
 
-#include <QSqlDatabase>
-#include <QSqlDriver>
-#include <QSqlError>
-#include <QSqlQuery>
-#include <QDebug>
-
-void setup_db()
+void MainWindow::setup_db()
 {
     //database setup
     const QString DRIVER("QSQLITE");
     if(QSqlDatabase::isDriverAvailable(DRIVER))
     {
-        QSqlDatabase db = QSqlDatabase::addDatabase(DRIVER);
+        db = QSqlDatabase::addDatabase(DRIVER);
         //db.setDatabaseName(":memory:");
         db.setDatabaseName("../db/fingerprint_db");
         if(!db.open())
@@ -23,13 +17,39 @@ void setup_db()
             qWarning() << "ERROR: " << db.lastError();
         }
         //creamos una tabla
-        QSqlQuery query("CREATE TABLE people (id INTEGER, descriptor TEXT,PRIMARY KEY(id, descriptor))");
+        QSqlQuery query("CREATE TABLE people (id INTEGER, descriptor_sample INTEGER, descriptor_path TEXT,PRIMARY KEY(id, descriptor_sample))");
         if(!query.isActive())
         {
             //no se pudo crear la table, posiblemente porque ya existia
             //qWarning() << "ERROR: " << query.lastError().text();
         }
     }
+}
+
+//guarda el descriptor en disco y lo ingresa a la base de datos
+void MainWindow::ingresar_descriptor(cv::Mat &descriptors, const QString &id)
+{
+
+    QDir qdir = QDir::current();
+    QString descriptor_path = qdir.path()+"/../db/descriptors/"+id;
+    qdir.mkpath(descriptor_path);
+
+    //vemos que numero de muestra estamos por ingresar
+    //@todo
+    QSqlQuery query;
+    query.prepare("SELECT FROM people()");
+    int sample = 0;
+
+    //guardamos el archivo en disco armando el nombre
+    descriptor_path = descriptor_path + "/" + QString::number(sample)+".jpg";
+    cv::imwrite(descriptor_path.toStdString(), descriptors);
+    //ingresamos los descriptores a la base de datos
+    query.prepare("INSERT INTO people(id, descriptor_sample, descriptor_path) VALUES (:id, :sample, :path)");
+    query.bindValue(":id",id);
+    query.bindValue(":path", descriptor_path);
+    query.bindValue(":sample",sample);
+    if(!query.exec())
+      qWarning() << "ERROR: " << query.lastError().text();
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -225,12 +245,10 @@ void MainWindow::on_btn_ingresar_clicked()
         {
             //obtenemos los descriptores
             cv::Mat descriptors = obtenerDescriptores(src);
-            //ingresamos los descriptores a la base de datos
-            QDir qdir = QDir::current();
+            //guardamos el descriptor e ingresamos los descriptores a la base de datos
             QString id = ui->lineEdit->text();
-            QString path = qdir.path()+"/../"+"descriptors_db/"+id;
-            qdir.mkpath(path);
-            cv::imwrite(path.toStdString()+"/"+std::to_string(n)+".jpg",descriptors);
+
+            ingresar_descriptor(descriptors,id);
             std::cout << "Huella ingresada" << std:: endl;
             n++;
         }

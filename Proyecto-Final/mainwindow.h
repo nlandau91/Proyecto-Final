@@ -4,6 +4,11 @@
 #include <opencv2/opencv.hpp>
 
 #include <QMainWindow>
+#include <QSqlDatabase>
+#include <QSqlDriver>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QDebug>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -12,12 +17,6 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
-    struct db_entry
-    {
-        std::string id;
-        std::vector<cv::Mat> huellas;
-    };
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -30,11 +29,15 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QSqlDatabase db;
 
+    void ingresar_descriptor(cv::Mat &descriptors, const QString &id);
+    void setup_db();
     void mostrarImagen(cv::Mat &imagen);
     cv::Mat obtenerDescriptores(cv::Mat &src);
     cv::Mat preprocesar(cv::Mat &src);
     std::vector<cv::Mat> database_descriptors;
-    std::vector<db_entry> db;
+
+
 };
 #endif // MAINWINDOW_H
