@@ -1,14 +1,44 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include <QFileDialog>
+
+#include <QSqlDatabase>
+#include <QSqlDriver>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QDebug>
+
+void setup_db()
+{
+    //database setup
+    const QString DRIVER("QSQLITE");
+    if(QSqlDatabase::isDriverAvailable(DRIVER))
+    {
+        QSqlDatabase db = QSqlDatabase::addDatabase(DRIVER);
+        //db.setDatabaseName(":memory:");
+        db.setDatabaseName("../db/fingerprint_db");
+        if(!db.open())
+        {
+            qWarning() << "ERROR: " << db.lastError();
+        }
+        //creamos una tabla
+        QSqlQuery query("CREATE TABLE people (id INTEGER, descriptor TEXT,PRIMARY KEY(id, descriptor))");
+        if(!query.isActive())
+        {
+            //no se pudo crear la table, posiblemente porque ya existia
+            //qWarning() << "ERROR: " << query.lastError().text();
+        }
+    }
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    std::string src_path = "test.jpg";
-    cv::Mat src = cv::imread(src_path,cv::IMREAD_GRAYSCALE);
+
+    setup_db();
 }
 
 MainWindow::~MainWindow()
@@ -183,8 +213,8 @@ cv::Mat MainWindow::obtenerDescriptores(cv::Mat &src)
 void MainWindow::on_btn_ingresar_clicked()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this,
-                                                    tr("Open Image"), "../res/",
-                                                    tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
+                                                          tr("Open Image"), "../res/",
+                                                          tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
     std::string id = ui->lineEdit->text().toStdString();
     int n = 0;
     for(QString fileName : fileNames)

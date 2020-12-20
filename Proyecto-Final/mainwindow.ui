@@ -82,7 +82,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string/>
+             <string>2</string>
             </property>
             <property name="clearButtonEnabled">
              <bool>false</bool>
