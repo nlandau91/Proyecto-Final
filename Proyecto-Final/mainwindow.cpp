@@ -164,11 +164,6 @@ std::vector<cv::KeyPoint> obtenerKeyPoints(cv::Mat preprocesado, float threshold
     return keypoints;
 }
 
-void ingresar(cv::Mat &descriptors, std::vector<cv::Mat> &database_descriptors)
-{
-    database_descriptors.push_back(descriptors);
-}
-
 //a partir de una imagen en escala de gris, obtiene sus descriptores
 //pensado para huellas digitales
 cv::Mat MainWindow::obtenerDescriptores(cv::Mat &src)
@@ -187,10 +182,12 @@ cv::Mat MainWindow::obtenerDescriptores(cv::Mat &src)
 
 void MainWindow::on_btn_ingresar_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,
+    QStringList fileNames = QFileDialog::getOpenFileNames(this,
                                                     tr("Open Image"), "../res/",
                                                     tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
-    if(!fileName.isEmpty())
+    std::string id = ui->lineEdit->text().toStdString();
+    int n = 0;
+    for(QString fileName : fileNames)
     {
         //leemos la imagen en escala de gris
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
@@ -199,10 +196,13 @@ void MainWindow::on_btn_ingresar_clicked()
             //obtenemos los descriptores
             cv::Mat descriptors = obtenerDescriptores(src);
             //ingresamos los descriptores a la base de datos
-            std::string id = ui->lineEdit->text().toStdString();
-            ingresar(descriptors, database_descriptors);
+            QDir qdir = QDir::current();
+            QString id = ui->lineEdit->text();
+            QString path = qdir.path()+"/../"+"descriptors_db/"+id;
+            qdir.mkpath(path);
+            cv::imwrite(path.toStdString()+"/"+std::to_string(n)+".jpg",descriptors);
             std::cout << "Huella ingresada" << std:: endl;
-            std::cout << database_descriptors.size() << " huellas en la base de datos." << std::endl;
+            n++;
         }
     }
 }
