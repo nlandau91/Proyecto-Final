@@ -29,17 +29,24 @@ void MainWindow::setup_db()
 //guarda el descriptor en disco y lo ingresa a la base de datos
 void MainWindow::ingresar_descriptor(cv::Mat &descriptors, const QString &id)
 {
-
+    //armamos el path
     QDir qdir = QDir::current();
     QString descriptor_path = qdir.path()+"/../db/descriptors/"+id;
     qdir.mkpath(descriptor_path);
 
     //vemos que numero de muestra estamos por ingresar
-    //@todo
     QSqlQuery query;
-    query.prepare("SELECT FROM people()");
+    query.prepare("SELECT COUNT(*) FROM people WHERE id=:id");
+    query.bindValue(":id",id);
+    if(!query.exec())
+    {
+        qWarning() << "ERROR: " << query.lastError().text();
+    }
     int sample = 0;
-
+    if(query.first())
+    {
+        sample = query.value(0).toInt();
+    }
     //guardamos el archivo en disco armando el nombre
     descriptor_path = descriptor_path + "/" + QString::number(sample)+".jpg";
     cv::imwrite(descriptor_path.toStdString(), descriptors);
@@ -49,7 +56,34 @@ void MainWindow::ingresar_descriptor(cv::Mat &descriptors, const QString &id)
     query.bindValue(":path", descriptor_path);
     query.bindValue(":sample",sample);
     if(!query.exec())
-      qWarning() << "ERROR: " << query.lastError().text();
+    {
+        qWarning() << "ERROR: " << query.lastError().text();
+    }
+}
+
+//devuelve los descriptores de las muestras correspondientes al id
+std::vector<cv::Mat> MainWindow::obtener_lista_descriptores(const QString &id)
+{
+    std::vector<cv::Mat> lista_descriptores;
+
+    QSqlQuery query;
+    query.prepare("SELECT descriptor_path FROM people WHERE id=:id");
+    query.bindValue(":id",id);
+    if(!query.exec())
+    {
+        qWarning() << "ERROR: " << query.lastError().text();
+    }
+    while(query.next())
+    {
+        QString path = query.value(0).toString();
+        std::cout << path.toStdString() << std::endl;
+        cv::Mat descriptores = cv::imread(path.toStdString(),cv::IMREAD_GRAYSCALE);
+        lista_descriptores.push_back(descriptores);
+    }
+
+
+    //devolvemos los descriptores
+    return lista_descriptores;
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -216,7 +250,7 @@ std::vector<cv::KeyPoint> obtenerKeyPoints(cv::Mat preprocesado, float threshold
 
 //a partir de una imagen en escala de gris, obtiene sus descriptores
 //pensado para huellas digitales
-cv::Mat MainWindow::obtenerDescriptores(cv::Mat &src)
+cv::Mat MainWindow::calcular_descriptores(cv::Mat &src)
 {
     //preprocesamos la imagen para mejorar la extraccion de caracteristicas
     cv::Mat preprocesado = preprocesar(src);
@@ -236,7 +270,6 @@ void MainWindow::on_btn_ingresar_clicked()
                                                           tr("Open Image"), "../res/",
                                                           tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
     std::string id = ui->lineEdit->text().toStdString();
-    int n = 0;
     for(QString fileName : fileNames)
     {
         //leemos la imagen en escala de gris
@@ -244,27 +277,25 @@ void MainWindow::on_btn_ingresar_clicked()
         if(!src.empty())
         {
             //obtenemos los descriptores
-            cv::Mat descriptors = obtenerDescriptores(src);
+            cv::Mat descriptors = calcular_descriptores(src);
             //guardamos el descriptor e ingresamos los descriptores a la base de datos
             QString id = ui->lineEdit->text();
-
             ingresar_descriptor(descriptors,id);
             std::cout << "Huella ingresada" << std:: endl;
-            n++;
         }
     }
 }
 
-//busca matches entre descriptores de una imagen y una base de datos de descriptores
-std::vector<std::vector<cv::DMatch>> obtenerMatches(cv::Mat &descriptors, std::vector<cv::Mat> &database_descriptors)
+//busca matches entre descriptores de una imagen y una un arreglo de descriptores
+std::vector<std::vector<cv::DMatch>> obtenerMatches(cv::Mat &descriptors, std::vector<cv::Mat> &lista_descriptores)
 {
     // Create the matcher interface
     cv::BFMatcher matcher = cv::BFMatcher(cv::NORM_HAMMING);
     // Now loop over the database and start the matching
     std::vector< std::vector< cv::DMatch > > all_matches;
-    for(long unsigned entry=0; entry<database_descriptors.size();entry++){
+    for(long unsigned entry=0; entry<lista_descriptores.size();entry++){
         std::vector<cv::DMatch> matches;
-        matcher.match(database_descriptors[entry],descriptors,matches);
+        matcher.match(lista_descriptores[entry],descriptors,matches);
         all_matches.push_back(matches);
         // Loop over matches and multiply
         // Return the matching certainty score
@@ -295,9 +326,13 @@ void MainWindow::on_btn_verificar_clicked()
         if(!src.empty())
         {
             //obtenemos los descriptores
-            cv::Mat descriptors = obtenerDescriptores(src);
+            cv::Mat descriptors = calcular_descriptores(src);
+            //obtenemos la lista de descriptores de la base de datos
+            QString id = ui->lineEdit->text();
+            std::vector<cv::Mat> lista_descriptores;
+            lista_descriptores = obtener_lista_descriptores(id);
             //obtenemos los matches entre los descriptores de la imagen ingresada, y los de la base de datos
-            std::vector<std::vector<cv::DMatch>> matches = obtenerMatches(descriptors, database_descriptors);
+            std::vector<std::vector<cv::DMatch>> matches = obtenerMatches(descriptors, lista_descriptores);
             //analizamos los matches para intentar verificar
 
         }

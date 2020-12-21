@@ -32,12 +32,11 @@ private:
     QSqlDatabase db;
 
     void ingresar_descriptor(cv::Mat &descriptors, const QString &id);
+    std::vector<cv::Mat> obtener_lista_descriptores(const QString &id);
     void setup_db();
     void mostrarImagen(cv::Mat &imagen);
-    cv::Mat obtenerDescriptores(cv::Mat &src);
+    cv::Mat calcular_descriptores(cv::Mat &src);
     cv::Mat preprocesar(cv::Mat &src);
-    std::vector<cv::Mat> database_descriptors;
-
 
 };
 #endif // MAINWINDOW_H
