@@ -27,12 +27,15 @@ private slots:
 
     void on_btn_verificar_clicked();
 
+    void on_btn_identificar_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db;
 
     void ingresar_descriptor(cv::Mat &descriptors, const QString &id);
     std::vector<cv::Mat> obtener_lista_descriptores(const QString &id);
+    std::vector<QString> obtener_lista_id();
     void setup_db();
     void mostrarImagen(cv::Mat &imagen);
     cv::Mat calcular_descriptores(cv::Mat &src);
