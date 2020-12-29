@@ -362,7 +362,7 @@ std::vector<std::vector<cv::DMatch>> obtener_matches2(cv::Mat &descriptors, std:
 
 //devuelve el mejor score(el mas bajo) entre matches de los descriptores des1 con los de lista_descriptores
 //devuelve true si se encuentra un match con un escore menor a max_score
-bool identificar(cv::Mat &descriptors, std::vector<cv::Mat> &lista_descriptores, int max_score = 80)
+bool verificar(cv::Mat &descriptors, std::vector<cv::Mat> &lista_descriptores, int max_score = 80)
 {
     int best_score = 999;
     std::vector<std::vector<cv::DMatch>> all_matches;
@@ -382,7 +382,7 @@ bool identificar(cv::Mat &descriptors, std::vector<cv::Mat> &lista_descriptores,
             {
                 best_score = score;
             }
-            std::cout << score << std::endl;
+            //std::cout << score << std::endl;
         }
     }
     return best_score <= max_score;
@@ -410,7 +410,7 @@ void MainWindow::on_btn_verificar_clicked()
                 std::vector<cv::Mat> lista_descriptores;
                 lista_descriptores = obtener_lista_descriptores(id);
                 ///verificamos
-                verificado = identificar(descriptors, lista_descriptores,80);
+                verificado = verificar(descriptors, lista_descriptores,80);
             }
             std::cout << "Verificado: " << verificado << std::endl;
         }
@@ -437,7 +437,7 @@ void MainWindow::on_btn_identificar_clicked()
                 std::vector<QString> lista_id;
                 lista_id = obtener_lista_id();
                 //para cada id, realizamos la verificacion
-                int best_score = 999;
+                bool verificado = false;
                 QString best_id;
                 for(QString id : lista_id)
                 {
@@ -445,14 +445,13 @@ void MainWindow::on_btn_identificar_clicked()
                     std::vector<cv::Mat> lista_descriptores;
                     lista_descriptores = obtener_lista_descriptores(id);
                     //obtenemos el mejor resultado entre los match de los descriptores
-                    int score = identificar(descriptors, lista_descriptores);
-                    if(score < best_score)
+                    verificado = verificar(descriptors, lista_descriptores);
+                    if(verificado)
                     {
-                        best_score = score;
-                        best_id = id;
+                        std::cout << "Match encontrado: " << id.toStdString() << std::endl;
                     }
+
                 }
-                std::cout << best_id.toStdString() << " score: " << best_score << std::endl;
             }
             else
             {
