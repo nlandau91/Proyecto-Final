@@ -17,11 +17,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     database.cpp \
+    fingerprintenhacer.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     database.h \
+    fingerprintenhacer.h \
     mainwindow.h
 
 FORMS += \

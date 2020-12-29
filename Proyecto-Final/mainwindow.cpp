@@ -238,7 +238,6 @@ cv::Mat MainWindow::preprocesar(cv::Mat &src)
     //luego obtenemos el "esqueleto" de la imagen
     cv::Mat skeleton = binary.clone();
     thinning(skeleton);
-    mostrarImagen(skeleton);
     return skeleton;
 }
 
