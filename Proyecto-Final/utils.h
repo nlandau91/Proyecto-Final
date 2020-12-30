@@ -7,8 +7,8 @@
 
 namespace fp
 {
-    QImage cvMatToQImage(const cv::Mat &inMat);
-    QPixmap cvMatToQPixmap( const cv::Mat &inMat );
+QImage cvMatToQImage(const cv::Mat &inMat);
+QPixmap cvMatToQPixmap( const cv::Mat &inMat );
 }
 
 #endif // UTILS_H

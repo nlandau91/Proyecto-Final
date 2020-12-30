@@ -57,49 +57,6 @@ void MainWindow::on_btn_ingresar_clicked()
     }
 }
 
-//busca matches entre descriptores de una imagen y una un arreglo de descriptores
-std::vector<std::vector<cv::DMatch>> obtener_matches(cv::Mat &descriptors, std::vector<cv::Mat> &lista_descriptores)
-{
-    // Create the matcher interface
-    cv::BFMatcher matcher = cv::BFMatcher(cv::NORM_HAMMING, true);
-    // Now loop over the database and start the matching
-    std::vector< std::vector< cv::DMatch > > all_matches;
-    for(long unsigned entry=0; entry<lista_descriptores.size();entry++){
-        std::vector<cv::DMatch> matches;
-        matcher.match(lista_descriptores[entry],descriptors,matches);
-        all_matches.push_back(matches);
-    }
-    return all_matches;
-}
-
-//devuelve el mejor score(el mas bajo) entre matches de los descriptores des1 con los de lista_descriptores
-//devuelve true si se encuentra un match con un escore menor a max_score
-bool verificar(cv::Mat &descriptors, std::vector<cv::Mat> &lista_descriptores, int max_score = 80)
-{
-    int best_score = 999;
-    std::vector<std::vector<cv::DMatch>> all_matches;
-    all_matches = obtener_matches(descriptors, lista_descriptores);
-    for(std::vector<cv::DMatch> vm : all_matches)
-    {
-        if(vm.size() > 0)
-        {
-            float score = 0.0;
-            float sum = 0.0;
-            for(cv::DMatch m : vm)
-            {
-                sum = sum + m.distance;
-            }
-            score = sum/vm.size();
-            if(score < best_score)
-            {
-                best_score = score;
-            }
-            //std::cout << score << std::endl;
-        }
-    }
-    return best_score <= max_score;
-}
-
 void MainWindow::on_btn_verificar_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -123,8 +80,8 @@ void MainWindow::on_btn_verificar_clicked()
                 QString id = ui->lineEdit->text();
                 std::vector<cv::Mat> lista_descriptores;
                 lista_descriptores = db.obtener_lista_descriptores(id);
-                ///verificamos
-                verificado = verificar(analysis.descriptors, lista_descriptores,80);
+                //verificamos
+                verificado = 80>=fp::Comparator::compare(analysis.descriptors, lista_descriptores);
             }
             std::cout << "Verificado: " << verificado << std::endl;
         }
@@ -161,7 +118,7 @@ void MainWindow::on_btn_identificar_clicked()
                     std::vector<cv::Mat> lista_descriptores;
                     lista_descriptores = db.obtener_lista_descriptores(id);
                     //obtenemos el mejor resultado entre los match de los descriptores
-                    verificado = verificar(analysis.descriptors, lista_descriptores);
+                    verificado = 80>=fp::Comparator::compare(analysis.descriptors, lista_descriptores);
                     if(verificado)
                     {
                         std::cout << "Match encontrado: " << id.toStdString() << std::endl;
