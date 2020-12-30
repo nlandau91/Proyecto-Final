@@ -348,12 +348,13 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
     cv::Mat meshX, meshY;
     meshgrid(szek, meshX, meshY);
     cv::Mat refFilter = cv::Mat::zeros(meshX.rows, meshX.cols, CV_32FC1);
+    std::cout << "debug1" << std::endl;
 
     meshX.convertTo(meshX, CV_32FC1);
     meshY.convertTo(meshY, CV_32FC1);
 
     double pi_by_unfreq_by_2 = 2 * M_PI * unfreq;
-
+    std::cout << "debug2" << std::endl;
     for (int i = 0; i < meshX.rows; i++) {
         const float *meshX_i = meshX.ptr<float>(i);
         const float *meshY_i = meshY.ptr<float>(i);
@@ -368,6 +369,7 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
             reffilter_i[j] = pixVal * std::cos(cosVal);
         }
     }
+    std::cout << "debug3" << std::endl;
 
     std::vector<cv::Mat> filters;
 
@@ -381,6 +383,7 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
         cv::warpAffine(refFilter, rotResult, rot_mat, refFilter.size());
         filters.push_back(rotResult);
     }
+    std::cout << "debug4" << std::endl;
 
     // Find indices of matrix points greater than maxsze from the image boundary
     int maxsze = szek;
@@ -392,7 +395,7 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
 
     int rows_maxsze = rows - maxsze;
     int cols_maxsze = cols - maxsze;
-
+    std::cout << "debug5" << std::endl;
     for (int y = 0; y < rows; y++) {
         const auto *orientationImage_y = orientationImage.ptr<float>(y);
         auto *orientindex_y = orientindex.ptr<float>(y);
@@ -415,24 +418,23 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
             orientindex_y[x] = orientpix;
         }
     }
-
+    std::cout << "debug6" << std::endl;
     // Finally, do the filtering
+    std::cout << validr.size() << std::endl;
     for (long unsigned k = 0; k < validr.size(); k++) {
         int r = validr[k];
         int c = validc[k];
-
         cv::Rect roi(c - szek - 1, r - szek - 1, meshX.cols, meshX.rows);
         cv::Mat subim(inputImage(roi));
-
+        std::cout << orientindex.at<int>(r,c) << std::endl;
         cv::Mat subFilter = filters.at(orientindex.at<float>(r, c));
         cv::Mat mulResult;
         cv::multiply(subim, subFilter, mulResult);
-
         if (cv::sum(mulResult)[0] > 0) {
             enhancedImage.at<float>(r, c) = 255;
         }
     }
-    std::cout << "debug" << std::endl;
+    std::cout << "debug8" << std::endl;
     // Add a border.
     if (addBorder) {
         enhancedImage.rowRange(0, rows).colRange(0, szek + 1).setTo(255);
