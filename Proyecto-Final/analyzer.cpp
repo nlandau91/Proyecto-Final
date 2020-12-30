@@ -1,6 +1,8 @@
-#include "fingerprintanalyzer.h"
+#include "analyzer.h"
 
-FingerprintAnalyzer::FingerprintAnalyzer()
+namespace fp
+{
+Analyzer::Analyzer()
 {
 
 }
@@ -46,9 +48,9 @@ cv::Mat calcular_descriptores(cv::Mat &src)
     return descriptors;
 }
 
-FingerprintAnalyzer::FingerprintAnalysis FingerprintAnalyzer::analize(cv::Mat &src, FingerprintAnalyzer::KeypointMethod keypoint_method, FingerprintAnalyzer::DescriptorMethod descriptor_method)
+Analyzer::Analysis Analyzer::analize(cv::Mat &src, Analyzer::KeypointMethod keypoint_method, Analyzer::DescriptorMethod descriptor_method)
 {
-    FingerprintAnalysis analysis;
+    Analysis analysis;
     analysis.fingerprint = src.clone();
     //buscamos los puntos minuciosos (minutae)
     switch(keypoint_method)
@@ -72,4 +74,5 @@ FingerprintAnalyzer::FingerprintAnalysis FingerprintAnalyzer::analize(cv::Mat &s
         break;
     }
     return analysis;
+}
 }

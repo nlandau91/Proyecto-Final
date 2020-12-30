@@ -3,8 +3,11 @@
 
 #include <opencv2/opencv.hpp>
 
+namespace fp
+{
+
 //clase que realiza la mejora de las imagenes de huellas dactilares
-class FingerprintEnhancer
+class Enhancer
 {
 public:
     enum EnhancementMethod
@@ -14,10 +17,10 @@ public:
         GABORFILTERS
     };
 
-    FingerprintEnhancer();
+    Enhancer();
 
     //mejora la imagen de una huella dactilar
     static cv::Mat enhance(cv::Mat &src, EnhancementMethod method);
 };
-
+}
 #endif // FINGERPRINTENHANCER_H

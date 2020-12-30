@@ -2,15 +2,14 @@
 #define MAINWINDOW_H
 
 #include <opencv2/opencv.hpp>
-#include "fingerprintenhancer.h"
-#include "fingerprintanalyzer.h"
+#include "enhancer.h"
+#include "analyzer.h"
+#include "database.h"
+#include "utils.h"
 
 #include <QMainWindow>
-#include <QSqlDatabase>
-#include <QSqlDriver>
-#include <QSqlError>
-#include <QSqlQuery>
-#include <QDebug>
+#include <QFileDialog>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -33,12 +32,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QSqlDatabase db;
-
-    void ingresar_descriptor(cv::Mat &descriptors, const QString &id);
-    std::vector<cv::Mat> obtener_lista_descriptores(const QString &id);
-    std::vector<QString> obtener_lista_id();
-    void setup_db();
+    fp::Database db;
     void mostrar_imagen(cv::Mat &imagen);
 
 };

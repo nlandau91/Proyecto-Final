@@ -16,17 +16,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    analyzer.cpp \
     database.cpp \
-    fingerprintanalyzer.cpp \
-    fingerprintenhancer.cpp \
+    enhancer.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    utils.cpp
 
 HEADERS += \
+    analyzer.h \
     database.h \
-    fingerprintanalyzer.h \
-    fingerprintenhancer.h \
-    mainwindow.h
+    enhancer.h \
+    mainwindow.h \
+    utils.h
 
 FORMS += \
     mainwindow.ui

@@ -2,10 +2,11 @@
 #define FINGERPRINTANALYZER_H
 
 #include <opencv2/opencv.hpp>
-
+namespace fp
+{
 //clase para realizar el analisis y extraccion de caracteristicas de una huella dactilar
 //se asume que las imagenes de huellas ya estan preprocesadas
-class FingerprintAnalyzer
+class Analyzer
 {
 public:
     enum KeypointMethod
@@ -17,7 +18,7 @@ public:
         ORB,
     };
 
-    struct FingerprintAnalysis
+    struct Analysis
     {
         cv::Mat fingerprint;
         std::vector<cv::KeyPoint> keypoints;
@@ -25,11 +26,11 @@ public:
     };
 
 
-    FingerprintAnalyzer();
+    Analyzer();
 
     //analiza la huella digital
-    static FingerprintAnalysis analize(cv::Mat &src, KeypointMethod keypoint_method = HARRIS, DescriptorMethod descriptor_method = ORB);
+    static Analysis analize(cv::Mat &src, KeypointMethod keypoint_method = HARRIS, DescriptorMethod descriptor_method = ORB);
 
 };
-
+}
 #endif // FINGERPRINTANALYZER_H

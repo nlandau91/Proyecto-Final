@@ -1,6 +1,10 @@
-#include "fingerprintenhancer.h"
+#include "enhancer.h"
 
-FingerprintEnhancer::FingerprintEnhancer()
+namespace fp
+{
+
+
+Enhancer::Enhancer()
 {
     //esta clase solo tiene metodos estaticos
     //no es necesario instanciarla
@@ -71,7 +75,7 @@ cv::Mat skeletonize(cv::Mat &src)
     return skeleton;
 }
 
-cv::Mat FingerprintEnhancer::enhance(cv::Mat &src, EnhancementMethod method)
+cv::Mat Enhancer::enhance(cv::Mat &src, EnhancementMethod method)
 {
     cv::Mat enhanced;
     switch (method)
@@ -88,4 +92,5 @@ cv::Mat FingerprintEnhancer::enhance(cv::Mat &src, EnhancementMethod method)
         break;
     }
     return enhanced;
+}
 }
