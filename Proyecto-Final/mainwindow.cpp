@@ -38,7 +38,7 @@ void MainWindow::on_btn_ingresar_clicked()
             cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::SKELETONIZE);
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
-            //cv::Mat descriptors = FingerprintAnalyzer::calcular_descriptores(enhanced);
+            mostrar_imagen(analysis.fingerprint);
             //solo ingresamos huellas que sean suficientemente buenas
             if(analysis.descriptors.rows > 4)
             {
@@ -69,9 +69,10 @@ void MainWindow::on_btn_verificar_clicked()
         if(!src.empty())
         {
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::SKELETONIZE);
+            cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::GABORFILTERS);
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
+            mostrar_imagen(analysis.fingerprint);
             //solo verificamos si la huella es buena
             bool verificado = false;
             if(analysis.descriptors.rows > 0)
@@ -83,7 +84,14 @@ void MainWindow::on_btn_verificar_clicked()
                 //verificamos
                 verificado = 80>=fp::Comparator::compare(analysis.descriptors, lista_descriptores);
             }
-            std::cout << "Verificado: " << verificado << std::endl;
+            if(verificado)
+            {
+                std::cout << "Verificado!" << std::endl;
+            }
+            else
+            {
+                std::cout << "NO Verificado!" << std::endl;
+            }
         }
     }
 }
@@ -103,6 +111,7 @@ void MainWindow::on_btn_identificar_clicked()
             cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::SKELETONIZE);
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
+            mostrar_imagen(analysis.fingerprint);
             //solo verificamos si la huella es buena
             if(analysis.descriptors.rows > 0)
             {
@@ -121,7 +130,7 @@ void MainWindow::on_btn_identificar_clicked()
                     verificado = 80>=fp::Comparator::compare(analysis.descriptors, lista_descriptores);
                     if(verificado)
                     {
-                        std::cout << "Match encontrado: " << id.toStdString() << std::endl;
+                        std::cout << "Match encontrado: " << id.toStdString() << std::endl;;
                     }
 
                 }

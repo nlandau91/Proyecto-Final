@@ -1,8 +1,2 @@
-Para hacer luego del 28 de diciembre:
-Ver identificacion (devuelve bool, no score ni id, sirve para verificar, no para identificar)
 
-cambiar el preproceso de thinning por filtros de gabor o frangi
-
-comparacion de scores
-
-mejora de parametros (threshold, min dist, lower ratio)
+Agregar modos a la clase enhacenment (gabor, fragi, etc)
