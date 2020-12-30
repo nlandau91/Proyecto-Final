@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <opencv2/opencv.hpp>
+#include "fingerprintenhancer.h"
+#include "fingerprintanalyzer.h"
 
 #include <QMainWindow>
 #include <QSqlDatabase>
@@ -37,9 +39,7 @@ private:
     std::vector<cv::Mat> obtener_lista_descriptores(const QString &id);
     std::vector<QString> obtener_lista_id();
     void setup_db();
-    void mostrarImagen(cv::Mat &imagen);
-    cv::Mat calcular_descriptores(cv::Mat &src);
-    cv::Mat preprocesar(cv::Mat &src);
+    void mostrar_imagen(cv::Mat &imagen);
 
 };
 #endif // MAINWINDOW_H

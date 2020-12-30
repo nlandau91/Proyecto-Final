@@ -170,120 +170,9 @@ inline QPixmap cvMatToQPixmap( const cv::Mat &inMat )
     return QPixmap::fromImage( cvMatToQImage( inMat ) );
 }
 
-void MainWindow::mostrarImagen(cv::Mat &imagen)
+void MainWindow::mostrar_imagen(cv::Mat &imagen)
 {
     ui->label->setPixmap(cvMatToQPixmap(imagen));
-}
-
-//realiza una iteracion de reduccion, la misma se debe repetir hasta que la imagen este esquelitizada
-void thinningIteration(cv::Mat& im, int iter)
-{
-    cv::Mat marker =cv::Mat::zeros(im.size(), CV_8UC1);
-    for (int i = 1; i < im.rows-1; i++)
-    {
-        for (int j = 1; j < im.cols-1; j++)
-        {
-            uchar p2 = im.at<uchar>(i-1, j);
-            uchar p3 = im.at<uchar>(i-1, j+1);
-            uchar p4 = im.at<uchar>(i, j+1);
-            uchar p5 = im.at<uchar>(i+1, j+1);
-            uchar p6 = im.at<uchar>(i+1, j);
-            uchar p7 = im.at<uchar>(i+1, j-1);
-            uchar p8 = im.at<uchar>(i, j-1);
-            uchar p9 = im.at<uchar>(i-1, j-1);
-
-            int A  = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
-                    (p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
-                    (p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
-                    (p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
-            int B  = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
-            int m1 = iter == 0 ? (p2 * p4 * p6) : (p2 * p4 * p8);
-            int m2 = iter == 0 ? (p4 * p6 * p8) : (p2 * p6 * p8);
-
-            if (A == 1 && (B >= 2 && B <= 6) && m1 == 0 && m2 == 0)
-                marker.at<uchar>(i,j) = 1;
-        }
-    }
-
-    im &= ~marker;
-}
-
-//funcion para reducir una imagen binaria, debe estar en el rango de 0-255.
-//basado en el algoritmo de Zhang-Suen https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm
-void thinning(cv::Mat& im)
-{
-    // Enforce the range tob e in between 0 - 255
-    im /= 255;
-
-    cv::Mat prev = cv::Mat::zeros(im.size(), CV_8UC1);
-    cv::Mat diff;
-
-    do {
-        thinningIteration(im, 0);
-        thinningIteration(im, 1);
-        cv::absdiff(im, prev, diff);
-        im.copyTo(prev);
-    }
-    while (cv::countNonZero(diff) > 0);
-
-    im *= 255;
-}
-
-//preprocesamos la imagen
-cv::Mat MainWindow::preprocesar(cv::Mat &src)
-{
-    //pasamos la imagen de escala de gris a binario
-    cv::Mat binary;
-    cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
-    //luego obtenemos el "esqueleto" de la imagen
-    cv::Mat skeleton = binary.clone();
-    thinning(skeleton);
-    return skeleton;
-}
-
-//buscamos los keypoints en una imagen con el detector de esquinas de Harris
-//la imagen ya debe estar preprocesada
-std::vector<cv::KeyPoint> obtenerKeyPoints(cv::Mat preprocesado, float threshold = 130.0)
-{
-    cv::Mat harris_corners, harris_normalised;
-    harris_corners = cv::Mat::zeros(preprocesado.size(), CV_32FC1);
-    cv::cornerHarris(preprocesado,harris_corners,2,3,0.04,cv::BORDER_DEFAULT);
-    cv::normalize(harris_corners,harris_normalised,0,255,cv::NORM_MINMAX,CV_32FC1,cv::Mat());
-    std::vector<cv::KeyPoint> keypoints;
-    cv::Mat rescaled;
-    cv::convertScaleAbs(harris_normalised,rescaled);
-    cv::Mat harris_c(rescaled.rows,rescaled.cols,CV_8UC3);
-    cv::Mat in[] = {rescaled,rescaled,rescaled};
-    int from_to[] = {0,0,1,1,2,2};
-    cv::mixChannels(in,3,&harris_c,1,from_to,3);
-    for(int x = 0; x < harris_normalised.cols; x++)
-    {
-        for(int y = 0; y < harris_normalised.rows; y++)
-        {
-            if((int)harris_normalised.at<float>(y,x) > threshold)
-            {
-                //guardamos el keypoint
-                keypoints.push_back((cv::KeyPoint(x,y,1)));
-            }
-        }
-    }
-    return keypoints;
-}
-
-//a partir de una imagen en escala de gris, obtiene sus descriptores
-//pensado para huellas digitales
-cv::Mat MainWindow::calcular_descriptores(cv::Mat &src)
-{
-    //preprocesamos la imagen para mejorar la extraccion de caracteristicas
-    cv::Mat preprocesado = preprocesar(src);
-    //buscamos los puntos minuciosos (minutae)
-    std::vector<cv::KeyPoint> keypoints;
-    keypoints = obtenerKeyPoints(preprocesado);
-    //obtenemos los descriptores alrededor de esos puntos
-    cv::Ptr<cv::Feature2D> orb_descriptor = cv::ORB::create();
-    cv::Mat descriptors;
-    orb_descriptor->compute(preprocesado,keypoints,descriptors);
-    return descriptors;
 }
 
 void MainWindow::on_btn_ingresar_clicked()
@@ -300,14 +189,17 @@ void MainWindow::on_btn_ingresar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
+            //mejoramos la imagen
+            cv::Mat enhanced = FingerprintEnhancer::enhance(src,FingerprintEnhancer::SKELETONIZE);
             //obtenemos los descriptores
-            cv::Mat descriptors = calcular_descriptores(src);
+            FingerprintAnalyzer::FingerprintAnalysis analysis = FingerprintAnalyzer::analize(enhanced);
+            //cv::Mat descriptors = FingerprintAnalyzer::calcular_descriptores(enhanced);
             //solo ingresamos huellas que sean suficientemente buenas
-            if(descriptors.rows > 4)
+            if(analysis.descriptors.rows > 4)
             {
                 //guardamos el descriptor e ingresamos los descriptores a la base de datos
                 QString id = ui->lineEdit->text();
-                ingresar_descriptor(descriptors,id);
+                ingresar_descriptor(analysis.descriptors,id);
                 std::cout << "Huella ingresada" << std::endl;
             }
             else
@@ -398,18 +290,21 @@ void MainWindow::on_btn_verificar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
+            //mejoramos la imagen
+            cv::Mat enhanced = FingerprintEnhancer::enhance(src,FingerprintEnhancer::SKELETONIZE);
             //obtenemos los descriptores
-            cv::Mat descriptors = calcular_descriptores(src);
+            FingerprintAnalyzer::FingerprintAnalysis analysis = FingerprintAnalyzer::analize(enhanced);
+            //cv::Mat descriptors = FingerprintAnalyzer::calcular_descriptores(enhanced);
             //solo verificamos si la huella es buena
             bool verificado = false;
-            if(descriptors.rows > 0)
+            if(analysis.descriptors.rows > 0)
             {
                 //obtenemos la lista de descriptores de la base de datos
                 QString id = ui->lineEdit->text();
                 std::vector<cv::Mat> lista_descriptores;
                 lista_descriptores = obtener_lista_descriptores(id);
                 ///verificamos
-                verificado = verificar(descriptors, lista_descriptores,80);
+                verificado = verificar(analysis.descriptors, lista_descriptores,80);
             }
             std::cout << "Verificado: " << verificado << std::endl;
         }
@@ -427,10 +322,13 @@ void MainWindow::on_btn_identificar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
+            //mejoramos la imagen
+            cv::Mat enhanced = FingerprintEnhancer::enhance(src,FingerprintEnhancer::SKELETONIZE);
             //obtenemos los descriptores
-            cv::Mat descriptors = calcular_descriptores(src);
+            FingerprintAnalyzer::FingerprintAnalysis analysis = FingerprintAnalyzer::analize(enhanced);
+            //cv::Mat descriptors = FingerprintAnalyzer::calcular_descriptores(enhanced);
             //solo verificamos si la huella es buena
-            if(descriptors.rows > 0)
+            if(analysis.descriptors.rows > 0)
             {
                 //obtenemos una lista con los id de la base de datos
                 std::vector<QString> lista_id;
@@ -444,7 +342,7 @@ void MainWindow::on_btn_identificar_clicked()
                     std::vector<cv::Mat> lista_descriptores;
                     lista_descriptores = obtener_lista_descriptores(id);
                     //obtenemos el mejor resultado entre los match de los descriptores
-                    verificado = verificar(descriptors, lista_descriptores);
+                    verificado = verificar(analysis.descriptors, lista_descriptores);
                     if(verificado)
                     {
                         std::cout << "Match encontrado: " << id.toStdString() << std::endl;
