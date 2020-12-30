@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     analyzer.cpp \
+    comparator.cpp \
     database.cpp \
     enhancer.cpp \
     main.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
 
 HEADERS += \
     analyzer.h \
+    comparator.h \
     database.h \
     enhancer.h \
     mainwindow.h \

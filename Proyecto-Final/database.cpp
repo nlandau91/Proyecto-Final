@@ -2,7 +2,8 @@
 
 namespace fp
 {
-Database::Database()
+
+void Database::init()
 {
     //database setup
     const QString DRIVER("QSQLITE");
@@ -24,6 +25,13 @@ Database::Database()
         }
     }
 }
+
+
+Database::Database()
+{
+
+}
+
 void Database::ingresar_descriptor(cv::Mat &descriptors, const QString &id)
 {
     if(!descriptors.empty())

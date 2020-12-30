@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    db = fp::Database();
+    db.init();
 }
 
 MainWindow::~MainWindow()
@@ -68,30 +68,6 @@ std::vector<std::vector<cv::DMatch>> obtener_matches(cv::Mat &descriptors, std::
         std::vector<cv::DMatch> matches;
         matcher.match(lista_descriptores[entry],descriptors,matches);
         all_matches.push_back(matches);
-    }
-    return all_matches;
-}
-
-//busca matches entre descriptores de una imagen y una un arreglo de descriptores
-//version alternativa, devuelve mejores matches utilizando el metodo de Lowe para comparar
-std::vector<std::vector<cv::DMatch>> obtener_matches2(cv::Mat &descriptors, std::vector<cv::Mat> &lista_descriptores, float ratio = 0.8)
-{
-    // Create the matcher interface
-    cv::BFMatcher matcher = cv::BFMatcher(cv::NORM_HAMMING);
-    // Now loop over the database and start the matching
-    std::vector< std::vector< cv::DMatch > > all_matches;
-    for(long unsigned entry=0; entry<lista_descriptores.size();entry++){
-        std::vector<std::vector<cv::DMatch>> matches;
-        matcher.knnMatch(descriptors,lista_descriptores[entry],matches,2);
-        std::vector<cv::DMatch> good_matches;
-        for (long unsigned i = 0; i < matches.size(); ++i)
-        {
-            if (matches[i][0].distance < ratio * matches[i][1].distance)
-            {
-                good_matches.push_back(matches[i][0]);
-            }
-        }
-        all_matches.push_back(good_matches);
     }
     return all_matches;
 }

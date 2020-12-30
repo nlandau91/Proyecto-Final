@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include "enhancer.h"
 #include "analyzer.h"
+#include "comparator.h"
 #include "database.h"
 #include "utils.h"
 
