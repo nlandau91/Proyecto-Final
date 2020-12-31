@@ -78,7 +78,8 @@ cv::Mat skeletonize(cv::Mat &src)
 /*
  * Compute the standard deviation of the image.
  */
-float deviation(const cv::Mat &im, float average) {
+float deviation(const cv::Mat &im, float average)
+{
     float sdev = 0.0;
 
     for (int i = 0; i < im.rows; i++) {
@@ -96,14 +97,12 @@ float deviation(const cv::Mat &im, float average) {
     return sd;
 }
 
-/*
- * Normalization function of Anil Jain's algorithm.
- */
-cv::Mat normalize_image(const cv::Mat &im, double reqMean,
-                        double reqVar) {
 
+//normaliza una imagen para que tenga la media y varianza deseadas
+cv::Mat normalize(cv::Mat &src, double reqMean, double reqVar)
+{
     cv::Mat convertedIm;
-    im.convertTo(convertedIm, CV_32FC1);
+    src.convertTo(convertedIm, CV_32FC1);
 
     cv::Scalar mean = cv::mean(convertedIm);
     cv::Mat normalizedImage = convertedIm - mean[0];
@@ -111,9 +110,11 @@ cv::Mat normalize_image(const cv::Mat &im, double reqMean,
     cv::Scalar normMean = cv::mean(normalizedImage);
     float stdNorm = deviation(normalizedImage, normMean[0]);
     normalizedImage = normalizedImage / stdNorm;
-    normalizedImage = reqMean + normalizedImage * cv::sqrt(reqVar);
+    normalizedImage = reqMean + normalizedImage * std::sqrt(reqVar);
+
 
     return normalizedImage;
+
 }
 
 /*
@@ -121,6 +122,7 @@ cv::Mat normalize_image(const cv::Mat &im, double reqMean,
  */
 void gradient(const cv::Mat &image, cv::Mat &xGradient, cv::Mat &yGradient)
 {
+
     int ddepth = CV_32FC1;
     xGradient = cv::Mat::zeros(image.rows, image.cols, ddepth);
     yGradient = cv::Mat::zeros(image.rows, image.cols, ddepth);
@@ -177,7 +179,6 @@ cv::Mat orient_ridge(const cv::Mat &im) {
     double orientSmoothSigma = 5.0;
 
     int ddepth = CV_32FC1;
-
 
 
     cv::Mat gradX, gradY;
@@ -250,9 +251,9 @@ cv::Mat orient_ridge(const cv::Mat &im) {
     G3 = G1 + G2;
     cv::sqrt(G3, denom);
 
-    cv::Mat sub = grad_xx - grad_yy;
     cv::divide(grad_xy, denom, sin2theta);
-    cv::divide(sub, denom, cos2theta);
+    cv::Mat sub1 = grad_xx - grad_yy;
+    cv::divide(sub1, denom, cos2theta);
 
     int sze3 = 6 * round(orientSmoothSigma);
 
@@ -303,10 +304,8 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
     gv = gv.reshape(1, 1);
 
     cv::repeat(gv, total, 1, meshX);
-    cv::Mat transpose = gv.t();
-    cv::repeat(transpose, 1, total, meshY);
-    std::cout << meshX << std::endl;
-    std::cout << meshY << std::endl;
+    cv::Mat traspose = gv.t();
+    cv::repeat(traspose, 1, total, meshY);
 }
 
 /*
@@ -315,12 +314,13 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
  *
  * Refer to the paper for detailed description.
 */
-cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage, const cv::Mat &frequency)
+cv::Mat filter_ridge(const cv::Mat &inputImage,
+                     const cv::Mat &orientationImage,
+                     const cv::Mat &frequency)
 {
     double kx = 0.8;
     double ky = 0.8;
     bool addBorder = false;
-
     // Fixed angle increment between filter orientations in degrees
     int angleInc = 3;
 
@@ -347,14 +347,14 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
 
     cv::Mat meshX, meshY;
     meshgrid(szek, meshX, meshY);
+
     cv::Mat refFilter = cv::Mat::zeros(meshX.rows, meshX.cols, CV_32FC1);
-    std::cout << "debug1" << std::endl;
 
     meshX.convertTo(meshX, CV_32FC1);
     meshY.convertTo(meshY, CV_32FC1);
 
     double pi_by_unfreq_by_2 = 2 * M_PI * unfreq;
-    std::cout << "debug2" << std::endl;
+
     for (int i = 0; i < meshX.rows; i++) {
         const float *meshX_i = meshX.ptr<float>(i);
         const float *meshY_i = meshY.ptr<float>(i);
@@ -369,7 +369,6 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
             reffilter_i[j] = pixVal * std::cos(cosVal);
         }
     }
-    std::cout << "debug3" << std::endl;
 
     std::vector<cv::Mat> filters;
 
@@ -383,7 +382,6 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
         cv::warpAffine(refFilter, rotResult, rot_mat, refFilter.size());
         filters.push_back(rotResult);
     }
-    std::cout << "debug4" << std::endl;
 
     // Find indices of matrix points greater than maxsze from the image boundary
     int maxsze = szek;
@@ -395,7 +393,7 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
 
     int rows_maxsze = rows - maxsze;
     int cols_maxsze = cols - maxsze;
-    std::cout << "debug5" << std::endl;
+
     for (int y = 0; y < rows; y++) {
         const auto *orientationImage_y = orientationImage.ptr<float>(y);
         auto *orientindex_y = orientindex.ptr<float>(y);
@@ -418,23 +416,24 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
             orientindex_y[x] = orientpix;
         }
     }
-    std::cout << "debug6" << std::endl;
+
     // Finally, do the filtering
-    std::cout << validr.size() << std::endl;
-    for (long unsigned k = 0; k < validr.size(); k++) {
+    for (int k = 0; k < validr.size(); k++) {
         int r = validr[k];
         int c = validc[k];
+
         cv::Rect roi(c - szek - 1, r - szek - 1, meshX.cols, meshX.rows);
         cv::Mat subim(inputImage(roi));
-        std::cout << orientindex.at<int>(r,c) << std::endl;
+
         cv::Mat subFilter = filters.at(orientindex.at<float>(r, c));
         cv::Mat mulResult;
         cv::multiply(subim, subFilter, mulResult);
+
         if (cv::sum(mulResult)[0] > 0) {
             enhancedImage.at<float>(r, c) = 255;
         }
     }
-    std::cout << "debug8" << std::endl;
+
     // Add a border.
     if (addBorder) {
         enhancedImage.rowRange(0, rows).colRange(0, szek + 1).setTo(255);
@@ -448,44 +447,24 @@ cv::Mat filter_ridge(const cv::Mat &inputImage, const cv::Mat &orientationImage,
     return enhancedImage;
 }
 
-/*
- * Perform Gabor filter based image enhancement using orientation field and
- * frequency.
- */
-cv::Mat gabor_filter(const cv::Mat &inputImage) {
-    // The frequency is set to 0.11 experimentally. You can change this value
-    // or use a dynamic calculation instead.
+//mejora una imagen aplicando filtros de gabor
+cv::Mat gabor(cv::Mat &src)
+{
+    //suavizamos la imagen
+    cv::Mat blurred;
+    cv::medianBlur(src,blurred,3);
+    //normalizacion
+    cv::Mat normalized;
+    normalized = normalize(blurred,150,100); //todo: normalizar correctamente
+    //estimacion de la orientacion local
+    cv::Mat orientationImage = orient_ridge(normalized);
+
     double freqValue = 0.11;
-    // Perform median blurring to smooth the image
-    cv::Mat blurredImage;
-    cv::medianBlur(inputImage, blurredImage, 3);
-
-    // Check whether the input image is grayscale.
-    // If not, convert it to grayscale.
-    if (blurredImage.channels() != 1) {
-        cv::cvtColor(blurredImage, blurredImage, cv::COLOR_BGR2GRAY);
-    }
-
-
-    std::cout << "Rows: " << blurredImage.rows << " / Cols: " << blurredImage.cols
-              << std::endl;
-
-    // Perform normalization using the method provided in the paper
-    cv::Mat normalizedImage = normalize_image(blurredImage, 0, 1);
-    std::cout << "Normalization done" << std::endl;
-
-    // Calculate ridge orientation field
-    cv::Mat orientationImage = orient_ridge(normalizedImage);
-    std::cout << "Orientation done" << std::endl;
-
-    cv::Mat freq = cv::Mat::ones(normalizedImage.rows, normalizedImage.cols,
-                                 normalizedImage.type()) *
-            freqValue;
-    // Get the final enhanced image and return it as result
+    cv::Mat freq = cv::Mat::ones(normalized.rows, normalized.cols, normalized.type()) * freqValue;
+    //filtro
     cv::Mat enhancedImage =
-            filter_ridge(normalizedImage, orientationImage, freq);
-
-    std::cout << "Done with processing pipeling" << std::endl;
+            filter_ridge(normalized, orientationImage, freq);
+    //devolvemos la imagen mejorada
     return enhancedImage;
 }
 
@@ -495,14 +474,22 @@ cv::Mat Enhancer::enhance(cv::Mat &src, EnhancementMethod method)
     switch (method)
     {
     case NONE:
+    {
         enhanced = src.clone();
         break;
+    }
     case SKELETONIZE:
+    {
         enhanced = skeletonize(src);
         break;
+    }
     case GABORFILTERS:
-        enhanced = gabor_filter(src);
+    {
+        cv::Mat normalized = gabor(src);
+        normalized.convertTo(enhanced,CV_8UC1);
         break;
+    }
+
     default:
         break;
     }
