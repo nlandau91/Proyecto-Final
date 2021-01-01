@@ -105,6 +105,7 @@ cv::Mat normalize(cv::Mat &src, double reqMean, double reqVar)
     src.convertTo(convertedIm, CV_32FC1);
 
     cv::Scalar mean = cv::mean(convertedIm);
+    std::cout  << mean[0] << std
     cv::Mat normalizedImage = convertedIm - mean[0];
 
     cv::Scalar normMean = cv::mean(normalizedImage);
@@ -468,6 +469,59 @@ cv::Mat gabor(cv::Mat &src)
     return enhancedImage;
 }
 
+/*
+ * Compute a filter which remove the background based on a input image.
+ *
+ * The filter is a simple mask which keep only pixed corresponding
+ * to the fingerprint.
+ */
+cv::Mat postProcessingFilter(const cv::Mat &inputImage)
+{
+
+    int cannyLowThreshold = 10;
+    int cannyRatio = 3;
+    int kernelSize = 3;
+    int blurringTimes = 30;
+    int dilationSize = 10;
+    int dilationType = 1;
+
+    cv::Mat inputImageGrey;
+    cv::Mat filter;
+
+    if (inputImage.channels() != 1) {
+        cv::cvtColor(inputImage, inputImageGrey, cv::COLOR_RGB2GRAY);
+    } else {
+        inputImageGrey = inputImage.clone();
+    }
+
+    // Blurring the image several times with a kernel 3x3
+    // to have smooth surfaces
+    for (int j = 0; j < blurringTimes; j++) {
+        blur(inputImageGrey, inputImageGrey, cv::Size(3, 3));
+    }
+
+    // Canny detector to catch the edges
+    cv::Canny(inputImageGrey, filter, cannyLowThreshold,
+              cannyLowThreshold * cannyRatio, kernelSize);
+
+    // Use Canny's output as a mask
+    cv::Mat processedImage(cv::Scalar::all(0));
+    inputImageGrey.copyTo(processedImage, filter);
+
+    cv::Mat element = cv::getStructuringElement(
+                dilationType, cv::Size(2 * dilationSize + 1, 2 * dilationSize + 1),
+                cv::Point(dilationSize, dilationSize));
+
+    // Dilate the image to get the contour of the finger
+    dilate(processedImage, processedImage, element);
+
+    // Fill the image from the middle to the edge.
+    floodFill(processedImage, cv::Point(filter.cols / 2, filter.rows / 2),
+              cv::Scalar(255));
+
+    return processedImage;
+}
+
 cv::Mat Enhancer::enhance(cv::Mat &src, EnhancementMethod method)
 {
     cv::Mat enhanced;
@@ -485,8 +539,10 @@ cv::Mat Enhancer::enhance(cv::Mat &src, EnhancementMethod method)
     }
     case GABORFILTERS:
     {
-        cv::Mat normalized = gabor(src);
-        normalized.convertTo(enhanced,CV_8UC1);
+        //cv::Mat normalized = gabor(src);
+        //normalized.convertTo(enhanced,CV_8UC1);
+        enhanced = gabor(src);
+        enhanced.convertTo(enhanced,CV_8UC1);
         break;
     }
 
