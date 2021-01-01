@@ -105,7 +105,6 @@ cv::Mat normalize(cv::Mat &src, double reqMean, double reqVar)
     src.convertTo(convertedIm, CV_32FC1);
 
     cv::Scalar mean = cv::mean(convertedIm);
-    std::cout  << mean[0] << std
     cv::Mat normalizedImage = convertedIm - mean[0];
 
     cv::Scalar normMean = cv::mean(normalizedImage);
@@ -539,8 +538,6 @@ cv::Mat Enhancer::enhance(cv::Mat &src, EnhancementMethod method)
     }
     case GABORFILTERS:
     {
-        //cv::Mat normalized = gabor(src);
-        //normalized.convertTo(enhanced,CV_8UC1);
         enhanced = gabor(src);
         enhanced.convertTo(enhanced,CV_8UC1);
         break;

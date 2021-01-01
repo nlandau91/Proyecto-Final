@@ -5,6 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    qDebug("Starting...");
     ui->setupUi(this);
 
     db.init();
@@ -35,10 +36,16 @@ void MainWindow::on_btn_ingresar_clicked()
         if(!src.empty())
         {
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::SKELETONIZE);
+            cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::GABORFILTERS);
+            enhanced = fp::Enhancer::enhance(enhanced,fp::Enhancer::SKELETONIZE);
+            //juntamos la imagen original y la mejorada para mostrarlas
+            cv::Mat comparacion;
+            cv::hconcat(src,enhanced,comparacion);
+            mostrar_imagen(comparacion);
+
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
-            mostrar_imagen(analysis.fingerprint);
+            qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
             //solo ingresamos huellas que sean suficientemente buenas
             if(analysis.descriptors.rows > 4)
             {
@@ -70,6 +77,11 @@ void MainWindow::on_btn_verificar_clicked()
         {
             //mejoramos la imagen
             cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::GABORFILTERS);
+            enhanced = fp::Enhancer::enhance(enhanced,fp::Enhancer::SKELETONIZE);
+            //juntamos la imagen original y la mejorada para mostrarlas
+            cv::Mat comparacion;
+            cv::hconcat(src,enhanced,comparacion);
+            mostrar_imagen(comparacion);
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
             mostrar_imagen(analysis.fingerprint);
@@ -108,7 +120,12 @@ void MainWindow::on_btn_identificar_clicked()
         if(!src.empty())
         {
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::SKELETONIZE);
+            cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::GABORFILTERS);
+            enhanced = fp::Enhancer::enhance(enhanced,fp::Enhancer::SKELETONIZE);
+            //juntamos la imagen original y la mejorada para mostrarlas
+            cv::Mat comparacion;
+            cv::hconcat(src,enhanced,comparacion);
+            mostrar_imagen(comparacion);
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
             mostrar_imagen(analysis.fingerprint);

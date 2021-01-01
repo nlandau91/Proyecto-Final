@@ -43,3 +43,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 # OpenCV
 INCLUDEPATH += /usr/local/include/opencv4
 LIBS += `pkg-config --cflags --libs opencv4`
+
+#This is a release build
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
