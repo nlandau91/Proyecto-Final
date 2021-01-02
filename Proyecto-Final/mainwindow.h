@@ -7,6 +7,7 @@
 #include "comparator.h"
 #include "database.h"
 #include "utils.h"
+#include "configdialog.h"
 
 #include <QMainWindow>
 #include <QFileDialog>
@@ -37,6 +38,7 @@ private:
     Ui::MainWindow *ui;
     fp::Database db;
     void mostrar_imagen(cv::Mat &imagen);
+    ConfigDialog *config_dialog;
 
 };
 #endif // MAINWINDOW_H

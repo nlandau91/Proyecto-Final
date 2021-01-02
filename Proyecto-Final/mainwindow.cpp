@@ -32,7 +32,7 @@ void MainWindow::on_btn_ingresar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABORFILTERS,fp::Preprocesser::ZHANGSUEN);
+            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABORFILTERS,fp::Preprocesser::ZHANGSUEN, false);
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
             qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
@@ -150,4 +150,8 @@ void MainWindow::on_btn_identificar_clicked()
 void MainWindow::on_actionOpciones_triggered()
 {
     qDebug() << "Opciones";
+    config_dialog = new ConfigDialog(this);
+    config_dialog->setModal(true);
+    config_dialog->show();
+    //hide();
 }

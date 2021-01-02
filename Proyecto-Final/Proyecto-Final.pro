@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     analyzer.cpp \
     comparator.cpp \
+    configdialog.cpp \
     database.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -27,12 +28,14 @@ SOURCES += \
 HEADERS += \
     analyzer.h \
     comparator.h \
+    configdialog.h \
     database.h \
     mainwindow.h \
     preprocesser.h \
     utils.h
 
 FORMS += \
+    configdialog.ui \
     mainwindow.ui
 
 # Default rules for deployment.

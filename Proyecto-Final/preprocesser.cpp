@@ -88,14 +88,14 @@ void guohall_iteration(cv::Mat& im, int iter)
             uchar p8 = im.at<uchar>(i, j-1);
             uchar p9 = im.at<uchar>(i-1, j-1);
 
-            int C  = (!p2 & (p3 | p4)) + (!p4 & (p5 | p6)) +
-                    (!p6 & (p7 | p8)) + (!p8 & (p9 | p2));
+            int C  = ((!p2) & (p3 | p4)) + ((!p4) & (p5 | p6)) +
+                    ((!p6) & (p7 | p8)) + ((!p8) & (p9 | p2));
             int N1 = (p9 | p2) + (p3 | p4) + (p5 | p6) + (p7 | p8);
             int N2 = (p2 | p3) + (p4 | p5) + (p6 | p7) + (p8 | p9);
             int N  = N1 < N2 ? N1 : N2;
-            int m  = iter == 0 ? ((p6 | p7 | !p9) & p8) : ((p2 | p3 | !p5) & p4);
+            int m  = iter == 0 ? ((p6 | p7 | (!p9)) & p8) : ((p2 | p3 | (!p5)) & p4);
 
-            if (C == 1 && (N >= 2 && N <= 3) & m == 0)
+            if (C == 1 && (N >= 2 && N <= 3) & (m == 0))
                 marker.at<uchar>(i,j) = 1;
         }
     }
@@ -628,11 +628,20 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
     }
     case MORPHOLOGICAL:
     {
+        //pasamos la imagen de escala de gris a binario
+        cv::Mat binary;
+        cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+        //luego obtenemos el "esqueleto" de la imagen
+        thinned = morphological_thinning(binary);
         break;
     }
     case GUOHALL:
     {
-        thinned = src.clone();
+        //pasamos la imagen de escala de gris a binario
+        cv::Mat binary;
+        cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+        //luego obtenemos el "esqueleto" de la imagen
+        thinned = binary.clone();
         guohall_thinning(thinned);
     }
     default:
@@ -643,16 +652,25 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
 
 cv::Mat Preprocesser::roi_mask(cv::Mat &original, cv::Mat &preprocessed)
 {
-
+    cv::Mat filter = postProcessingFilter(original);
+    cv::Mat masked;
+    preprocessed.copyTo(masked,filter);
+    return masked;
 }
 
-cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method)
+cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method, bool roi_masking)
 {
     cv::Mat enhanced = enhance(src, enhancement_method);
 
     cv::Mat thinned = thin(enhanced,thinning_method);
 
-    return thinned;
+    cv::Mat result = thinned;
+    if(roi_masking)
+    {
+        result = roi_mask(src, thinned);
+    }
+
+    return result;
 
 }
 }
