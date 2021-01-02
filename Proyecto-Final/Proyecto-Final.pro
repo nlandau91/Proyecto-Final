@@ -19,17 +19,17 @@ SOURCES += \
     analyzer.cpp \
     comparator.cpp \
     database.cpp \
-    enhancer.cpp \
     main.cpp \
     mainwindow.cpp \
+    preprocesser.cpp \
     utils.cpp
 
 HEADERS += \
     analyzer.h \
     comparator.h \
     database.h \
-    enhancer.h \
     mainwindow.h \
+    preprocesser.h \
     utils.h
 
 FORMS += \

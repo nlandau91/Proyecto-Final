@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <opencv2/opencv.hpp>
-#include "enhancer.h"
+#include "preprocesser.h"
 #include "analyzer.h"
 #include "comparator.h"
 #include "database.h"
@@ -30,6 +30,8 @@ private slots:
     void on_btn_verificar_clicked();
 
     void on_btn_identificar_clicked();
+
+    void on_actionOpciones_triggered();
 
 private:
     Ui::MainWindow *ui;

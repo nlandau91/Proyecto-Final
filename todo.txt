@@ -1,2 +1,2 @@
-
-Agregar modos a la clase enhacenment (gabor, fragi, etc)
+Refactorizar segun el pipeline
+Agregar funcionalidad a la UI

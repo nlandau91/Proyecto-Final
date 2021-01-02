@@ -1,17 +1,17 @@
-#include "enhancer.h"
+#include "preprocesser.h"
 
 namespace fp
 {
 
 
-Enhancer::Enhancer()
+Preprocesser::Preprocesser()
 {
     //esta clase solo tiene metodos estaticos
     //no es necesario instanciarla
 }
 
-//realiza una iteracion de reduccion, la misma se debe repetir hasta que la imagen este esquelitizada
-void thinningIteration(cv::Mat& im, int iter)
+//realiza una iteracion de reduccion del algoritmo de zhang-suen, la misma se debe repetir hasta que la imagen este esquelitizada
+void zhangsuen_iteration(cv::Mat& im, int iter)
 {
     cv::Mat marker =cv::Mat::zeros(im.size(), CV_8UC1);
     for (int i = 1; i < im.rows-1; i++)
@@ -45,7 +45,7 @@ void thinningIteration(cv::Mat& im, int iter)
 
 //funcion para reducir una imagen binaria, debe estar en el rango de 0-255.
 //basado en el algoritmo de Zhang-Suen https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm
-void thinning(cv::Mat& im)
+void zhangsuen_thinning(cv::Mat& im)
 {
     // Enforce the range tob e in between 0 - 255
     im /= 255;
@@ -54,8 +54,8 @@ void thinning(cv::Mat& im)
     cv::Mat diff;
 
     do {
-        thinningIteration(im, 0);
-        thinningIteration(im, 1);
+        zhangsuen_iteration(im, 0);
+        zhangsuen_iteration(im, 1);
         cv::absdiff(im, prev, diff);
         im.copyTo(prev);
     }
@@ -64,15 +64,89 @@ void thinning(cv::Mat& im)
     im *= 255;
 }
 
-cv::Mat skeletonize(cv::Mat &src)
+/**
+ * Perform one thinning iteration.
+ * Normally you wouldn't call this function directly from your code.
+ *
+ * @param  im    Binary image with range = 0-1
+ * @param  iter  0=even, 1=odd
+ */
+void guohall_iteration(cv::Mat& im, int iter)
 {
-    //pasamos la imagen de escala de gris a binario
-    cv::Mat binary;
-    cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
-    //luego obtenemos el "esqueleto" de la imagen
-    cv::Mat skeleton = binary.clone();
-    thinning(skeleton);
-    return skeleton;
+    cv::Mat marker = cv::Mat::zeros(im.size(), CV_8UC1);
+
+    for (int i = 1; i < im.rows; i++)
+    {
+        for (int j = 1; j < im.cols; j++)
+        {
+            uchar p2 = im.at<uchar>(i-1, j);
+            uchar p3 = im.at<uchar>(i-1, j+1);
+            uchar p4 = im.at<uchar>(i, j+1);
+            uchar p5 = im.at<uchar>(i+1, j+1);
+            uchar p6 = im.at<uchar>(i+1, j);
+            uchar p7 = im.at<uchar>(i+1, j-1);
+            uchar p8 = im.at<uchar>(i, j-1);
+            uchar p9 = im.at<uchar>(i-1, j-1);
+
+            int C  = (!p2 & (p3 | p4)) + (!p4 & (p5 | p6)) +
+                    (!p6 & (p7 | p8)) + (!p8 & (p9 | p2));
+            int N1 = (p9 | p2) + (p3 | p4) + (p5 | p6) + (p7 | p8);
+            int N2 = (p2 | p3) + (p4 | p5) + (p6 | p7) + (p8 | p9);
+            int N  = N1 < N2 ? N1 : N2;
+            int m  = iter == 0 ? ((p6 | p7 | !p9) & p8) : ((p2 | p3 | !p5) & p4);
+
+            if (C == 1 && (N >= 2 && N <= 3) & m == 0)
+                marker.at<uchar>(i,j) = 1;
+        }
+    }
+
+    im &= ~marker;
+}
+
+/**
+ * Function for thinning the given binary image
+ *
+ * @param  im  Binary image with range = 0-255
+ */
+void guohall_thinning(cv::Mat& im)
+{
+    im /= 255;
+
+    cv::Mat prev = cv::Mat::zeros(im.size(), CV_8UC1);
+    cv::Mat diff;
+
+    do {
+        guohall_iteration(im, 0);
+        guohall_iteration(im, 1);
+        cv::absdiff(im, prev, diff);
+        im.copyTo(prev);
+    }
+    while (cv::countNonZero(diff) > 0);
+
+    im *= 255;
+}
+
+cv::Mat morphological_thinning(cv::Mat &src)
+{
+    cv::Mat bin;
+    cv::threshold(src,bin,127,255,cv::THRESH_BINARY);
+    cv::Mat skel(src.size(), CV_8UC1,cv::Scalar(0));
+    cv::Mat temp(src.size(),CV_8UC1);
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS,cv::Size(3,3));
+    bool done;
+    do
+    {
+        cv::morphologyEx(src, temp, cv::MORPH_OPEN, element);
+        cv::bitwise_not(temp, temp);
+        cv::bitwise_and(src, temp, temp);
+        cv::bitwise_or(skel, temp, skel);
+        cv::erode(src, src, element);
+
+        double max;
+        cv::minMaxLoc(src, 0, &max);
+        done = (max == 0);
+    } while (!done);
+    return skel;
 }
 
 /*
@@ -320,7 +394,7 @@ cv::Mat filter_ridge(const cv::Mat &inputImage,
 {
     double kx = 0.8;
     double ky = 0.8;
-    bool addBorder = false;
+    bool addBorder = true;
     // Fixed angle increment between filter orientations in degrees
     int angleInc = 3;
 
@@ -418,7 +492,7 @@ cv::Mat filter_ridge(const cv::Mat &inputImage,
     }
 
     // Finally, do the filtering
-    for (int k = 0; k < validr.size(); k++) {
+    for (long unsigned k = 0; k < validr.size(); k++) {
         int r = validr[k];
         int c = validc[k];
 
@@ -455,15 +529,13 @@ cv::Mat gabor(cv::Mat &src)
     cv::medianBlur(src,blurred,3);
     //normalizacion
     cv::Mat normalized;
-    normalized = normalize(blurred,150,100); //todo: normalizar correctamente
+    normalized = normalize(blurred,150,100);
     //estimacion de la orientacion local
     cv::Mat orientationImage = orient_ridge(normalized);
-
     double freqValue = 0.11;
     cv::Mat freq = cv::Mat::ones(normalized.rows, normalized.cols, normalized.type()) * freqValue;
     //filtro
-    cv::Mat enhancedImage =
-            filter_ridge(normalized, orientationImage, freq);
+    cv::Mat enhancedImage = filter_ridge(normalized, orientationImage, freq);
     //devolvemos la imagen mejorada
     return enhancedImage;
 }
@@ -521,31 +593,66 @@ cv::Mat postProcessingFilter(const cv::Mat &inputImage)
     return processedImage;
 }
 
-cv::Mat Enhancer::enhance(cv::Mat &src, EnhancementMethod method)
+cv::Mat Preprocesser::enhance(cv::Mat &src, EnhancementMethod enhancement_method)
 {
     cv::Mat enhanced;
-    switch (method)
+    switch (enhancement_method)
     {
-    case NONE:
-    {
-        enhanced = src.clone();
-        break;
-    }
-    case SKELETONIZE:
-    {
-        enhanced = skeletonize(src);
-        break;
-    }
     case GABORFILTERS:
     {
         enhanced = gabor(src);
+
         enhanced.convertTo(enhanced,CV_8UC1);
         break;
     }
-
     default:
         break;
     }
     return enhanced;
+}
+
+cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
+{
+    cv::Mat thinned;
+    switch(thinning_method)
+    {
+    case ZHANGSUEN:
+    {
+        //pasamos la imagen de escala de gris a binario
+        cv::Mat binary;
+        cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+        //luego obtenemos el "esqueleto" de la imagen
+        thinned = binary.clone();
+        zhangsuen_thinning(thinned);
+        break;
+    }
+    case MORPHOLOGICAL:
+    {
+        break;
+    }
+    case GUOHALL:
+    {
+        thinned = src.clone();
+        guohall_thinning(thinned);
+    }
+    default:
+        break;
+    }
+    return thinned;
+}
+
+cv::Mat Preprocesser::roi_mask(cv::Mat &original, cv::Mat &preprocessed)
+{
+
+}
+
+cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method)
+{
+    cv::Mat enhanced = enhance(src, enhancement_method);
+
+    cv::Mat thinned = thin(enhanced,thinning_method);
+
+    return thinned;
+
 }
 }

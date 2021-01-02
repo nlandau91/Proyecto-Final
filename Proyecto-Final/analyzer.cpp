@@ -9,7 +9,7 @@ Analyzer::Analyzer()
 
 //buscamos los keypoints en una imagen con el detector de esquinas de Harris
 //la imagen ya debe estar preprocesada
-std::vector<cv::KeyPoint> obtenerKeyPoints(cv::Mat preprocesado, float threshold = 130.0)
+std::vector<cv::KeyPoint> obtenerKeyPoints(cv::Mat preprocesado, float threshold = 100.0)
 {
     cv::Mat harris_corners, harris_normalised;
     harris_corners = cv::Mat::zeros(preprocesado.size(), CV_32FC1);

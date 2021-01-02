@@ -16,36 +16,31 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::mostrar_imagen(cv::Mat &imagen)
-{
-    ui->label->setPixmap(fp::cvMatToQPixmap(imagen));
-}
-
 void MainWindow::on_btn_ingresar_clicked()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this,
                                                           tr("Open Image"), "../res/",
                                                           tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
-    std::string id = ui->lineEdit->text().toStdString();
-    int n = 0;
+    //std::string id = ui->lineEdit->text().toStdString();
+    //int n = 0;
     for(QString fileName : fileNames)
     {
-        ui->lineEdit->setText(QString::number(n/8));
+        //ui->lineEdit->setText(QString::number(n/8));
         //leemos la imagen en escala de gris
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
+            ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::GABORFILTERS);
-            enhanced = fp::Enhancer::enhance(enhanced,fp::Enhancer::SKELETONIZE);
-            //juntamos la imagen original y la mejorada para mostrarlas
-            cv::Mat comparacion;
-            cv::hconcat(src,enhanced,comparacion);
-            mostrar_imagen(comparacion);
-
+            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABORFILTERS,fp::Preprocesser::ZHANGSUEN);
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
             qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
+            //dibujamos sobre la imagen de salida
+            cv::Mat enhanced_marked;
+            cv::cvtColor(enhanced,enhanced_marked,cv::COLOR_GRAY2BGR);
+            cv::drawKeypoints(enhanced_marked,analysis.keypoints,enhanced_marked,cv::Scalar(0,255,0),cv::DrawMatchesFlags::DRAW_OVER_OUTIMG);
+            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
             //solo ingresamos huellas que sean suficientemente buenas
             if(analysis.descriptors.rows > 4)
             {
@@ -60,7 +55,7 @@ void MainWindow::on_btn_ingresar_clicked()
             }
 
         }
-        n++;
+        //n++;
     }
 }
 
@@ -75,16 +70,12 @@ void MainWindow::on_btn_verificar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
+            ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::GABORFILTERS);
-            enhanced = fp::Enhancer::enhance(enhanced,fp::Enhancer::SKELETONIZE);
-            //juntamos la imagen original y la mejorada para mostrarlas
-            cv::Mat comparacion;
-            cv::hconcat(src,enhanced,comparacion);
-            mostrar_imagen(comparacion);
+            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABORFILTERS,fp::Preprocesser::ZHANGSUEN);
+            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));;
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
-            mostrar_imagen(analysis.fingerprint);
             //solo verificamos si la huella es buena
             bool verificado = false;
             if(analysis.descriptors.rows > 0)
@@ -119,16 +110,12 @@ void MainWindow::on_btn_identificar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
+            ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Enhancer::enhance(src,fp::Enhancer::GABORFILTERS);
-            enhanced = fp::Enhancer::enhance(enhanced,fp::Enhancer::SKELETONIZE);
-            //juntamos la imagen original y la mejorada para mostrarlas
-            cv::Mat comparacion;
-            cv::hconcat(src,enhanced,comparacion);
-            mostrar_imagen(comparacion);
+            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABORFILTERS,fp::Preprocesser::ZHANGSUEN);
+            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
-            mostrar_imagen(analysis.fingerprint);
             //solo verificamos si la huella es buena
             if(analysis.descriptors.rows > 0)
             {
@@ -158,4 +145,9 @@ void MainWindow::on_btn_identificar_clicked()
             }
         }
     }
+}
+
+void MainWindow::on_actionOpciones_triggered()
+{
+    qDebug() << "Opciones";
 }
