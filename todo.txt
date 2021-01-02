@@ -1,2 +1,5 @@
 Refactorizar segun el pipeline
 Agregar funcionalidad a la UI
+Agregar variantes de extraccion de features
+Agregar mensajes de logging
+Mejorar comentarios
