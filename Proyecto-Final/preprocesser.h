@@ -2,29 +2,36 @@
 #define FINGERPRINTENHANCER_H
 
 #include <opencv2/opencv.hpp>
+#include <QObject>
+#include <QMetaEnum>
+#include <QDebug>
 
 namespace fp
 {
 
 //clase que realiza el preprocesamiento de las huellas dactilares
-class Preprocesser
+class Preprocesser : public QObject
 {
+    Q_OBJECT
 public:
     enum EnhancementMethod
     {
-        GABORFILTERS
+        NONE,
+        GABOR,
     };
+    Q_ENUM(EnhancementMethod)
     enum ThinningMethod
     {
         ZHANGSUEN,
-        MORPHOLOGICAL,
+        MORPH,
         GUOHALL,
     };
+     Q_ENUM(ThinningMethod)
 
     Preprocesser();
 
     //realiza el preprocesamiento de una huella dactilar par adecuarla a la extraccion de features
-    static cv::Mat preprocess(cv::Mat &src, EnhancementMethod enhancement_method = GABORFILTERS, ThinningMethod thinning_method = ZHANGSUEN, bool roi_masking = false);
+    static cv::Mat preprocess(cv::Mat &src, EnhancementMethod enhancement_method = GABOR, ThinningMethod thinning_method = ZHANGSUEN, bool roi_masking = false);
 
     //mejora una huella dactilar
     static cv::Mat enhance(cv::Mat &src, EnhancementMethod enhancement_method);

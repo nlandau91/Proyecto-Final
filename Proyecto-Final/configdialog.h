@@ -2,6 +2,8 @@
 #define CONFIGDIALOG_H
 
 #include <QDialog>
+#include <QSettings>
+#include <QDebug>
 
 namespace Ui {
 class ConfigDialog;
@@ -15,8 +17,14 @@ public:
     explicit ConfigDialog(QWidget *parent = nullptr);
     ~ConfigDialog();
 
+private slots:
+    void on_buttonBox_accepted();
+
 private:
     Ui::ConfigDialog *ui;
+
+    void load_settings();
+    void save_settings();
 };
 
 #endif // CONFIGDIALOG_H

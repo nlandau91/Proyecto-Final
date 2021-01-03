@@ -22,6 +22,14 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+
+    struct AppSettings
+    {
+        fp::Preprocesser::EnhancementMethod enhancement_method;
+        fp::Preprocesser::ThinningMethod thinning_method;
+        bool masking;
+    };
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -37,8 +45,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
     fp::Database db;
+    AppSettings app_settings;
     void mostrar_imagen(cv::Mat &imagen);
-    ConfigDialog *config_dialog;
+    void load_settings();
 
 };
 #endif // MAINWINDOW_H

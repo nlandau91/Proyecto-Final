@@ -48,19 +48,26 @@ cv::Mat calcular_descriptores(cv::Mat &src)
     return descriptors;
 }
 
-Analyzer::Analysis Analyzer::analize(cv::Mat &src, Analyzer::KeypointMethod keypoint_method, Analyzer::DescriptorMethod descriptor_method)
+std::vector<cv::KeyPoint> Analyzer::calcular_keypoints(cv::Mat &src, KeypointMethod keypoint_method)
 {
-    Analysis analysis;
-    analysis.fingerprint = src.clone();
-    //buscamos los puntos minuciosos (minutae)
+    std::vector<cv::KeyPoint> keypoints;
     switch(keypoint_method)
     {
     case HARRIS:
-        analysis.keypoints = obtenerKeyPoints(analysis.fingerprint);
+        keypoints = obtenerKeyPoints(src);
         break;
     default:
         break;
     }
+    return keypoints;
+}
+
+Analyzer::Analysis Analyzer::analize(cv::Mat &src, KeypointMethod keypoint_method, DescriptorMethod descriptor_method)
+{
+    Analysis analysis;
+    analysis.fingerprint = src.clone();
+    //buscamos los puntos minuciosos (minutae)
+    analysis.keypoints = calcular_keypoints(analysis.fingerprint,keypoint_method);
     //obtenemos los descriptores alrededor de esos puntos
     switch(descriptor_method)
     {

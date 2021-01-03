@@ -30,7 +30,7 @@ public:
 
     //analiza la huella digital
     static Analysis analize(cv::Mat &src, KeypointMethod keypoint_method = HARRIS, DescriptorMethod descriptor_method = ORB);
-
+    static std::vector<cv::KeyPoint> calcular_keypoints(cv::Mat &src, KeypointMethod keypoint_method = HARRIS);
 };
 }
 #endif // FINGERPRINTANALYZER_H

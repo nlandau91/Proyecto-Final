@@ -32,7 +32,7 @@ void MainWindow::on_btn_ingresar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABORFILTERS,fp::Preprocesser::ZHANGSUEN, false);
+            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABOR,fp::Preprocesser::ZHANGSUEN, false);
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
             qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
@@ -72,7 +72,7 @@ void MainWindow::on_btn_verificar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABORFILTERS,fp::Preprocesser::ZHANGSUEN);
+            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABOR,fp::Preprocesser::ZHANGSUEN);
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));;
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
@@ -112,7 +112,7 @@ void MainWindow::on_btn_identificar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABORFILTERS,fp::Preprocesser::ZHANGSUEN);
+            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABOR,fp::Preprocesser::ZHANGSUEN);
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
@@ -147,11 +147,32 @@ void MainWindow::on_btn_identificar_clicked()
     }
 }
 
+void MainWindow::load_settings()
+{
+    QString file = QApplication::applicationDirPath()+"/settings.ini";
+    QSettings settings(file, QSettings::IniFormat);
+    QString enh_method = settings.value("enhance_method").toString();
+    QString thi_method = settings.value("thinning_method").toString();
+    QString masking = settings.value("masking").toString();
+   // ui->comboBox_enh->setCurrentText(settings.value("enhance_method").toString());
+    //ui->comboBox_thi->setCurrentText(settings.value("thinning_method").toString());
+    //ui->comboBox_mas->setCurrentText(settings.value("masking").toString());
+
+    auto&& metaEnum = QMetaEnum::fromType<fp::Preprocesser::EnhancementMethod>();
+    app_settings.enhancement_method = static_cast<fp::Preprocesser::EnhancementMethod>(metaEnum.keyToValue(enh_method.toUtf8().constData()));
+    metaEnum = QMetaEnum::fromType<fp::Preprocesser::ThinningMethod>();
+    app_settings.thinning_method = static_cast<fp::Preprocesser::ThinningMethod>(metaEnum.keyToValue(enh_method.toUtf8().constData()));
+    metaEnum = QMetaEnum::fromType<fp::Preprocesser::EnhancementMethod>();
+    app_settings.enhancement_method = static_cast<fp::Preprocesser::EnhancementMethod>(metaEnum.keyToValue(enh_method.toUtf8().constData()));
+}
+
+
 void MainWindow::on_actionOpciones_triggered()
 {
-    qDebug() << "Opciones";
-    config_dialog = new ConfigDialog(this);
-    config_dialog->setModal(true);
-    config_dialog->show();
-    //hide();
+    qDebug() << "Entrando a opciones";
+    ConfigDialog config_dialog;
+    config_dialog.setModal(true);
+    config_dialog.exec();
+    qDebug() << "Saliendo de opciones";
+    load_settings();
 }
