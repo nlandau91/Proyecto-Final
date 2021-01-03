@@ -1,17 +1,20 @@
 Actividades
-A1: Estudio del problema y planteo de solucion
-A2: Relevamiento y eleccion de herramientas
-A3: Obtencion de huellas
-A4: Diseño e implementacion de GUI
+A1: Estudio del problema y planteo de solucion.
+A2: Evaluacion y eleccion de herramientas.
+A3: Obtencion de huellas.
+A4: Diseño e implementacion de GUI.
 A5: Diseño de modulos de preprocesado, analisis y comparacion.
 A6: Implementacion e incorporacion del algoritmo de esqueletizado de Zhang-Suen al modulo de preprocesado.
 A7: Incorporacion de metodo Harris para deteccion de keypoints y ORB para extraccion de features al modulo de analisis.
-A8: Incorporacion de metodo BruteForce para obtencion de matches al modulo de comparacion
-A9: 
-A10: 
-A11: 
+A8: Incorporacion de metodo BruteForce para obtencion de matches al modulo de .
+A9: Integracion de base de datos.
+A10: Implementacion e incorporacion de metodo de mejora de huellas mediante filtros de Gabor al modulo de preprocesado.
+A11: Implementacion e incorporacion de metodos adicionales de esqueletizado (Guo-Hall y Morfologico)
 A12: 
 A13: 
 A14: 
 A15: 
 A16: 
+.
+.
+.
