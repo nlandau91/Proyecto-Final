@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     analyzer.cpp \
+    appsettings.cpp \
     comparator.cpp \
     configdialog.cpp \
     database.cpp \
@@ -27,6 +28,7 @@ SOURCES += \
 
 HEADERS += \
     analyzer.h \
+    appsettings.h \
     common.h \
     comparator.h \
     configdialog.h \

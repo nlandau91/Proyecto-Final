@@ -15,13 +15,6 @@ class ConfigDialog : public QDialog
 {
     Q_OBJECT
 
-    struct AppSettings
-    {
-        fp::Preprocesser::EnhancementMethod enhancement_method;
-        fp::Preprocesser::ThinningMethod thinning_method;
-        bool masking;
-    };
-
 public:
     explicit ConfigDialog(QWidget *parent = nullptr);
     ~ConfigDialog();
@@ -29,12 +22,12 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
+
 private:
     Ui::ConfigDialog *ui;
 
     void load_settings();
     void save_settings();
-    AppSettings app_settings;
 };
 
 #endif // CONFIGDIALOG_H
