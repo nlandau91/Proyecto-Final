@@ -1,13 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <common.h>
 #include <opencv2/opencv.hpp>
-#include "preprocesser.h"
-#include "analyzer.h"
-#include "comparator.h"
-#include "database.h"
-#include "utils.h"
-#include "configdialog.h"
 
 #include <QMainWindow>
 #include <QFileDialog>
@@ -46,6 +41,7 @@ private:
     Ui::MainWindow *ui;
     fp::Database db;
     AppSettings app_settings;
+    EnumParser<int> enum_parser;
     void mostrar_imagen(cv::Mat &imagen);
     void load_settings();
 

@@ -27,9 +27,11 @@ SOURCES += \
 
 HEADERS += \
     analyzer.h \
+    common.h \
     comparator.h \
     configdialog.h \
     database.h \
+    enumparser.h \
     mainwindow.h \
     preprocesser.h \
     utils.h

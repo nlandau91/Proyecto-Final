@@ -30,6 +30,8 @@ void ConfigDialog::load_settings()
 {
     QString file = QApplication::applicationDirPath()+"/settings.ini";
     QSettings settings(file, QSettings::IniFormat);
+
+    app_settings.enhancement_method = (fp::Preprocesser::EnhancementMethod)settings.value("enhance_method").toInt()
     ui->comboBox_enh->setCurrentText(settings.value("enhance_method").toString());
     ui->comboBox_thi->setCurrentText(settings.value("thinning_method").toString());
     ui->comboBox_mas->setCurrentText(settings.value("masking").toString());

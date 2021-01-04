@@ -50,4 +50,6 @@ QPixmap cvMatToQPixmap( const cv::Mat &inMat )
 {
     return QPixmap::fromImage( cvMatToQImage( inMat ) );
 }
+
+
 }

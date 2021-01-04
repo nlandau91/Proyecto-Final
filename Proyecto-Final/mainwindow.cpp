@@ -5,10 +5,16 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    qDebug("Starting...");
+    qDebug("Setting up UI...");
     ui->setupUi(this);
-
+    qDebug("Initializing db...");
     db.init();
+    qDebug("Populating enum parser...");
+    enum_parser.add_enum(fp::Preprocesser::NONE,"none");
+    enum_parser.add_enum(fp::Preprocesser::GABOR,"gabor");
+    fp::Preprocesser::EnhancementMethod averga = (fp::Preprocesser::EnhancementMethod)enum_parser.parse_enum("gab?");
+    std::cout << averga << std::endl;
+    //enum_parser.add_enum(fp::Preprocesser::EnhancementMethod::GABOR,"asd");
 }
 
 MainWindow::~MainWindow()
@@ -154,16 +160,13 @@ void MainWindow::load_settings()
     QString enh_method = settings.value("enhance_method").toString();
     QString thi_method = settings.value("thinning_method").toString();
     QString masking = settings.value("masking").toString();
-   // ui->comboBox_enh->setCurrentText(settings.value("enhance_method").toString());
-    //ui->comboBox_thi->setCurrentText(settings.value("thinning_method").toString());
-    //ui->comboBox_mas->setCurrentText(settings.value("masking").toString());
 
-    auto&& metaEnum = QMetaEnum::fromType<fp::Preprocesser::EnhancementMethod>();
-    app_settings.enhancement_method = static_cast<fp::Preprocesser::EnhancementMethod>(metaEnum.keyToValue(enh_method.toUtf8().constData()));
-    metaEnum = QMetaEnum::fromType<fp::Preprocesser::ThinningMethod>();
-    app_settings.thinning_method = static_cast<fp::Preprocesser::ThinningMethod>(metaEnum.keyToValue(enh_method.toUtf8().constData()));
-    metaEnum = QMetaEnum::fromType<fp::Preprocesser::EnhancementMethod>();
-    app_settings.enhancement_method = static_cast<fp::Preprocesser::EnhancementMethod>(metaEnum.keyToValue(enh_method.toUtf8().constData()));
+
+    app_settings.enhancement_method = (fp::Preprocesser::EnhancementMethod)enum_parser.parse_enum(enh_method.toStdString());
+
+    app_settings.thinning_method = (fp::Preprocesser::ThinningMethod)enum_parser.parse_enum(thi_method.toStdString());
+
+
 }
 
 
