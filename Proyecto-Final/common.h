@@ -9,4 +9,6 @@
 #include "configdialog.h"
 #include "appsettings.h"
 
+#include <QDebug>
+
 #endif // COMMON_H

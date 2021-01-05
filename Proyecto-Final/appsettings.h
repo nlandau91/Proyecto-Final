@@ -12,9 +12,9 @@ public:
     fp::Preprocesser::EnhancementMethod enhancement_method;
     fp::Preprocesser::ThinningMethod thinning_method;
     bool masking;
-    fp::Analyzer::KeypointMethod keypoint_method;
+    fp::Analyzer::KeypointExtractor keypoint_extractor;
     int keypoint_threshold;
-    fp::Analyzer::DescriptorMethod descriptor_method;
+    fp::Analyzer::FeatureExtractor feature_extractor;
     fp::Analyzer::MatcherMethod matcher_method;
     int max_match_dist;
 };

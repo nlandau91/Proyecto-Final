@@ -18,6 +18,14 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->comboBox_mas->addItem("true");
     ui->comboBox_mas->addItem("false");
 
+    ui->comboBox_kp->addItem("harris");
+    ui->comboBox_kp->addItem("shitomasi");
+    ui->comboBox_kp->addItem("sift");
+
+    ui->comboBox_feat->addItem("orb");
+    ui->comboBox_feat->addItem("surf");
+    ui->comboBox_feat->addItem("sift");
+
     load_settings();
 }
 
@@ -37,6 +45,9 @@ void ConfigDialog::load_settings()
     ui->comboBox_thi->setCurrentText(settings.value("thinning_method").toString());
     ui->comboBox_mas->setCurrentText(settings.value("masking").toString());
 
+    ui->comboBox_kp->setCurrentText(settings.value("keypoint_extractor").toString());
+    ui->comboBox_feat->setCurrentText(settings.value("feature_extractor").toString());
+
     ui->lineEdit_thresh->setText(settings.value("keypoint_threshold").toString());
     ui->lineEdit_dist->setText(settings.value("max_match_dist").toString());
 }
@@ -48,6 +59,9 @@ void ConfigDialog::save_settings()
     settings.setValue("enhancement_method", ui->comboBox_enh->currentText());
     settings.setValue("thinning_method", ui->comboBox_thi->currentText());
     settings.setValue("masking", ui->comboBox_mas->currentText());
+
+    settings.setValue("keypoint_extractor", ui->comboBox_kp->currentText());
+    settings.setValue("feature_extractor", ui->comboBox_feat->currentText());
 
     settings.setValue("keypoint_threshold", ui->lineEdit_thresh->text());
     settings.setValue("max_match_dist", ui->lineEdit_dist->text());

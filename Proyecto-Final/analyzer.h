@@ -9,17 +9,23 @@ namespace fp
 class Analyzer
 {
 public:
-    enum KeypointMethod
+    enum KeypointExtractor
     {
         HARRIS,
+        SHITOMASI,
+        KSIFT,
     };
-    enum DescriptorMethod
+    enum FeatureExtractor
     {
-        ORB,
+        ORB,      
+        SURF,
+        DSIFT,
+
     };
     enum MatcherMethod
     {
         BRUTEFORCE,
+        FLANN,
     };
 
     struct Analysis
@@ -30,17 +36,19 @@ public:
     };
 
     Analyzer();
-    Analyzer(KeypointMethod keypoint_method, int keypoint_threshold, DescriptorMethod descriptor_method, MatcherMethod matcher_method, int max_match_dist);
+    Analyzer(KeypointExtractor keypoint_method, int keypoint_threshold, FeatureExtractor descriptor_method, MatcherMethod matcher_method, int max_match_dist);
 
     //analiza la huella digital
     Analysis analize(cv::Mat &src);
     std::vector<cv::KeyPoint> calcular_keypoints(cv::Mat &src);
+    cv::Mat calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> keypoints);
+
 
 private:
     int keypoint_threshold;
     int max_match_dist;
-    KeypointMethod keypoint_method;
-    DescriptorMethod descriptor_method;
+    KeypointExtractor keypoint_method;
+    FeatureExtractor descriptor_method;
     MatcherMethod matcher_method;
 };
 }

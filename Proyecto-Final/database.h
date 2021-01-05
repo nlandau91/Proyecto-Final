@@ -1,12 +1,13 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
+#include "common.h"
+
 #include <opencv2/opencv.hpp>
 #include <QSqlDatabase>
 #include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QDebug>
 #include <QDir>
 namespace fp
 {

@@ -4,7 +4,6 @@
 #include <opencv2/opencv.hpp>
 #include <QObject>
 #include <QMetaEnum>
-#include <QDebug>
 
 namespace fp
 {

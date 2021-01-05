@@ -119,12 +119,12 @@
        <item>
         <widget class="QLabel" name="label_9">
          <property name="text">
-          <string>Keypoint Method:</string>
+          <string>Keypoint Extractor:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox"/>
+        <widget class="QComboBox" name="comboBox_kp"/>
        </item>
        <item>
         <widget class="QLabel" name="label_6">
@@ -152,12 +152,12 @@
        <item>
         <widget class="QLabel" name="label_10">
          <property name="text">
-          <string>Feature Method:</string>
+          <string>Feature Extractor:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_2"/>
+        <widget class="QComboBox" name="comboBox_feat"/>
        </item>
        <item>
         <spacer name="verticalSpacer">

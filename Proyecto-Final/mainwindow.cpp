@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     qDebug("Loading settings...");
     app_settings.load_settings();
     qDebug("Setting up analyzer module...");
-    analyzer = fp::Analyzer(app_settings.keypoint_method,app_settings.keypoint_threshold,app_settings.descriptor_method,app_settings.matcher_method,app_settings.max_match_dist);
+    analyzer = fp::Analyzer(app_settings.keypoint_extractor,app_settings.keypoint_threshold,app_settings.feature_extractor,app_settings.matcher_method,app_settings.max_match_dist);
 }
 
 MainWindow::~MainWindow()
@@ -43,7 +43,7 @@ void MainWindow::on_btn_ingresar_clicked()
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
             cv::cvtColor(enhanced,enhanced_marked,cv::COLOR_GRAY2BGR);
-            cv::drawKeypoints(enhanced_marked,analysis.keypoints,enhanced_marked,cv::Scalar(0,255,0),cv::DrawMatchesFlags::DRAW_OVER_OUTIMG);
+            cv::drawKeypoints(enhanced_marked,analysis.keypoints,enhanced_marked,cv::Scalar(0,255,0),cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
             //solo ingresamos huellas que sean suficientemente buenas
             if(analysis.descriptors.rows > 4)
@@ -153,14 +153,12 @@ void MainWindow::on_btn_identificar_clicked()
 
 void MainWindow::on_actionOpciones_triggered()
 {
-    qDebug() << "Entrando a opciones";
     ConfigDialog config_dialog;
     config_dialog.setModal(true);
     int result = config_dialog.exec();
-    qDebug() << "Saliendo de opciones";
     if(result == QDialog::Accepted)
     {
         app_settings.load_settings();
     }
-    analyzer = fp::Analyzer(app_settings.keypoint_method,app_settings.keypoint_threshold,app_settings.descriptor_method,app_settings.matcher_method,app_settings.max_match_dist);
+    analyzer = fp::Analyzer(app_settings.keypoint_extractor,app_settings.keypoint_threshold,app_settings.feature_extractor,app_settings.matcher_method,app_settings.max_match_dist);
 }
