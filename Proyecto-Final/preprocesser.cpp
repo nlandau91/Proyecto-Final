@@ -665,11 +665,7 @@ cv::Mat Preprocesser::roi_mask(cv::Mat &original, cv::Mat &preprocessed)
 
 cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method, bool roi_masking)
 {
-    auto&& metaEnum = QMetaEnum::fromType<EnhancementMethod>();
-    EnhancementMethod wantedEnum = static_cast<EnhancementMethod>(metaEnum.keyToValue("NONE"));
-
-    //qDebug() << wantedEnum;
-    cv::Mat enhanced = enhance(src, wantedEnum);
+    cv::Mat enhanced = enhance(src, enhancement_method);
 
     cv::Mat thinned = thin(enhanced,thinning_method);
 

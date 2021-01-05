@@ -7,12 +7,16 @@ class AppSettings
 {
 public:
     AppSettings();
-private:
+    void load_settings();
 
     fp::Preprocesser::EnhancementMethod enhancement_method;
     fp::Preprocesser::ThinningMethod thinning_method;
     bool masking;
-
+    fp::Analyzer::KeypointMethod keypoint_method;
+    int keypoint_threshold;
+    fp::Analyzer::DescriptorMethod descriptor_method;
+    fp::Analyzer::MatcherMethod matcher_method;
+    int max_match_dist;
 };
 
 #endif // APPSETTINGS_H

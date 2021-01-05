@@ -9,12 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     qDebug("Initializing db...");
     db.init();
-    qDebug("Populating enum parser...");
-    enum_parser.add_enum(fp::Preprocesser::NONE,"none");
-    enum_parser.add_enum(fp::Preprocesser::GABOR,"gabor");
-    fp::Preprocesser::EnhancementMethod averga = (fp::Preprocesser::EnhancementMethod)enum_parser.parse_enum("gab?");
-    std::cout << averga << std::endl;
-    //enum_parser.add_enum(fp::Preprocesser::EnhancementMethod::GABOR,"asd");
+    qDebug("Loading settings...");
+    app_settings.load_settings();
+    qDebug("Setting up analyzer module...");
+    analyzer = fp::Analyzer(app_settings.keypoint_method,app_settings.keypoint_threshold,app_settings.descriptor_method,app_settings.matcher_method,app_settings.max_match_dist);
 }
 
 MainWindow::~MainWindow()
@@ -38,9 +36,9 @@ void MainWindow::on_btn_ingresar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABOR,fp::Preprocesser::ZHANGSUEN, false);
+            cv::Mat enhanced = fp::Preprocesser::preprocess(src,app_settings.enhancement_method,app_settings.thinning_method, app_settings.masking);
             //obtenemos los descriptores
-            fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
+            fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
             qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
@@ -81,7 +79,7 @@ void MainWindow::on_btn_verificar_clicked()
             cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABOR,fp::Preprocesser::ZHANGSUEN);
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));;
             //obtenemos los descriptores
-            fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
+            fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
             //solo verificamos si la huella es buena
             bool verificado = false;
             if(analysis.descriptors.rows > 0)
@@ -121,7 +119,7 @@ void MainWindow::on_btn_identificar_clicked()
             cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABOR,fp::Preprocesser::ZHANGSUEN);
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));
             //obtenemos los descriptores
-            fp::Analyzer::Analysis analysis = fp::Analyzer::analize(enhanced);
+            fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
             //solo verificamos si la huella es buena
             if(analysis.descriptors.rows > 0)
             {
@@ -153,29 +151,16 @@ void MainWindow::on_btn_identificar_clicked()
     }
 }
 
-void MainWindow::load_settings()
-{
-    QString file = QApplication::applicationDirPath()+"/settings.ini";
-    QSettings settings(file, QSettings::IniFormat);
-    QString enh_method = settings.value("enhance_method").toString();
-    QString thi_method = settings.value("thinning_method").toString();
-    QString masking = settings.value("masking").toString();
-
-
-    app_settings.enhancement_method = (fp::Preprocesser::EnhancementMethod)enum_parser.parse_enum(enh_method.toStdString());
-
-    app_settings.thinning_method = (fp::Preprocesser::ThinningMethod)enum_parser.parse_enum(thi_method.toStdString());
-
-
-}
-
-
 void MainWindow::on_actionOpciones_triggered()
 {
     qDebug() << "Entrando a opciones";
     ConfigDialog config_dialog;
     config_dialog.setModal(true);
-    config_dialog.exec();
+    int result = config_dialog.exec();
     qDebug() << "Saliendo de opciones";
-    load_settings();
+    if(result == QDialog::Accepted)
+    {
+        app_settings.load_settings();
+    }
+    analyzer = fp::Analyzer(app_settings.keypoint_method,app_settings.keypoint_threshold,app_settings.descriptor_method,app_settings.matcher_method,app_settings.max_match_dist);
 }

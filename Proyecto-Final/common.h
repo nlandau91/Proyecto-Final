@@ -7,6 +7,6 @@
 #include "database.h"
 #include "utils.h"
 #include "configdialog.h"
-#include "enumparser.h"
+#include "appsettings.h"
 
 #endif // COMMON_H

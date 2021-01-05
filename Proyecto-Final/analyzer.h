@@ -17,6 +17,10 @@ public:
     {
         ORB,
     };
+    enum MatcherMethod
+    {
+        BRUTEFORCE,
+    };
 
     struct Analysis
     {
@@ -25,12 +29,19 @@ public:
         cv::Mat descriptors;
     };
 
-
     Analyzer();
+    Analyzer(KeypointMethod keypoint_method, int keypoint_threshold, DescriptorMethod descriptor_method, MatcherMethod matcher_method, int max_match_dist);
 
     //analiza la huella digital
-    static Analysis analize(cv::Mat &src, KeypointMethod keypoint_method = HARRIS, DescriptorMethod descriptor_method = ORB);
-    static std::vector<cv::KeyPoint> calcular_keypoints(cv::Mat &src, KeypointMethod keypoint_method = HARRIS);
+    Analysis analize(cv::Mat &src);
+    std::vector<cv::KeyPoint> calcular_keypoints(cv::Mat &src);
+
+private:
+    int keypoint_threshold;
+    int max_match_dist;
+    KeypointMethod keypoint_method;
+    DescriptorMethod descriptor_method;
+    MatcherMethod matcher_method;
 };
 }
 #endif // FINGERPRINTANALYZER_H

@@ -18,13 +18,6 @@ class MainWindow : public QMainWindow
 
 public:
 
-    struct AppSettings
-    {
-        fp::Preprocesser::EnhancementMethod enhancement_method;
-        fp::Preprocesser::ThinningMethod thinning_method;
-        bool masking;
-    };
-
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -41,7 +34,7 @@ private:
     Ui::MainWindow *ui;
     fp::Database db;
     AppSettings app_settings;
-    EnumParser<int> enum_parser;
+    fp::Analyzer analyzer;
     void mostrar_imagen(cv::Mat &imagen);
     void load_settings();
 
