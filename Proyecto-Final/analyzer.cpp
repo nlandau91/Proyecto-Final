@@ -1,4 +1,5 @@
 #include "analyzer.h"
+#include <QDebug>
 
 namespace fp
 {
@@ -18,7 +19,7 @@ Analyzer::Analyzer(KeypointExtractor keypoint_method, int keypoint_threshold, Fe
 
 //buscamos los keypoints en una imagen con el detector de esquinas de Harris
 //la imagen ya debe estar preprocesada
-std::vector<cv::KeyPoint> obtenerKeyPoints(cv::Mat preprocesado, float keypoint_threshold)
+std::vector<cv::KeyPoint> kp_harris(cv::Mat preprocesado, float keypoint_threshold)
 {
     cv::Mat harris_corners, harris_normalised;
     harris_corners = cv::Mat::zeros(preprocesado.size(), CV_32FC1);
@@ -38,9 +39,23 @@ std::vector<cv::KeyPoint> obtenerKeyPoints(cv::Mat preprocesado, float keypoint_
             if((int)harris_normalised.at<float>(y,x) > keypoint_threshold)
             {
                 //guardamos el keypoint
-                keypoints.push_back((cv::KeyPoint(x,y,1)));
+                keypoints.push_back(cv::KeyPoint(x,y,5));
             }
         }
+    }
+    return keypoints;
+}
+
+std::vector<cv::KeyPoint> kp_shitomasi(cv::Mat &src)
+{
+    cv::Mat kp_positions;
+    cv::goodFeaturesToTrack(src,kp_positions,25,0.01,10);
+    std::vector<cv::KeyPoint> keypoints;
+    for(int x = 0; x < kp_positions.rows; x++)
+    {
+        cv::Point2f pt = kp_positions.at<cv::Point2f>(x,0);
+        cv::KeyPoint keypoint = cv::KeyPoint(pt,5);
+        keypoints.push_back(keypoint);
     }
     return keypoints;
 }
@@ -52,11 +67,12 @@ std::vector<cv::KeyPoint> Analyzer::calcular_keypoints(cv::Mat &src)
     {
     case HARRIS:
     {
-        keypoints = obtenerKeyPoints(src, keypoint_threshold);
+        keypoints = kp_harris(src, keypoint_threshold);
         break;
     }
     case SHITOMASI:
     {
+        keypoints = kp_shitomasi(src);
         break;
     }
     case KSIFT:

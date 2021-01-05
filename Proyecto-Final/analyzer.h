@@ -17,7 +17,7 @@ public:
     };
     enum FeatureExtractor
     {
-        ORB,      
+        ORB,
         SURF,
         DSIFT,
 
@@ -40,9 +40,6 @@ public:
 
     //analiza la huella digital
     Analysis analize(cv::Mat &src);
-    std::vector<cv::KeyPoint> calcular_keypoints(cv::Mat &src);
-    cv::Mat calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> keypoints);
-
 
 private:
     int keypoint_threshold;
@@ -50,6 +47,9 @@ private:
     KeypointExtractor keypoint_method;
     FeatureExtractor descriptor_method;
     MatcherMethod matcher_method;
+
+    std::vector<cv::KeyPoint> calcular_keypoints(cv::Mat &src);
+    cv::Mat calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> keypoints);
 };
 }
 #endif // FINGERPRINTANALYZER_H
