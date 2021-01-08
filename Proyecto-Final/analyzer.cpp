@@ -43,6 +43,7 @@ std::vector<cv::KeyPoint> kp_harris(cv::Mat preprocesado, float keypoint_thresho
             }
         }
     }
+
     return keypoints;
 }
 
@@ -57,6 +58,15 @@ std::vector<cv::KeyPoint> kp_shitomasi(cv::Mat &src)
         cv::KeyPoint keypoint = cv::KeyPoint(pt,5);
         keypoints.push_back(keypoint);
     }
+    return keypoints;
+}
+
+std::vector<cv::KeyPoint> kp_sift(cv::Mat &src)
+{
+    cv::Ptr<cv::SIFT> siftPtr = cv::SIFT::create();
+    std::vector<cv::KeyPoint> keypoints;
+    siftPtr->detect(src, keypoints);
+
     return keypoints;
 }
 
@@ -77,6 +87,7 @@ std::vector<cv::KeyPoint> Analyzer::calcular_keypoints(cv::Mat &src)
     }
     case KSIFT:
     {
+        keypoints = kp_sift(src);
         break;
     }
     default:
