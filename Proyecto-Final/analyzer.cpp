@@ -65,9 +65,19 @@ std::vector<cv::KeyPoint> kp_shitomasi(cv::Mat &src)
 std::vector<cv::KeyPoint> kp_sift(cv::Mat &src)
 {
 
-    cv::Ptr<cv::xfeatures2d::SIFT> siftPtr = cv::xfeatures2d::SIFT::create();
+    cv::Ptr<cv::SIFT> siftPtr = cv::SIFT::create();
     std::vector<cv::KeyPoint> keypoints;
     siftPtr->detect(src, keypoints);
+
+    return keypoints;
+}
+
+std::vector<cv::KeyPoint> kp_surf(cv::Mat &src, int hessian_threshold = 20000)
+{
+
+    cv::Ptr<cv::xfeatures2d::SURF> surf = cv::xfeatures2d::SURF::create(hessian_threshold);
+    std::vector<cv::KeyPoint> keypoints;
+    surf->detect(src,keypoints);
 
     return keypoints;
 }
@@ -89,7 +99,8 @@ std::vector<cv::KeyPoint> Analyzer::calcular_keypoints(cv::Mat &src)
     }
     case KSIFT:
     {
-        keypoints = kp_sift(src);
+        //keypoints = kp_sift(src);
+        keypoints = kp_surf(src);
         break;
     }
     default:

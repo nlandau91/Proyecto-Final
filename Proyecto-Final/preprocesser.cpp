@@ -549,7 +549,7 @@ cv::Mat gabor(cv::Mat &src)
 cv::Mat postProcessingFilter(const cv::Mat &inputImage)
 {
 
-    int cannyLowThreshold = 10;
+    int cannyLowThreshold = 6;
     int cannyRatio = 3;
     int kernelSize = 3;
     int blurringTimes = 30;
@@ -629,10 +629,12 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
     case THI_ZHANGSUEN:
     {
         //pasamos la imagen de escala de gris a binario
-        cv::Mat binary;
-        cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+       // cv::Mat binary;
+       // cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
         //luego obtenemos el "esqueleto" de la imagen
-        thinned = binary.clone();
+       // thinned = binary.clone();
+       // zhangsuen_thinning(thinned);
+        thinned = src.clone();
         zhangsuen_thinning(thinned);
         break;
     }
@@ -668,8 +670,19 @@ cv::Mat Preprocesser::roi_mask(cv::Mat &original, cv::Mat &preprocessed)
     return masked;
 }
 
+cv::Mat Preprocesser::segment(cv::Mat &src)
+{
+    cv::Mat binary;
+   // cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+    cv::adaptiveThreshold(src,binary,255,cv::ADAPTIVE_THRESH_GAUSSIAN_C,cv::THRESH_BINARY_INV,33,11);
+    return binary;
+}
+
+
+
 cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method, bool roi_masking)
 {
+    return segment(src);
     cv::Mat enhanced = enhance(src, enhancement_method);
 
     cv::Mat thinned = thin(enhanced,thinning_method);

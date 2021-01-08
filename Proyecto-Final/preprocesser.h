@@ -31,6 +31,9 @@ public:
     //realiza el preprocesamiento de una huella dactilar par adecuarla a la extraccion de features
     static cv::Mat preprocess(cv::Mat &src, EnhancementMethod enhancement_method = ENH_GABOR, ThinningMethod thinning_method = THI_ZHANGSUEN, bool roi_masking = false);
 
+    //separa el foreground del background
+    static cv::Mat segment(cv::Mat &src);
+
     //mejora una huella dactilar
     static cv::Mat enhance(cv::Mat &src, EnhancementMethod enhancement_method);
     //esqueletiza una huella dactilar
