@@ -11,6 +11,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->comboBox_enh->addItem("gabor");
     ui->comboBox_enh->addItem("none");
 
+    ui->comboBox_thi->addItem("none");
     ui->comboBox_thi->addItem("zhangsuen");
     ui->comboBox_thi->addItem("guohall");
     ui->comboBox_thi->addItem("morph");
@@ -20,11 +21,11 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     ui->comboBox_kp->addItem("harris");
     ui->comboBox_kp->addItem("shitomasi");
-    ui->comboBox_kp->addItem("sift");
+    ui->comboBox_kp->addItem("ksift");
 
     ui->comboBox_feat->addItem("orb");
     ui->comboBox_feat->addItem("surf");
-    ui->comboBox_feat->addItem("sift");
+    ui->comboBox_feat->addItem("dsift");
 
     load_settings();
 }

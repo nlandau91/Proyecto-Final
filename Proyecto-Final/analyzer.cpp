@@ -1,4 +1,5 @@
 #include "analyzer.h"
+#include <opencv2/xfeatures2d/nonfree.hpp>
 #include <QDebug>
 
 namespace fp
@@ -63,7 +64,8 @@ std::vector<cv::KeyPoint> kp_shitomasi(cv::Mat &src)
 
 std::vector<cv::KeyPoint> kp_sift(cv::Mat &src)
 {
-    cv::Ptr<cv::SIFT> siftPtr = cv::SIFT::create();
+
+    cv::Ptr<cv::xfeatures2d::SIFT> siftPtr = cv::xfeatures2d::SIFT::create(25,3,0.01,1000);
     std::vector<cv::KeyPoint> keypoints;
     siftPtr->detect(src, keypoints);
 

@@ -76,7 +76,7 @@ void MainWindow::on_btn_verificar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABOR,fp::Preprocesser::ZHANGSUEN);
+            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::ENH_GABOR,fp::Preprocesser::THI_ZHANGSUEN);
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));;
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
@@ -116,7 +116,7 @@ void MainWindow::on_btn_identificar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::GABOR,fp::Preprocesser::ZHANGSUEN);
+            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::ENH_GABOR,fp::Preprocesser::THI_ZHANGSUEN);
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);

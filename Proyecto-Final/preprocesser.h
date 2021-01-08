@@ -15,22 +15,21 @@ class Preprocesser : public QObject
 public:
     enum EnhancementMethod
     {
-        NONE,
-        GABOR,
+        ENH_NONE,
+        ENH_GABOR,
     };
-    Q_ENUM(EnhancementMethod)
     enum ThinningMethod
     {
-        ZHANGSUEN,
-        MORPH,
-        GUOHALL,
+        THI_NONE,
+        THI_ZHANGSUEN,
+        THI_MORPH,
+        THI_GUOHALL,
     };
-     Q_ENUM(ThinningMethod)
 
     Preprocesser();
 
     //realiza el preprocesamiento de una huella dactilar par adecuarla a la extraccion de features
-    static cv::Mat preprocess(cv::Mat &src, EnhancementMethod enhancement_method = GABOR, ThinningMethod thinning_method = ZHANGSUEN, bool roi_masking = false);
+    static cv::Mat preprocess(cv::Mat &src, EnhancementMethod enhancement_method = ENH_GABOR, ThinningMethod thinning_method = THI_ZHANGSUEN, bool roi_masking = false);
 
     //mejora una huella dactilar
     static cv::Mat enhance(cv::Mat &src, EnhancementMethod enhancement_method);

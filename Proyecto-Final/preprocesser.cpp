@@ -598,12 +598,12 @@ cv::Mat Preprocesser::enhance(cv::Mat &src, EnhancementMethod enhancement_method
     cv::Mat enhanced;
     switch (enhancement_method)
     {
-    case NONE:
+    case ENH_NONE:
     {
         enhanced = src.clone();
         break;
     }
-    case GABOR:
+    case ENH_GABOR:
     {
         enhanced = gabor(src);
 
@@ -621,7 +621,12 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
     cv::Mat thinned;
     switch(thinning_method)
     {
-    case ZHANGSUEN:
+    case THI_NONE:
+    {
+        thinned = src;
+        break;
+    }
+    case THI_ZHANGSUEN:
     {
         //pasamos la imagen de escala de gris a binario
         cv::Mat binary;
@@ -631,7 +636,7 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
         zhangsuen_thinning(thinned);
         break;
     }
-    case MORPH:
+    case THI_MORPH:
     {
         //pasamos la imagen de escala de gris a binario
         cv::Mat binary;
@@ -640,7 +645,7 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
         thinned = morphological_thinning(binary);
         break;
     }
-    case GUOHALL:
+    case THI_GUOHALL:
     {
         //pasamos la imagen de escala de gris a binario
         cv::Mat binary;
