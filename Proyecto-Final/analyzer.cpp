@@ -65,7 +65,7 @@ std::vector<cv::KeyPoint> kp_shitomasi(cv::Mat &src)
 std::vector<cv::KeyPoint> kp_sift(cv::Mat &src)
 {
 
-    cv::Ptr<cv::xfeatures2d::SIFT> siftPtr = cv::xfeatures2d::SIFT::create(25,3,0.01,1000);
+    cv::Ptr<cv::xfeatures2d::SIFT> siftPtr = cv::xfeatures2d::SIFT::create();
     std::vector<cv::KeyPoint> keypoints;
     siftPtr->detect(src, keypoints);
 
