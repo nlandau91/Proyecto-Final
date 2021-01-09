@@ -32,7 +32,7 @@ public:
     static cv::Mat preprocess(cv::Mat &src, EnhancementMethod enhancement_method = ENH_GABOR, ThinningMethod thinning_method = THI_ZHANGSUEN, bool roi_masking = false);
 
     //separa el foreground del background
-    static cv::Mat segment(cv::Mat &src, int w = 16, float t = 0.2);
+    static cv::Mat segment(cv::Mat &src, cv::Mat &mask, int w = 16, float t = 0.2);
     //obtiene la mascara que representa la region de interes de la imagen
     static cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2);
     //mejora una huella dactilar

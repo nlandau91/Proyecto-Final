@@ -174,7 +174,7 @@ float deviation(const cv::Mat &im, float average)
 
 
 //normaliza una imagen para que tenga la media y varianza deseadas
-cv::Mat normalize_1(cv::Mat &src, double reqMean, double reqVar)
+cv::Mat normalize_1(cv::Mat &src, float reqMean, float reqVar)
 {
     cv::Scalar mean = cv::mean(src);
     cv::Mat normalizedImage = src - mean[0];
@@ -204,30 +204,29 @@ float normalize_pixel(float x, float v0, float v, float m, float m0)
     return normalized_pixel;
 }
 
-cv::Mat normalize_2(cv::Mat &convertedIm, float m0, float v0)
+cv::Mat normalize_2(cv::Mat &src, float m0, float v0)
 {
-    cv::Scalar mean = cv::mean(convertedIm);
-    double m = mean[0];
-    double v = deviation(convertedIm,m);
-    cv::Mat normalized = cv::Mat::zeros(convertedIm.size(),CV_32FC1);
-    for(int row = 0; row < convertedIm.rows; row++)
+    cv::Scalar mean = cv::mean(src);
+    float m = mean[0];
+    float v = deviation(src,m);
+    cv::Mat normalized = src.clone();
+    for(int row = 0; row < src.rows; row++)
     {
-        for(int col = 0; col < convertedIm.cols; col++)
+        for(int col = 0; col < src.cols; col++)
         {
-            normalized.at<float>(row,col) = normalize_pixel(convertedIm.at<float>(row,col),v0,v,m,m0);
+            normalized.at<float>(row,col) = normalize_pixel(src.at<float>(row,col),v0,v,m,m0);
         }
     }
     return normalized;
 }
 
-cv::Mat normalize(cv::Mat &src, double reqMean, double reqVar)
+cv::Mat normalize(cv::Mat &src, float reqMean, float reqVar)
 {
     cv::Mat converted_im;
     src.convertTo(converted_im, CV_32FC1);
 
     cv::Mat normalized_image;
-    normalized_image = normalize_1(converted_im,reqMean,reqVar);
-
+    normalized_image = normalize_2(converted_im,reqMean,reqVar);
     return normalized_image;
 
 }
@@ -563,6 +562,7 @@ cv::Mat filter_ridge(const cv::Mat &inputImage,
 }
 
 //mejora una imagen aplicando filtros de gabor
+//supone que la imagen ya esta normalizada y segmentada
 cv::Mat gabor(cv::Mat &src)
 {
     //suavizamos la imagen
@@ -570,7 +570,7 @@ cv::Mat gabor(cv::Mat &src)
     cv::medianBlur(src,blurred,3);
     //normalizacion
     cv::Mat normalized;
-    normalized = normalize(blurred,150,100);
+    normalized = normalize_1(blurred,150,100);
     //estimacion de la orientacion local
     cv::Mat orientationImage = orient_ridge(normalized);
     double freqValue = 0.11;
@@ -637,6 +637,8 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
     return thinned;
 }
 
+//calcula la roi de una imagen
+//supone que la imagen ya esta normalizada
 cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio)
 {
     int w = block_size;
@@ -677,9 +679,10 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
 
 }
 
-cv::Mat Preprocesser::segment(cv::Mat &src, int w, float t)
+//aplica una mascara de roi a una imagen
+cv::Mat Preprocesser::segment(cv::Mat &src, cv::Mat &mask, int w, float t)
 {
-    cv::Mat mask = get_roi(src,w,t);
+    mask = get_roi(src,w,t);
     cv::Mat segmented;
     src.convertTo(segmented,CV_8UC1);
     cv::bitwise_and(segmented,mask,segmented);
@@ -689,9 +692,18 @@ cv::Mat Preprocesser::segment(cv::Mat &src, int w, float t)
 
 cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method, bool roi_masking)
 {
-    cv::Mat normalized = normalize(src,100,100);
-    cv::Mat segmented = segment(normalized);
+    Q_UNUSED(roi_masking);
+    //pipeline de preprocesamiento
+    //normalizacion
+    cv::Mat normalized = normalize(src,120.0,100.0);
+    //obtenemos la imagen segmentada y la mascara
+    cv::Mat mask = get_roi(normalized);
+    //cv::Mat segmented = segment(normalized, mask);
+    cv::Mat segmented;
+    normalized.convertTo(segmented,CV_8UC1);
+    cv::bitwise_and(segmented,mask,segmented);
 
+    return segmented;
     cv::Mat enhanced = enhance(segmented, enhancement_method);
     cv::Mat thinned = thin(enhanced,thinning_method);
     //cv::Mat enhanced = enhance(src, enhancement_method);

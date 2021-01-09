@@ -43,8 +43,11 @@ void MainWindow::on_btn_ingresar_clicked()
             qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
-            cv::cvtColor(enhanced,enhanced_marked,cv::COLOR_GRAY2BGR);
-            cv::drawKeypoints(enhanced_marked,analysis.keypoints,enhanced_marked,cv::Scalar(0,255,0),cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+            if(app_settings.draw_over_output)
+            {
+                cv::cvtColor(enhanced,enhanced_marked,cv::COLOR_GRAY2BGR);
+                cv::drawKeypoints(enhanced_marked,analysis.keypoints,enhanced_marked,cv::Scalar(0,255,0),cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+            }
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
             //solo ingresamos huellas que sean suficientemente buenas
             if(analysis.descriptors.rows > 4)

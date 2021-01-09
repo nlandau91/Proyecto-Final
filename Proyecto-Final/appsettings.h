@@ -17,6 +17,7 @@ public:
     fp::Analyzer::FeatureExtractor feature_extractor;
     fp::Analyzer::MatcherMethod matcher_method;
     int max_match_dist;
+    bool draw_over_output;
 };
 
 #endif // APPSETTINGS_H
