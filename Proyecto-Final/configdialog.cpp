@@ -21,10 +21,10 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     ui->comboBox_kp->addItem("harris");
     ui->comboBox_kp->addItem("shitomasi");
-    ui->comboBox_kp->addItem("ksift");
+    ui->comboBox_kp->addItem("ksurf");
 
     ui->comboBox_feat->addItem("orb");
-    ui->comboBox_feat->addItem("surf");
+    ui->comboBox_feat->addItem("dsurf");
     ui->comboBox_feat->addItem("dsift");
 
     load_settings();

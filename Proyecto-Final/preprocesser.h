@@ -32,7 +32,7 @@ public:
     static cv::Mat preprocess(cv::Mat &src, EnhancementMethod enhancement_method = ENH_GABOR, ThinningMethod thinning_method = THI_ZHANGSUEN, bool roi_masking = false);
 
     //separa el foreground del background
-    static cv::Mat segment(cv::Mat &src);
+    static cv::Mat segment(cv::Mat &src, int w = 16, float t = 0.2);
 
     //mejora una huella dactilar
     static cv::Mat enhance(cv::Mat &src, EnhancementMethod enhancement_method);

@@ -97,7 +97,7 @@ std::vector<cv::KeyPoint> Analyzer::calcular_keypoints(cv::Mat &src)
         keypoints = kp_shitomasi(src);
         break;
     }
-    case KSIFT:
+    case KSURF:
     {
         //keypoints = kp_sift(src);
         keypoints = kp_surf(src);
@@ -120,7 +120,7 @@ cv::Mat Analyzer::calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> k
         orb_descriptor->compute(src,keypoints,descriptors);
         break;
     }
-    case SURF:
+    case DSURF:
     {
         break;
     }

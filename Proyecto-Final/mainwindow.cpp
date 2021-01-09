@@ -25,6 +25,7 @@ void MainWindow::on_btn_ingresar_clicked()
     QStringList fileNames = QFileDialog::getOpenFileNames(this,
                                                           tr("Open Image"), "../res/",
                                                           tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
+    setEnabled(false);
     //std::string id = ui->lineEdit->text().toStdString();
     //int n = 0;
     for(QString fileName : fileNames)
@@ -61,6 +62,7 @@ void MainWindow::on_btn_ingresar_clicked()
         }
         //n++;
     }
+    setEnabled(true);
 }
 
 void MainWindow::on_btn_verificar_clicked()

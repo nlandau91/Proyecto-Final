@@ -35,9 +35,9 @@ int string_to_enum(const QString arg1)
     if(arg1 == "morph") return fp::Preprocesser::ThinningMethod::THI_MORPH;
     if(arg1 == "harris") return fp::Analyzer::KeypointExtractor::HARRIS;
     if(arg1 == "shitomasi") return fp::Analyzer::KeypointExtractor::SHITOMASI;
-    if(arg1 == "ksift") return fp::Analyzer::KeypointExtractor::KSIFT;
+    if(arg1 == "ksurf") return fp::Analyzer::KeypointExtractor::KSURF;
     if(arg1 == "orb") return fp::Analyzer::FeatureExtractor::ORB;
-    if(arg1 == "surf") return fp::Analyzer::FeatureExtractor::SURF;
+    if(arg1 == "dsurf") return fp::Analyzer::FeatureExtractor::DSURF;
     if(arg1 == "dsift") return fp::Analyzer::FeatureExtractor::DSIFT;
 
 

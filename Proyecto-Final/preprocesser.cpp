@@ -1,4 +1,5 @@
 #include "preprocesser.h"
+#include <QDebug>
 
 namespace fp
 {
@@ -65,12 +66,12 @@ void zhangsuen_thinning(cv::Mat& im)
 }
 
 /**
- * Perform one thinning iteration.
- * Normally you wouldn't call this function directly from your code.
- *
- * @param  im    Binary image with range = 0-1
- * @param  iter  0=even, 1=odd
- */
+         * Perform one thinning iteration.
+         * Normally you wouldn't call this function directly from your code.
+         *
+         * @param  im    Binary image with range = 0-1
+         * @param  iter  0=even, 1=odd
+         */
 void guohall_iteration(cv::Mat& im, int iter)
 {
     cv::Mat marker = cv::Mat::zeros(im.size(), CV_8UC1);
@@ -104,10 +105,10 @@ void guohall_iteration(cv::Mat& im, int iter)
 }
 
 /**
- * Function for thinning the given binary image
- *
- * @param  im  Binary image with range = 0-255
- */
+         * Function for thinning the given binary image
+         *
+         * @param  im  Binary image with range = 0-255
+         */
 void guohall_thinning(cv::Mat& im)
 {
     im /= 255;
@@ -150,8 +151,8 @@ cv::Mat morphological_thinning(cv::Mat &src)
 }
 
 /*
- * Compute the standard deviation of the image.
- */
+         * Compute the standard deviation of the image.
+         */
 float deviation(const cv::Mat &im, float average)
 {
     float sdev = 0.0;
@@ -191,9 +192,44 @@ cv::Mat normalize(cv::Mat &src, double reqMean, double reqVar)
 
 }
 
+float normalize_pixel(float x, float v0, float v, float m, float m0)
+{
+    float normalized_pixel = 0;
+    float dev_coeff = sqrt((v0 * ((x - m)*(x - m)))/v);
+    if(x > m)
+    {
+        normalized_pixel = m0 + dev_coeff;
+    }
+    else
+    {
+        normalized_pixel = m0 - dev_coeff;
+    }
+    return normalized_pixel;
+}
+
+cv::Mat normalize2(cv::Mat &src, float m0, float v0)
+{
+
+    cv::Mat convertedIm;
+    src.convertTo(convertedIm, CV_32FC1);
+
+    cv::Scalar mean = cv::mean(convertedIm);
+    double m = mean[0];
+    double v = deviation(convertedIm,m);
+    cv::Mat normalized = convertedIm.clone();
+    for(int row = 0; row < convertedIm.rows; row++)
+    {
+        for(int col = 0; col < convertedIm.cols; col++)
+        {
+            normalized.at<float>(row,col) = normalize_pixel(convertedIm.at<float>(row,col),v0,v,m,m0);
+        }
+    }
+    return normalized;
+}
+
 /*
- * Calculate gradient in x- and y-direction of the image
- */
+         * Calculate gradient in x- and y-direction of the image
+         */
 void gradient(const cv::Mat &image, cv::Mat &xGradient, cv::Mat &yGradient)
 {
 
@@ -243,8 +279,8 @@ void gradient(const cv::Mat &image, cv::Mat &xGradient, cv::Mat &yGradient)
 }
 
 /*
- * Estimate orientation field of fingerprint ridges.
- */
+         * Estimate orientation field of fingerprint ridges.
+         */
 cv::Mat orient_ridge(const cv::Mat &im) {
 
 
@@ -364,8 +400,8 @@ cv::Mat orient_ridge(const cv::Mat &im) {
 }
 
 /*
- * This is equivalent to Matlab's 'meshgrid' function
-*/
+         * This is equivalent to Matlab's 'meshgrid' function
+        */
 void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
     std::vector<int> t;
 
@@ -383,11 +419,11 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
 }
 
 /*
- * Performing Gabor filtering for enhancement using previously calculated orientation
- * image and frequency. The output is final enhanced image.
- *
- * Refer to the paper for detailed description.
-*/
+         * Performing Gabor filtering for enhancement using previously calculated orientation
+         * image and frequency. The output is final enhanced image.
+         *
+         * Refer to the paper for detailed description.
+        */
 cv::Mat filter_ridge(const cv::Mat &inputImage,
                      const cv::Mat &orientationImage,
                      const cv::Mat &frequency)
@@ -541,11 +577,11 @@ cv::Mat gabor(cv::Mat &src)
 }
 
 /*
- * Compute a filter which remove the background based on a input image.
- *
- * The filter is a simple mask which keep only pixed corresponding
- * to the fingerprint.
- */
+         * Compute a filter which remove the background based on a input image.
+         *
+         * The filter is a simple mask which keep only pixed corresponding
+         * to the fingerprint.
+         */
 cv::Mat postProcessingFilter(const cv::Mat &inputImage)
 {
 
@@ -619,6 +655,9 @@ cv::Mat Preprocesser::enhance(cv::Mat &src, EnhancementMethod enhancement_method
 cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
 {
     cv::Mat thinned;
+    cv::Mat binary;
+    cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+    thinned = binary.clone();
     switch(thinning_method)
     {
     case THI_NONE:
@@ -628,32 +667,16 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
     }
     case THI_ZHANGSUEN:
     {
-        //pasamos la imagen de escala de gris a binario
-       // cv::Mat binary;
-       // cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
-        //luego obtenemos el "esqueleto" de la imagen
-       // thinned = binary.clone();
-       // zhangsuen_thinning(thinned);
-        thinned = src.clone();
         zhangsuen_thinning(thinned);
         break;
     }
     case THI_MORPH:
     {
-        //pasamos la imagen de escala de gris a binario
-        cv::Mat binary;
-        cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
-        //luego obtenemos el "esqueleto" de la imagen
         thinned = morphological_thinning(binary);
         break;
     }
     case THI_GUOHALL:
     {
-        //pasamos la imagen de escala de gris a binario
-        cv::Mat binary;
-        cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
-        //luego obtenemos el "esqueleto" de la imagen
-        thinned = binary.clone();
         guohall_thinning(thinned);
     }
     default:
@@ -670,28 +693,123 @@ cv::Mat Preprocesser::roi_mask(cv::Mat &original, cv::Mat &preprocessed)
     return masked;
 }
 
-cv::Mat Preprocesser::segment(cv::Mat &src)
+
+cv::Mat Preprocesser::segment(cv::Mat &src, int w, float t)
 {
-    cv::Mat binary;
-   // cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
-    cv::adaptiveThreshold(src,binary,255,cv::ADAPTIVE_THRESH_GAUSSIAN_C,cv::THRESH_BINARY_INV,33,11);
-    return binary;
+    cv::Scalar mean,stddev;
+    cv::meanStdDev(src,mean,stddev);
+    float threshold = stddev[0] * t;
+    cv::Mat image_variance(src.size(),src.type());
+    qDebug()<< "creando bloques de varianza...";
+    for(int i = 0; i < src.cols; i+=w)
+    {
+        for(int j = 0; j < src.rows; j+=w)
+        {
+            cv::Rect rect(i,j,std::min(w,src.cols-i-1),std::min(w,src.rows-j-1));
+            cv::Scalar b_mean, b_stddev;
+            cv::meanStdDev(src(rect),b_mean,b_stddev);
+            float block_stddev = b_stddev[0];
+            image_variance(rect).setTo(block_stddev);
+        }
+    }
+    qDebug()<< "creando mascara...";
+    cv::Mat mask(src.size(),CV_8UC1,255);
+    for(int i = 0; i < mask.cols; i++)
+    {
+        for(int j = 0; j < mask.rows; j++)
+        {
+            if(image_variance.at<float>(j,i) < threshold)
+            {
+
+                mask.at<uchar>(j,i) = 0;
+            }
+        }
+    }
+    qDebug()<< "creando kernel...";
+    cv::Mat kernel;
+    cv::Size k_size(2*w,2*w);
+    kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,k_size);
+    qDebug()<< "filtrando mascara...";
+    cv::morphologyEx(mask,mask,cv::MORPH_OPEN,kernel);
+    cv::morphologyEx(mask,mask,cv::MORPH_CLOSE,kernel);
+    qDebug()<< "mascara filtrada...";
+    cv::Mat segmented;
+    qDebug()<< "convirtiendo src...";
+    src.convertTo(segmented,CV_8UC1);
+    qDebug()<< "aplicando mascara...";
+    cv::bitwise_and(segmented,mask,segmented);
+    return segmented;
+
 }
 
+cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2)
+{
+    int w = block_size;
+    float t = threshold_ratio;
+    cv::Scalar mean,stddev;
+    cv::meanStdDev(src,mean,stddev);
+    float threshold = stddev[0] * t;
+    cv::Mat image_variance(src.size(),CV_32FC1);
+    qDebug()<< "creando bloques de varianza...";
+    for(int i = 0; i < src.cols; i+=w)
+    {
+        for(int j = 0; j < src.rows; j+=w)
+        {
+            cv::Rect rect(i,j,std::min(w,src.cols-i-1),std::min(w,src.rows-j-1));
+            cv::Scalar b_mean, b_stddev;
+            cv::meanStdDev(src(rect),b_mean,b_stddev);
+            float block_stddev = b_stddev[0];
+            image_variance(rect).setTo(block_stddev);
+        }
+    }
+    qDebug()<< "creando mascara...";
+    cv::Mat mask(src.size(),CV_8UC1,255);
+    for(int i = 0; i < mask.cols; i++)
+    {
+        for(int j = 0; j < mask.rows; j++)
+        {
+            if(image_variance.at<float>(j,i) < threshold)
+            {
 
+                mask.at<uchar>(j,i) = 0;
+            }
+        }
+    }
+    qDebug()<< "creando kernel...";
+    cv::Mat kernel;
+    cv::Size k_size(2*w,2*w);
+    kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,k_size);
+    qDebug()<< "filtrando mascara...";
+    cv::morphologyEx(mask,mask,cv::MORPH_OPEN,kernel);
+    cv::morphologyEx(mask,mask,cv::MORPH_CLOSE,kernel);
+    qDebug()<< "mascara filtrada...";
+    cv::Mat segmented;
+    qDebug()<< "convirtiendo src...";
+    src.convertTo(segmented,CV_8UC1);
+    qDebug()<< "aplicando mascara...";
+    cv::bitwise_and(segmented,mask,segmented);
+    return segmented;
+
+}
 
 cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method, bool roi_masking)
 {
-    return segment(src);
-    cv::Mat enhanced = enhance(src, enhancement_method);
+    cv::Mat normalized = normalize2(src,100,100);
+    qDebug() << "normalized";
+    cv::Mat segmented = segment(normalized);
+    qDebug() << "segmented";
 
+    cv::Mat enhanced = enhance(segmented, enhancement_method);
     cv::Mat thinned = thin(enhanced,thinning_method);
+    //cv::Mat enhanced = enhance(src, enhancement_method);
+
+    //    cv::Mat thinned = thin(enhanced,thinning_method);
 
     cv::Mat result = thinned;
-    if(roi_masking)
-    {
-        result = roi_mask(src, thinned);
-    }
+    //    if(roi_masking)
+    //    {
+    //        result = roi_mask(src, thinned);
+    //    }
 
     return result;
 

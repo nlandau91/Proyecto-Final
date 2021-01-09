@@ -13,12 +13,12 @@ public:
     {
         HARRIS,
         SHITOMASI,
-        KSIFT,
+        KSURF,
     };
     enum FeatureExtractor
     {
         ORB,
-        SURF,
+        DSURF,
         DSIFT,
 
     };
