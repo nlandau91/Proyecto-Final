@@ -33,13 +33,12 @@ public:
 
     //separa el foreground del background
     static cv::Mat segment(cv::Mat &src, int w = 16, float t = 0.2);
-
+    //obtiene la mascara que representa la region de interes de la imagen
+    static cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2);
     //mejora una huella dactilar
     static cv::Mat enhance(cv::Mat &src, EnhancementMethod enhancement_method);
     //esqueletiza una huella dactilar
     static cv::Mat thin(cv::Mat &src, ThinningMethod thinning_method);
-    //elimina el fondo de la imagen para solo quedarnos con el area de interes
-    static cv::Mat roi_mask(cv::Mat &original, cv::Mat &preprocessed);
 };
 }
 #endif // FINGERPRINTENHANCER_H

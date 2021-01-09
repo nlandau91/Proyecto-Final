@@ -174,13 +174,10 @@ float deviation(const cv::Mat &im, float average)
 
 
 //normaliza una imagen para que tenga la media y varianza deseadas
-cv::Mat normalize(cv::Mat &src, double reqMean, double reqVar)
+cv::Mat normalize_1(cv::Mat &src, double reqMean, double reqVar)
 {
-    cv::Mat convertedIm;
-    src.convertTo(convertedIm, CV_32FC1);
-
-    cv::Scalar mean = cv::mean(convertedIm);
-    cv::Mat normalizedImage = convertedIm - mean[0];
+    cv::Scalar mean = cv::mean(src);
+    cv::Mat normalizedImage = src - mean[0];
 
     cv::Scalar normMean = cv::mean(normalizedImage);
     float stdNorm = deviation(normalizedImage, normMean[0]);
@@ -207,16 +204,12 @@ float normalize_pixel(float x, float v0, float v, float m, float m0)
     return normalized_pixel;
 }
 
-cv::Mat normalize2(cv::Mat &src, float m0, float v0)
+cv::Mat normalize_2(cv::Mat &convertedIm, float m0, float v0)
 {
-
-    cv::Mat convertedIm;
-    src.convertTo(convertedIm, CV_32FC1);
-
     cv::Scalar mean = cv::mean(convertedIm);
     double m = mean[0];
     double v = deviation(convertedIm,m);
-    cv::Mat normalized = convertedIm.clone();
+    cv::Mat normalized = cv::Mat::zeros(convertedIm.size(),CV_32FC1);
     for(int row = 0; row < convertedIm.rows; row++)
     {
         for(int col = 0; col < convertedIm.cols; col++)
@@ -225,6 +218,18 @@ cv::Mat normalize2(cv::Mat &src, float m0, float v0)
         }
     }
     return normalized;
+}
+
+cv::Mat normalize(cv::Mat &src, double reqMean, double reqVar)
+{
+    cv::Mat converted_im;
+    src.convertTo(converted_im, CV_32FC1);
+
+    cv::Mat normalized_image;
+    normalized_image = normalize_1(converted_im,reqMean,reqVar);
+
+    return normalized_image;
+
 }
 
 /*
@@ -576,59 +581,6 @@ cv::Mat gabor(cv::Mat &src)
     return enhancedImage;
 }
 
-/*
-         * Compute a filter which remove the background based on a input image.
-         *
-         * The filter is a simple mask which keep only pixed corresponding
-         * to the fingerprint.
-         */
-cv::Mat postProcessingFilter(const cv::Mat &inputImage)
-{
-
-    int cannyLowThreshold = 6;
-    int cannyRatio = 3;
-    int kernelSize = 3;
-    int blurringTimes = 30;
-    int dilationSize = 10;
-    int dilationType = 1;
-
-    cv::Mat inputImageGrey;
-    cv::Mat filter;
-
-    if (inputImage.channels() != 1) {
-        cv::cvtColor(inputImage, inputImageGrey, cv::COLOR_RGB2GRAY);
-    } else {
-        inputImageGrey = inputImage.clone();
-    }
-
-    // Blurring the image several times with a kernel 3x3
-    // to have smooth surfaces
-    for (int j = 0; j < blurringTimes; j++) {
-        blur(inputImageGrey, inputImageGrey, cv::Size(3, 3));
-    }
-
-    // Canny detector to catch the edges
-    cv::Canny(inputImageGrey, filter, cannyLowThreshold,
-              cannyLowThreshold * cannyRatio, kernelSize);
-
-    // Use Canny's output as a mask
-    cv::Mat processedImage(cv::Scalar::all(0));
-    inputImageGrey.copyTo(processedImage, filter);
-
-    cv::Mat element = cv::getStructuringElement(
-                dilationType, cv::Size(2 * dilationSize + 1, 2 * dilationSize + 1),
-                cv::Point(dilationSize, dilationSize));
-
-    // Dilate the image to get the contour of the finger
-    dilate(processedImage, processedImage, element);
-
-    // Fill the image from the middle to the edge.
-    floodFill(processedImage, cv::Point(filter.cols / 2, filter.rows / 2),
-              cv::Scalar(255));
-
-    return processedImage;
-}
-
 cv::Mat Preprocesser::enhance(cv::Mat &src, EnhancementMethod enhancement_method)
 {
     cv::Mat enhanced;
@@ -685,64 +637,7 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
     return thinned;
 }
 
-cv::Mat Preprocesser::roi_mask(cv::Mat &original, cv::Mat &preprocessed)
-{
-    cv::Mat filter = postProcessingFilter(original);
-    cv::Mat masked;
-    preprocessed.copyTo(masked,filter);
-    return masked;
-}
-
-
-cv::Mat Preprocesser::segment(cv::Mat &src, int w, float t)
-{
-    cv::Scalar mean,stddev;
-    cv::meanStdDev(src,mean,stddev);
-    float threshold = stddev[0] * t;
-    cv::Mat image_variance(src.size(),src.type());
-    qDebug()<< "creando bloques de varianza...";
-    for(int i = 0; i < src.cols; i+=w)
-    {
-        for(int j = 0; j < src.rows; j+=w)
-        {
-            cv::Rect rect(i,j,std::min(w,src.cols-i-1),std::min(w,src.rows-j-1));
-            cv::Scalar b_mean, b_stddev;
-            cv::meanStdDev(src(rect),b_mean,b_stddev);
-            float block_stddev = b_stddev[0];
-            image_variance(rect).setTo(block_stddev);
-        }
-    }
-    qDebug()<< "creando mascara...";
-    cv::Mat mask(src.size(),CV_8UC1,255);
-    for(int i = 0; i < mask.cols; i++)
-    {
-        for(int j = 0; j < mask.rows; j++)
-        {
-            if(image_variance.at<float>(j,i) < threshold)
-            {
-
-                mask.at<uchar>(j,i) = 0;
-            }
-        }
-    }
-    qDebug()<< "creando kernel...";
-    cv::Mat kernel;
-    cv::Size k_size(2*w,2*w);
-    kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,k_size);
-    qDebug()<< "filtrando mascara...";
-    cv::morphologyEx(mask,mask,cv::MORPH_OPEN,kernel);
-    cv::morphologyEx(mask,mask,cv::MORPH_CLOSE,kernel);
-    qDebug()<< "mascara filtrada...";
-    cv::Mat segmented;
-    qDebug()<< "convirtiendo src...";
-    src.convertTo(segmented,CV_8UC1);
-    qDebug()<< "aplicando mascara...";
-    cv::bitwise_and(segmented,mask,segmented);
-    return segmented;
-
-}
-
-cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2)
+cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio)
 {
     int w = block_size;
     float t = threshold_ratio;
@@ -750,7 +645,6 @@ cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2)
     cv::meanStdDev(src,mean,stddev);
     float threshold = stddev[0] * t;
     cv::Mat image_variance(src.size(),CV_32FC1);
-    qDebug()<< "creando bloques de varianza...";
     for(int i = 0; i < src.cols; i+=w)
     {
         for(int j = 0; j < src.rows; j+=w)
@@ -762,7 +656,6 @@ cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2)
             image_variance(rect).setTo(block_stddev);
         }
     }
-    qDebug()<< "creando mascara...";
     cv::Mat mask(src.size(),CV_8UC1,255);
     for(int i = 0; i < mask.cols; i++)
     {
@@ -775,18 +668,20 @@ cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2)
             }
         }
     }
-    qDebug()<< "creando kernel...";
     cv::Mat kernel;
     cv::Size k_size(2*w,2*w);
     kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,k_size);
-    qDebug()<< "filtrando mascara...";
     cv::morphologyEx(mask,mask,cv::MORPH_OPEN,kernel);
     cv::morphologyEx(mask,mask,cv::MORPH_CLOSE,kernel);
-    qDebug()<< "mascara filtrada...";
+    return mask;
+
+}
+
+cv::Mat Preprocesser::segment(cv::Mat &src, int w, float t)
+{
+    cv::Mat mask = get_roi(src,w,t);
     cv::Mat segmented;
-    qDebug()<< "convirtiendo src...";
     src.convertTo(segmented,CV_8UC1);
-    qDebug()<< "aplicando mascara...";
     cv::bitwise_and(segmented,mask,segmented);
     return segmented;
 
@@ -794,10 +689,8 @@ cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2)
 
 cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method, bool roi_masking)
 {
-    cv::Mat normalized = normalize2(src,100,100);
-    qDebug() << "normalized";
+    cv::Mat normalized = normalize(src,100,100);
     cv::Mat segmented = segment(normalized);
-    qDebug() << "segmented";
 
     cv::Mat enhanced = enhance(segmented, enhancement_method);
     cv::Mat thinned = thin(enhanced,thinning_method);
