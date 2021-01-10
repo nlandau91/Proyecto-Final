@@ -1,5 +1,5 @@
-#ifndef FINGERPRINTENHANCER_H
-#define FINGERPRINTENHANCER_H
+#ifndef PREPROCESSER_H
+#define PREPROCESSER_H
 
 #include <opencv2/opencv.hpp>
 #include <QObject>
@@ -13,44 +13,70 @@ class Preprocesser : public QObject
 {
     Q_OBJECT
 public:
-    enum EnhancementMethod
+    enum class EnhancementMethod : int
     {
-        ENH_NONE,
-        ENH_GABOR,
+        NONE,
+        GABOR
     };
-    enum ThinningMethod
+    enum class ThinningMethod : int
     {
-        THI_NONE,
-        THI_ZHANGSUEN,
-        THI_MORPH,
-        THI_GUOHALL,
+        NONE,
+        ZHANGSUEN,
+        MORPH,
+        GUOHALL
     };
 
+    /*!
+     * \brief not used
+     */
     Preprocesser();
+   // Preprocesser();
 
-    //realiza el preprocesamiento de una huella dactilar par adecuarla a la extraccion de features
-    static cv::Mat preprocess(cv::Mat &src, EnhancementMethod enhancement_method = ENH_GABOR, ThinningMethod thinning_method = THI_ZHANGSUEN, bool roi_masking = false);
+    /*!
+     * \brief preprocess realiza el preprocesamiento de una huella dactilar para
+     * adecuara a la extraccion de caracteristicas. Esta funcion se encarga de llamar
+     * al resto de las funciones en el orden correcto
+     * \param src huella dactilar en formato CV_8UC1
+     * \param enhancement_method metodo de mejora
+     * \param thinning_method metodo de esqueletizacion
+     * \return devuelve la imagen luego de pasar por el pipeline de preprocesamiento, CV_8UC1
+     */
+    static cv::Mat preprocess(cv::Mat &src, EnhancementMethod enhancement_method = EnhancementMethod::GABOR, ThinningMethod thinning_method = ThinningMethod::ZHANGSUEN);
 
-    //normaliza una imagen para que tenga media y var elegidas
-    //entrada: CV_32FC1
-    //salida: CV_32FC1
+    /*!
+     * \brief normaliza una imagen para que tenga media y var elegidas
+     * \param src imagen CV_32FC1
+     * \param req_mean media elegida
+     * \param req_var var elegida
+     * \return imagen normalizada CV_32FC1
+     */
     static cv::Mat normalize(cv::Mat &src, float req_mean, float req_var);
 
-    //calcula la roi de una imagen
-    //supone que la imagen ya esta normalizada
-    //entrada: CV_32FC1
-    //salida: CV_8UC1
+    /*!
+     * \brief calcula y devuelve una mascara representando la roi de la imagen
+     * utilizando cambios en la variacion local
+     * \param src imagen que se calculara la roi, se supone normalizada y CV_32FC1
+     * \param block_size tamano del bloque donde se calculara la variacion local
+     * \param threshold_ratio afecta al threshold calculado, un valor mayor enmascara mas cantidad
+     * \return la mascara que representa el roi de la imagen, CV_8UC1
+     */
     static cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2);
 
-    //mejora una imagen con el metodo elegido
-    //entrada CV_32FC1
-    //salida CV_32FC1
+    /*!
+     * \brief mejora una imagen de una huella dactilar
+     * \param src imagen a mejorar, se supone normalizada, CV_32FC1
+     * \param enhancement_method metodo a utilizar
+     * \return devuelve la imagen mejorada, CV_32FC1
+     */
     static cv::Mat enhance(cv::Mat &src, EnhancementMethod enhancement_method);
 
-    //esqueletiza una huella dactilar
-    //entrada: CV_8UC1
-    //salida: CV_8UC1
+    /*!
+     * \brief esqueletiza una huella dactilar
+     * \param src imagen de la huella a esqueletizar, CV_8UC1
+     * \param thinning_method metodo a utilizar
+     * \return la imagen esqueletizada, CV_8UC1
+     */
     static cv::Mat thin(cv::Mat &src, ThinningMethod thinning_method);
 };
 }
-#endif // FINGERPRINTENHANCER_H
+#endif // PREPROCESSER_H

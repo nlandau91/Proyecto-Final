@@ -1,7 +1,7 @@
-#ifndef FINGERPRINTANALYZER_H
-#define FINGERPRINTANALYZER_H
+#ifndef ANALYZER_H
+#define ANALYZER_H
 
-#include <opencv2/opencv.hpp>
+#include "common.h"
 namespace fp
 {
 //clase para realizar el analisis y extraccion de caracteristicas de una huella dactilar
@@ -47,9 +47,8 @@ private:
     KeypointExtractor keypoint_method;
     FeatureExtractor descriptor_method;
     MatcherMethod matcher_method;
-
     std::vector<cv::KeyPoint> calcular_keypoints(cv::Mat &src);
     cv::Mat calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> keypoints);
 };
 }
-#endif // FINGERPRINTANALYZER_H
+#endif // ANALYZER_H

@@ -566,7 +566,7 @@ cv::Mat gabor(cv::Mat &normalized)
 {
     //estimacion de la orientacion local
     cv::Mat orient_image = orient_ridge(normalized);
-    double freq_val = 0.11;
+    float freq_val = 0.11;
     cv::Mat freq = cv::Mat::ones(normalized.rows, normalized.cols, normalized.type()) * freq_val;
     //filtro
     cv::Mat filtered = filter_ridge(normalized, orient_image, freq);
@@ -574,22 +574,20 @@ cv::Mat gabor(cv::Mat &normalized)
     return filtered;
 }
 
-//mejora una imagen con el metodo elegido
-//entrada CV_32FC1
-//salida CV_32FC1
 cv::Mat Preprocesser::enhance(cv::Mat &src, EnhancementMethod enhancement_method)
 {
     cv::Mat enhanced;
     switch (enhancement_method)
     {
-    case ENH_NONE:
+    case EnhancementMethod::NONE:
     {
         enhanced = src.clone();
         break;
     }
-    case ENH_GABOR:
+    case EnhancementMethod::GABOR:
     {
         enhanced = gabor(src);
+
         break;
     }
     default:
@@ -606,22 +604,22 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
     thinned = binary.clone();
     switch(thinning_method)
     {
-    case THI_NONE:
+    case ThinningMethod::NONE:
     {
         thinned = src;
         break;
     }
-    case THI_ZHANGSUEN:
+    case ThinningMethod::ZHANGSUEN:
     {
         zhangsuen_thinning(thinned);
         break;
     }
-    case THI_MORPH:
+    case ThinningMethod::MORPH:
     {
         thinned = morphological_thinning(binary);
         break;
     }
-    case THI_GUOHALL:
+    case ThinningMethod::GUOHALL:
     {
         guohall_thinning(thinned);
     }
@@ -631,8 +629,6 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
     return thinned;
 }
 
-//calcula la roi de una imagen
-//supone que la imagen ya esta normalizada
 cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio)
 {
     int w = block_size;
@@ -673,9 +669,8 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
 
 }
 
-cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method, bool roi_masking)
+cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method)
 {
-    Q_UNUSED(roi_masking);
     //pipeline de preprocesamiento
 
     //convertimos a 32f
@@ -689,7 +684,7 @@ cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_met
     cv::Mat enhanced = enhance(normalized, enhancement_method);
     enhanced.convertTo(enhanced,CV_8UC1);
 
-    //eskeletizamos la imagen
+    //esqueletizamos la imagen
     cv::Mat thinned = thin(enhanced,thinning_method);
 
     //segmentamos la imagen

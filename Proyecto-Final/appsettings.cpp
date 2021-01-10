@@ -29,11 +29,11 @@ int string_to_enum(const QString arg1)
 {
     int not_found = -1;
 
-    if(arg1 == "gabor") return fp::Preprocesser::EnhancementMethod::ENH_GABOR;
-    if(arg1 == "none") return fp::Preprocesser::EnhancementMethod::ENH_NONE;
-    if(arg1 == "guohall") return fp::Preprocesser::ThinningMethod::THI_GUOHALL;
-    if(arg1 == "zhangsuen") return fp::Preprocesser::ThinningMethod::THI_ZHANGSUEN;
-    if(arg1 == "morph") return fp::Preprocesser::ThinningMethod::THI_MORPH;
+    if(arg1 == "gabor") return static_cast<int>(fp::Preprocesser::EnhancementMethod::GABOR);
+    if(arg1 == "none") return static_cast<int>(fp::Preprocesser::EnhancementMethod::NONE);
+    if(arg1 == "guohall") return static_cast<int>(fp::Preprocesser::ThinningMethod::GUOHALL);
+    if(arg1 == "zhangsuen") return static_cast<int>(fp::Preprocesser::ThinningMethod::ZHANGSUEN);
+    if(arg1 == "morph") return static_cast<int>(fp::Preprocesser::ThinningMethod::MORPH);
     if(arg1 == "harris") return fp::Analyzer::KeypointExtractor::HARRIS;
     if(arg1 == "shitomasi") return fp::Analyzer::KeypointExtractor::SHITOMASI;
     if(arg1 == "ksurf") return fp::Analyzer::KeypointExtractor::KSURF;

@@ -12,7 +12,7 @@ public:
     fp::Preprocesser::EnhancementMethod enhancement_method;
     fp::Preprocesser::ThinningMethod thinning_method;
     bool masking;
-    fp::Analyzer::KeypointExtractor keypoint_extractor;
+    fp::Params keypoint_extractor;
     int keypoint_threshold;
     fp::Analyzer::FeatureExtractor feature_extractor;
     fp::Analyzer::MatcherMethod matcher_method;
