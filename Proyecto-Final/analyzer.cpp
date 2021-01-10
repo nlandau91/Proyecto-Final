@@ -82,9 +82,54 @@ std::vector<cv::KeyPoint> kp_surf(cv::Mat &src, int hessian_threshold = 20000)
     return keypoints;
 }
 
+//calcula los cruces por un pixel
+int crosses(cv::Mat &bin, int col, int row)
+{
+    int cn = 0;
+    //el pixel del medio es blanco (cresta, esta invertido)
+    if(bin.at<uchar>(row,col) == 1)
+    {
+        int p1 = bin.at<uchar>(row-1,col-1);
+        int p2 = bin.at<uchar>(row-1,col);
+        int p3 = bin.at<uchar>(row-1,col+1);
+        int p4 = bin.at<uchar>(row,col+1);
+        int p5 = bin.at<uchar>(row+1,col+1);
+        int p6 = bin.at<uchar>(row+1,col);
+        int p7 = bin.at<uchar>(row+1,col-1);
+        int p8 = bin.at<uchar>(row,col-1);
+        int p0 = p8;
+        int p_vals[9] = {p0,p1,p2,p3,p4,p5,p6,p7,p8};
+        for(int i = 1; i < 9;i++)
+        {
+            cn = cn + abs(p_vals[i] - p_vals[i-1]);
+        }
+        cn = cn/2;
+    }
+    return cn;
+}
+
+//encuentra las minutiae en una huella digital
+//src se supone que ya es esqueletizada,invertida y en rango 0-255
 std::vector<cv::KeyPoint> kp_cn(cv::Mat &src)
 {
+    std::vector<cv::KeyPoint> keypoints;
+    cv::Mat bin = src/255;
 
+    //iteramos en toda la imagen menos un borde de 1 pixel por el kernel de 3x3
+    for(int col = 1; col < bin.cols - 1; col++)
+    {
+        for(int row = 1; row < bin.rows - 1; row++)
+        {
+            int cn = crosses(bin, col, row);
+            //1 representa terminacion, 3 representa bifurcacion
+            if(cn == 1 || cn == 3)
+            {
+                cv::KeyPoint kp(col,row,cn);
+                keypoints.push_back(kp);
+            }
+        }
+    }
+    return keypoints;
 }
 
 std::vector<cv::KeyPoint> Analyzer::calcular_keypoints(cv::Mat &src)
