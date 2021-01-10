@@ -174,37 +174,37 @@ float deviation(const cv::Mat &im, float average)
 
 
 //normaliza una imagen para que tenga la media y varianza deseadas
-cv::Mat normalize_1(cv::Mat &src, float reqMean, float reqVar)
+cv::Mat normalize_1(cv::Mat &src, float req_mean, float req_var)
 {
     cv::Scalar mean = cv::mean(src);
-    cv::Mat normalizedImage = src - mean[0];
+    cv::Mat normalized_im = src - mean[0];
 
-    cv::Scalar normMean = cv::mean(normalizedImage);
-    float stdNorm = deviation(normalizedImage, normMean[0]);
-    normalizedImage = normalizedImage / stdNorm;
-    normalizedImage = reqMean + normalizedImage * std::sqrt(reqVar);
+    cv::Scalar norm_mean = cv::mean(normalized_im);
+    float std_norm = deviation(normalized_im, norm_mean[0]);
+    normalized_im = normalized_im / std_norm;
+    normalized_im = req_mean + normalized_im * std::sqrt(req_var);
 
 
-    return normalizedImage;
+    return normalized_im;
 
 }
 
-float normalize_pixel(float x, float v0, float v, float m, float m0)
+float normalize_pixel(float x, float req_var, float v, float m, float req_mean)
 {
     float normalized_pixel = 0;
-    float dev_coeff = sqrt((v0 * ((x - m)*(x - m)))/v);
+    float dev_coeff = sqrt((req_var * ((x - m)*(x - m)))/v);
     if(x > m)
     {
-        normalized_pixel = m0 + dev_coeff;
+        normalized_pixel = req_mean + dev_coeff;
     }
     else
     {
-        normalized_pixel = m0 - dev_coeff;
+        normalized_pixel = req_mean - dev_coeff;
     }
     return normalized_pixel;
 }
 
-cv::Mat normalize_2(cv::Mat &src, float m0, float v0)
+cv::Mat normalize_2(cv::Mat &src, float req_mean, float req_var)
 {
     cv::Scalar mean = cv::mean(src);
     float m = mean[0];
@@ -214,19 +214,16 @@ cv::Mat normalize_2(cv::Mat &src, float m0, float v0)
     {
         for(int col = 0; col < src.cols; col++)
         {
-            normalized.at<float>(row,col) = normalize_pixel(src.at<float>(row,col),v0,v,m,m0);
+            normalized.at<float>(row,col) = normalize_pixel(src.at<float>(row,col),req_var,v,m,req_mean);
         }
     }
     return normalized;
 }
 
-cv::Mat normalize(cv::Mat &src, float reqMean, float reqVar)
+cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var)
 {
-    cv::Mat converted_im;
-    src.convertTo(converted_im, CV_32FC1);
-
     cv::Mat normalized_image;
-    normalized_image = normalize_2(converted_im,reqMean,reqVar);
+    normalized_image = normalize_1(src,req_mean,req_var);
     return normalized_image;
 
 }
@@ -562,25 +559,24 @@ cv::Mat filter_ridge(const cv::Mat &inputImage,
 }
 
 //mejora una imagen aplicando filtros de gabor
-//supone que la imagen ya esta normalizada y segmentada
-cv::Mat gabor(cv::Mat &src)
+//supone que la imagen ya esta normalizada
+//entrada : imagen CV_32FC1
+//salida : imagen CV_32FC1
+cv::Mat gabor(cv::Mat &normalized)
 {
-    //suavizamos la imagen
-    cv::Mat blurred;
-    cv::medianBlur(src,blurred,3);
-    //normalizacion
-    cv::Mat normalized;
-    normalized = normalize_1(blurred,150,100);
     //estimacion de la orientacion local
-    cv::Mat orientationImage = orient_ridge(normalized);
-    double freqValue = 0.11;
-    cv::Mat freq = cv::Mat::ones(normalized.rows, normalized.cols, normalized.type()) * freqValue;
+    cv::Mat orient_image = orient_ridge(normalized);
+    double freq_val = 0.11;
+    cv::Mat freq = cv::Mat::ones(normalized.rows, normalized.cols, normalized.type()) * freq_val;
     //filtro
-    cv::Mat enhancedImage = filter_ridge(normalized, orientationImage, freq);
+    cv::Mat filtered = filter_ridge(normalized, orient_image, freq);
     //devolvemos la imagen mejorada
-    return enhancedImage;
+    return filtered;
 }
 
+//mejora una imagen con el metodo elegido
+//entrada CV_32FC1
+//salida CV_32FC1
 cv::Mat Preprocesser::enhance(cv::Mat &src, EnhancementMethod enhancement_method)
 {
     cv::Mat enhanced;
@@ -594,8 +590,6 @@ cv::Mat Preprocesser::enhance(cv::Mat &src, EnhancementMethod enhancement_method
     case ENH_GABOR:
     {
         enhanced = gabor(src);
-
-        enhanced.convertTo(enhanced,CV_8UC1);
         break;
     }
     default:
@@ -684,26 +678,26 @@ cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_met
     Q_UNUSED(roi_masking);
     //pipeline de preprocesamiento
 
+    //convertimos a 32f
+    cv::Mat src_32f;
+    src.convertTo(src_32f,CV_32FC1);
+
     //normalizacion
-    cv::Mat normalized = normalize(src,100.0,100.0);
-    //obtenemos la roi y segmentamos la imagen
-    cv::Mat mask = get_roi(normalized,16,0.2);
-    cv::Mat segmented;
-    normalized.convertTo(segmented,CV_8UC1);
-    cv::bitwise_and(segmented,mask,segmented);
+    cv::Mat normalized = normalize(src_32f,100.0,100.0);
 
-    cv::Mat enhanced = enhance(src, enhancement_method);
-    return enhanced;
+    //mejora
+    cv::Mat enhanced = enhance(normalized, enhancement_method);
+    enhanced.convertTo(enhanced,CV_8UC1);
+
+    //eskeletizamos la imagen
     cv::Mat thinned = thin(enhanced,thinning_method);
-    //cv::Mat enhanced = enhance(src, enhancement_method);
 
-    //    cv::Mat thinned = thin(enhanced,thinning_method);
+    //segmentamos la imagen
+    cv::Mat mask = get_roi(normalized,16,0.2);
+    cv::bitwise_and(thinned,mask,thinned);
 
     cv::Mat result = thinned;
-    //    if(roi_masking)
-    //    {
-    //        result = roi_mask(src, thinned);
-    //    }
+
 
     return result;
 
