@@ -393,7 +393,6 @@ cv::Mat orient_ridge(const cv::Mat &im) {
             orientim_i[j] = (M_PI + std::atan2(sin2theta_i[j], cos2theta_i[j])) / 2;
         }
     }
-
     return orientim;
 }
 
@@ -416,20 +415,155 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
     cv::repeat(traspose, 1, total, meshY);
 }
 
-/*
-         * Performing Gabor filtering for enhancement using previously calculated orientation
-         * image and frequency. The output is final enhanced image.
-         *
-         * Refer to the paper for detailed description.
-        */
+//mejora una huella utilizando filtros orientados
+//inputImage: imagen a mejorar
+//orientationImage: mapa de orientaciones
+//frequency: mapa de frecuencias
 cv::Mat filter_ridge(const cv::Mat &inputImage,
                      const cv::Mat &orientationImage,
                      const cv::Mat &frequency)
 {
-    double kx = 0.8;
-    double ky = 0.8;
-    bool addBorder = true;
+
+    double kx = 0.5;
+    double ky = 0.5;
+    bool addBorder = false;
     // Fixed angle increment between filter orientations in degrees
+    // Deberia ser divisor de 180
+    int angleInc = 3;
+
+    inputImage.convertTo(inputImage, CV_32FC1);
+    int rows = inputImage.rows;
+    int cols = inputImage.cols;
+
+    orientationImage.convertTo(orientationImage, CV_32FC1);
+
+    cv::Mat enhancedImage = cv::Mat::zeros(rows, cols, CV_32FC1);
+    std::vector<int> validr;
+    std::vector<int> validc;
+
+    double unfreq = frequency.at<float>(1, 1);
+
+    cv::Mat freqindex = cv::Mat::ones(100, 1, CV_32FC1);
+
+    double sigmax = (1 / unfreq) * kx;
+    double sigmax_squared = sigmax * sigmax;
+    double sigmay = (1 / unfreq) * ky;
+    double sigmay_squared = sigmay * sigmay;
+
+    int szek = (int) round(3 * (std::max(sigmax, sigmay)));
+
+    cv::Mat meshX, meshY;
+    meshgrid(szek, meshX, meshY);
+
+    cv::Mat refFilter = cv::Mat::zeros(meshX.rows, meshX.cols, CV_32FC1);
+
+    meshX.convertTo(meshX, CV_32FC1);
+    meshY.convertTo(meshY, CV_32FC1);
+
+    double pi_by_unfreq_by_2 = 2 * M_PI * unfreq;
+
+    for (int i = 0; i < meshX.rows; i++) {
+        const float *meshX_i = meshX.ptr<float>(i);
+        const float *meshY_i = meshY.ptr<float>(i);
+        auto *reffilter_i = refFilter.ptr<float>(i);
+        for (int j = 0; j < meshX.cols; j++) {
+            float meshX_i_j = meshX_i[j];
+            float meshY_i_j = meshY_i[j];
+            float pixVal2 = -0.5f * (meshX_i_j * meshX_i_j / sigmax_squared +
+                                     meshY_i_j * meshY_i_j / sigmay_squared);
+            float pixVal = std::exp(pixVal2);
+            float cosVal = pi_by_unfreq_by_2 * meshX_i_j;
+            reffilter_i[j] = pixVal * std::cos(cosVal);
+        }
+    }
+
+    std::vector<cv::Mat> filters;
+
+    for (int m = 0; m < 180 / angleInc; m++) {
+        double angle = -(m * angleInc + 90);
+        cv::Mat rot_mat =
+                cv::getRotationMatrix2D(cv::Point((float) (refFilter.rows / 2.0F),
+                                                  (float) (refFilter.cols / 2.0F)),
+                                        angle, 1.0);
+        cv::Mat rotResult;
+        cv::warpAffine(refFilter, rotResult, rot_mat, refFilter.size());
+        filters.push_back(rotResult);
+    }
+
+    // Find indices of matrix points greater than maxsze from the image boundary
+    int maxsze = szek;
+    // Convert orientation matrix values from radians to an index value that
+    // corresponds to round(degrees/angleInc)
+    int maxorientindex = std::round(180 / angleInc);
+
+    cv::Mat orientindex(rows, cols, CV_32FC1);
+
+    int rows_maxsze = rows - maxsze;
+    int cols_maxsze = cols - maxsze;
+
+    for (int y = 0; y < rows; y++) {
+        const auto *orientationImage_y = orientationImage.ptr<float>(y);
+        auto *orientindex_y = orientindex.ptr<float>(y);
+        for (int x = 0; x < cols; x++) {
+            if (x > maxsze && x < cols_maxsze && y > maxsze && y < rows_maxsze) {
+                validr.push_back(y);
+                validc.push_back(x);
+            }
+
+            int orientpix = static_cast<int>(
+                        std::round(orientationImage_y[x] / M_PI * 180 / angleInc));
+
+            if (orientpix < 0) {
+                orientpix += maxorientindex;
+            }
+            if (orientpix >= maxorientindex) {
+                orientpix -= maxorientindex;
+            }
+
+            orientindex_y[x] = orientpix;
+        }
+    }
+
+    // Finally, do the filtering
+    for (long unsigned k = 0; k < validr.size(); k++) {
+        int r = validr[k];
+        int c = validc[k];
+
+        cv::Rect roi(c - szek - 1, r - szek - 1, meshX.cols, meshX.rows);
+        cv::Mat subim(inputImage(roi));
+
+        cv::Mat subFilter = filters.at(orientindex.at<float>(r, c));
+        cv::Mat mulResult;
+        cv::multiply(subim, subFilter, mulResult);
+
+        if (cv::sum(mulResult)[0] > 0) {
+            enhancedImage.at<float>(r, c) = 255;
+        }
+    }
+
+    // Add a border.
+    if (addBorder) {
+        enhancedImage.rowRange(0, rows).colRange(0, szek + 1).setTo(255);
+        enhancedImage.rowRange(0, szek + 1).colRange(0, cols).setTo(255);
+        enhancedImage.rowRange(rows - szek, rows).colRange(0, cols).setTo(255);
+        enhancedImage.rowRange(0, rows)
+                .colRange(cols - 2 * (szek + 1) - 1, cols)
+                .setTo(255);
+    }
+
+    return enhancedImage;
+}
+
+cv::Mat filter_ridge2(const cv::Mat &inputImage,
+                     const cv::Mat &orientationImage,
+                     const cv::Mat &frequency)
+{
+
+    double kx = 0.5;
+    double ky = 0.5;
+    bool addBorder = false;
+    // Fixed angle increment between filter orientations in degrees
+    // Deberia ser divisor de 180
     int angleInc = 3;
 
     inputImage.convertTo(inputImage, CV_32FC1);
@@ -561,14 +695,73 @@ cv::Mat filter_ridge(const cv::Mat &inputImage,
 //salida : imagen CV_32FC1
 cv::Mat gabor(cv::Mat &normalized)
 {
+    cv::Mat im = normalized.clone();
     //estimacion de la orientacion local
-    cv::Mat orient_image = orient_ridge(normalized);
+    cv::Mat orient_image = orient_ridge(im);
     float freq_val = 0.11;
-    cv::Mat freq = cv::Mat::ones(normalized.rows, normalized.cols, normalized.type()) * freq_val;
+    cv::Mat freq = cv::Mat::ones(im.rows, im.cols, im.type()) * freq_val;
+
     //filtro
-    cv::Mat filtered = filter_ridge(normalized, orient_image, freq);
+    cv::Mat filtered = filter_ridge(im, orient_image, freq);
     //devolvemos la imagen mejorada
     return filtered;
+}
+
+float GetWeightedAngle(const cv::Mat& mag,const cv::Mat& ang)
+{
+    float res=0;
+    float n=0;
+    for (int i=0;i< mag.rows;++i)
+    {
+        for (int j=0;j< mag.cols;++j)
+        {
+            res+=ang.at<float>(i,j)*mag.at<float>(i,j);
+            n+=mag.at<float>(i,j);
+        }
+    }
+    res/=n;
+    return res;
+}
+
+cv::Mat gabor2(cv::Mat &normalized)
+{
+    cv::Mat thinned=normalized.clone();
+    //Thinning(img,thinned);
+
+    //cv::GaussianBlur(thinned,thinned,Size(3,3),1.0);
+    cv::Mat gx,gy,ang,mag;
+    cv::Sobel(thinned,gx,CV_32FC1,1,0,7);
+    cv::Sobel(thinned,gy,CV_32FC1,0,1,7);
+    cv::phase(gx,gy,ang,false);
+    cv::magnitude(gx,gy,mag);
+
+    cv::normalize(mag,mag,0,1,cv::NORM_MINMAX);
+
+
+    cv::Mat angRes=cv::Mat::zeros(normalized.rows,normalized.cols,CV_8UC1);
+
+    //int blockSize=normalized.cols/15-1;
+    int blockSize=5;
+    float r=blockSize;
+
+    for (int i=0;i< normalized.rows-blockSize;i+= blockSize)
+    {
+        for (int j=0;j< normalized.cols-blockSize;j+= blockSize)
+        {
+            float a=GetWeightedAngle(
+                        mag(cv::Rect(j,i,blockSize,blockSize)),
+                        ang(cv::Rect(j,i,blockSize,blockSize)));
+            float dx=r*cos(a);
+            float dy=r*sin(a);
+            int x=j;
+            int y=i;
+
+            cv::line(angRes,cv::Point(x,y),cv::Point(x+dx,y+dy),cv::Scalar::all(255),1,cv::LINE_AA);
+        }
+    }
+    cv::imwrite("ang.jpg",angRes);
+    cv::imwrite("source.jpg",normalized);
+    return angRes;
 }
 
 cv::Mat Preprocesser::enhance(cv::Mat &src, int enhancement_method)
@@ -584,7 +777,7 @@ cv::Mat Preprocesser::enhance(cv::Mat &src, int enhancement_method)
     case GABOR:
     {
         enhanced = gabor(src);
-
+        //gabor2(src);
         break;
     }
     default:
@@ -626,13 +819,13 @@ cv::Mat Preprocesser::thin(cv::Mat &src, int thinning_method)
     return thinned;
 }
 
+//calcula la roi de una imagen a partir de la variacion local
 cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio)
 {
     int w = block_size;
-    float t = threshold_ratio;
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev);
-    float threshold = stddev[0] * t;
+    float threshold = stddev[0] * threshold_ratio;
     cv::Mat image_variance(src.size(),CV_32FC1);
     for(int i = 0; i < src.cols; i+=w)
     {
@@ -668,7 +861,7 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
 
 cv::Mat Preprocesser::preprocess(cv::Mat &src)
 {
-     cv::Mat result;
+    cv::Mat result;
     //pipeline de preprocesamiento
 
     //convertimos a 32f
