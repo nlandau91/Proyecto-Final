@@ -17,6 +17,7 @@ public:
     float norm_req_var;
     int roi_block_size;
     float roi_threshold_ratio;
+    bool segment;
 
     /*!
      * \brief inicializa con valores por defecto
@@ -25,12 +26,14 @@ public:
      */
     Preprocesser() : enhancement_method(GABOR),thinning_method(ZHANGSUEN),
         norm_req_mean(100.0), norm_req_var(100.0),
-        roi_block_size(16),roi_threshold_ratio(0.2){}
+        roi_block_size(16),roi_threshold_ratio(0.2),
+    segment(true){}
 
     Preprocesser(int enhancement_method, int thinning_method)
         :enhancement_method(enhancement_method),thinning_method(thinning_method),
           norm_req_mean(100.0), norm_req_var(100.0),
-          roi_block_size(16),roi_threshold_ratio(0.2){}
+          roi_block_size(16),roi_threshold_ratio(0.2),
+    segment(true){}
     /*!
      * \brief preprocess realiza el preprocesamiento de una huella dactilar para
      * adecuara a la extraccion de caracteristicas. Esta funcion se encarga de llamar

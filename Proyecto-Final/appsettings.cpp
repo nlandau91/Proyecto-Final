@@ -16,14 +16,19 @@ void AppSettings::load_settings()
     QString file = QApplication::applicationDirPath()+"/settings.ini";
     QSettings settings(file, QSettings::IniFormat);
 
+    //preprocesser
     enhancement_method = string_to_enum(settings.value("enhancement_method").toString());
     thinning_method = string_to_enum(settings.value("thinning_method").toString());
-    masking = settings.value("masking").toBool();
+    segment = settings.value("segment").toBool();
+
+    //analyzer
     keypoint_threshold = settings.value("keypoint_threshold").toInt();
-    max_match_dist = settings.value("max_match_dist").toInt();
     keypoint_extractor = string_to_enum(settings.value("keypoint_extractor").toString());
     feature_extractor = string_to_enum(settings.value("feature_extractor").toString());
     draw_over_output = settings.value("draw_features").toBool();
+
+    //comparator
+    max_match_dist = settings.value("max_match_dist").toInt();
 }
 
 int string_to_enum(const QString arg1)
@@ -37,10 +42,10 @@ int string_to_enum(const QString arg1)
     if(arg1 == "morph") return fp::MORPH;
     if(arg1 == "harris") return fp::HARRIS;
     if(arg1 == "shitomasi") return fp::SHITOMASI;
-    if(arg1 == "ksurf") return fp::SURF;
     if(arg1 == "orb") return fp::ORB;
-    if(arg1 == "dsurf") return fp::SURF;
-    if(arg1 == "dsift") return fp::SIFT;
+    if(arg1 == "surf") return fp::SURF;
+    if(arg1 == "sift") return fp::SIFT;
+    if(arg1 == "cn") return fp::CN;
 
 
     return not_found;

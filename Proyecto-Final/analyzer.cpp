@@ -82,6 +82,11 @@ std::vector<cv::KeyPoint> kp_surf(cv::Mat &src, int hessian_threshold = 20000)
     return keypoints;
 }
 
+std::vector<cv::KeyPoint> kp_cn(cv::Mat &src)
+{
+
+}
+
 std::vector<cv::KeyPoint> Analyzer::calcular_keypoints(cv::Mat &src)
 {
     std::vector<cv::KeyPoint> keypoints;
@@ -99,8 +104,12 @@ std::vector<cv::KeyPoint> Analyzer::calcular_keypoints(cv::Mat &src)
     }
     case SURF:
     {
-        //keypoints = kp_sift(src);
         keypoints = kp_surf(src);
+        break;
+    }
+    case CN:
+    {
+        keypoints = kp_cn(src);
         break;
     }
     default:

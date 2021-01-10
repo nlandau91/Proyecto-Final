@@ -185,7 +185,11 @@ cv::Mat normalize_1(cv::Mat &src, float req_mean, float req_var)
 float normalize_pixel(float x, float req_var, float v, float m, float req_mean)
 {
     float normalized_pixel = 0;
-    float dev_coeff = sqrt((req_var * ((x - m)*(x - m)))/v);
+    //float dev_coeff = sqrt((req_var * ((x - m)*(x - m)))/v);
+    float dev_coeff = (x-m)*(x-m);
+    dev_coeff *= req_var;
+    dev_coeff /= v;
+    dev_coeff = sqrt(dev_coeff);
     if(x > m)
     {
         normalized_pixel = req_mean + dev_coeff;
@@ -216,7 +220,7 @@ cv::Mat normalize_2(cv::Mat &src, float req_mean, float req_var)
 cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var)
 {
     cv::Mat normalized_image;
-    normalized_image = normalize_1(src,req_mean,req_var);
+    normalized_image = normalize_2(src,req_mean,req_var);
     return normalized_image;
 
 }
@@ -664,6 +668,7 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
 
 cv::Mat Preprocesser::preprocess(cv::Mat &src)
 {
+     cv::Mat result;
     //pipeline de preprocesamiento
 
     //convertimos a 32f
@@ -679,12 +684,13 @@ cv::Mat Preprocesser::preprocess(cv::Mat &src)
 
     //esqueletizamos la imagen
     cv::Mat thinned = thin(enhanced,thinning_method);
-
+    result = thinned;
     //segmentamos la imagen
-    cv::Mat mask = get_roi(normalized,roi_block_size,roi_threshold_ratio);
-    cv::bitwise_and(thinned,mask,thinned);
-
-    cv::Mat result = thinned;
+    if(segment)
+    {
+        cv::Mat mask = get_roi(normalized,roi_block_size,roi_threshold_ratio);
+        cv::bitwise_and(thinned,mask,result);
+    }
 
 
     return result;

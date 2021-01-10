@@ -70,14 +70,11 @@
         <widget class="QComboBox" name="comboBox_thi"/>
        </item>
        <item>
-        <widget class="QLabel" name="label_3">
+        <widget class="QCheckBox" name="checkBox_seg">
          <property name="text">
-          <string>Masking:</string>
+          <string>Segment</string>
          </property>
         </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="comboBox_mas"/>
        </item>
        <item>
         <spacer name="verticalSpacer_2">

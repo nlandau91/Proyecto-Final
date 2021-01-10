@@ -21,6 +21,7 @@ enum Params
     SIFT,
     BRUTEFORCE,
     FLANN,
+    CN,
 
 };
 }

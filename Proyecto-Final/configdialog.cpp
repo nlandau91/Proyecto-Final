@@ -7,6 +7,8 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 {
 
     ui->setupUi(this);
+
+    //preprocessing
     ui->comboBox_enh->addItem("gabor");
     ui->comboBox_enh->addItem("none");
 
@@ -15,18 +17,25 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->comboBox_thi->addItem("guohall");
     ui->comboBox_thi->addItem("morph");
 
-    ui->comboBox_mas->addItem("true");
-    ui->comboBox_mas->addItem("false");
+    ui->checkBox_seg->setChecked(true);
 
+    //feature extraction
     ui->comboBox_kp->addItem("harris");
     ui->comboBox_kp->addItem("shitomasi");
-    ui->comboBox_kp->addItem("ksurf");
+    ui->comboBox_kp->addItem("surf");
+    ui->comboBox_kp->addItem("cn");
 
     ui->comboBox_feat->addItem("orb");
-    ui->comboBox_feat->addItem("dsurf");
-    ui->comboBox_feat->addItem("dsift");
+    ui->comboBox_feat->addItem("surf");
+    ui->comboBox_feat->addItem("sift");
+
+    ui->lineEdit_thresh->setText("120");
 
     ui->checkBox_draw->setChecked(true);
+
+    //feature matching
+    ui->lineEdit_dist->setText("80");
+
 
     load_settings();
 }
@@ -42,35 +51,39 @@ void ConfigDialog::load_settings()
 {
     QString file = QApplication::applicationDirPath()+"/settings.ini";
     QSettings settings(file, QSettings::IniFormat);
-
+    //preprocessing
     ui->comboBox_enh->setCurrentText(settings.value("enhancement_method").toString());
     ui->comboBox_thi->setCurrentText(settings.value("thinning_method").toString());
-    ui->comboBox_mas->setCurrentText(settings.value("masking").toString());
+    ui->checkBox_seg->setChecked(settings.value("segment").toBool());
 
+    //feature extraction
     ui->comboBox_kp->setCurrentText(settings.value("keypoint_extractor").toString());
     ui->comboBox_feat->setCurrentText(settings.value("feature_extractor").toString());
-
     ui->lineEdit_thresh->setText(settings.value("keypoint_threshold").toString());
-    ui->lineEdit_dist->setText(settings.value("max_match_dist").toString());
-
     ui->checkBox_draw->setChecked(settings.value("draw_features").toBool());
+
+    //feature matching
+    ui->lineEdit_dist->setText(settings.value("max_match_dist").toString());
 }
 
 void ConfigDialog::save_settings()
 {
     QString file = QApplication::applicationDirPath()+"/settings.ini";
     QSettings settings(file, QSettings::IniFormat);
+    //preprocessing
     settings.setValue("enhancement_method", ui->comboBox_enh->currentText());
     settings.setValue("thinning_method", ui->comboBox_thi->currentText());
-    settings.setValue("masking", ui->comboBox_mas->currentText());
+    settings.setValue("segment",ui->checkBox_seg->isChecked());
 
+    //feature extraction
     settings.setValue("keypoint_extractor", ui->comboBox_kp->currentText());
     settings.setValue("feature_extractor", ui->comboBox_feat->currentText());
-
     settings.setValue("keypoint_threshold", ui->lineEdit_thresh->text());
+    settings.setValue("draw_features",ui->checkBox_draw->isChecked());
+
+    //feature matching
     settings.setValue("max_match_dist", ui->lineEdit_dist->text());
 
-    settings.setValue("draw_features",ui->checkBox_draw->isChecked());
 }
 
 void ConfigDialog::on_buttonBox_accepted()

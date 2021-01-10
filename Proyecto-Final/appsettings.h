@@ -11,7 +11,7 @@ public:
 
     int enhancement_method;
     int thinning_method;
-    bool masking;
+    bool segment;
     int keypoint_extractor;
     int keypoint_threshold;
     int feature_extractor;
