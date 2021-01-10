@@ -27,6 +27,8 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->comboBox_feat->addItem("dsurf");
     ui->comboBox_feat->addItem("dsift");
 
+    ui->checkBox_draw->setChecked(true);
+
     load_settings();
 }
 
@@ -51,6 +53,8 @@ void ConfigDialog::load_settings()
 
     ui->lineEdit_thresh->setText(settings.value("keypoint_threshold").toString());
     ui->lineEdit_dist->setText(settings.value("max_match_dist").toString());
+
+    ui->checkBox_draw->setChecked(settings.value("draw_features").toBool());
 }
 
 void ConfigDialog::save_settings()
@@ -66,6 +70,8 @@ void ConfigDialog::save_settings()
 
     settings.setValue("keypoint_threshold", ui->lineEdit_thresh->text());
     settings.setValue("max_match_dist", ui->lineEdit_dist->text());
+
+    settings.setValue("draw_features",ui->checkBox_draw->isChecked());
 }
 
 void ConfigDialog::on_buttonBox_accepted()

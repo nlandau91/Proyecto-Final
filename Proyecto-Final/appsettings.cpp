@@ -22,7 +22,7 @@ void AppSettings::load_settings()
     max_match_dist = settings.value("max_match_dist").toInt();
     keypoint_extractor = (fp::Analyzer::KeypointExtractor)string_to_enum(settings.value("keypoint_extractor").toString());
     feature_extractor = (fp::Analyzer::FeatureExtractor)string_to_enum(settings.value("feature_extractor").toString());
-    draw_over_output = settings.value("draw_over_output").toBool();
+    draw_over_output = settings.value("draw_features").toBool();
 }
 
 int string_to_enum(const QString arg1)

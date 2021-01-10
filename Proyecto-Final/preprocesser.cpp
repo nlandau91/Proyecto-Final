@@ -679,32 +679,21 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
 
 }
 
-//aplica una mascara de roi a una imagen
-cv::Mat Preprocesser::segment(cv::Mat &src, cv::Mat &mask, int w, float t)
-{
-    mask = get_roi(src,w,t);
-    cv::Mat segmented;
-    src.convertTo(segmented,CV_8UC1);
-    cv::bitwise_and(segmented,mask,segmented);
-    return segmented;
-
-}
-
 cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method, bool roi_masking)
 {
     Q_UNUSED(roi_masking);
     //pipeline de preprocesamiento
+
     //normalizacion
-    cv::Mat normalized = normalize(src,120.0,100.0);
-    //obtenemos la imagen segmentada y la mascara
-    cv::Mat mask = get_roi(normalized);
-    //cv::Mat segmented = segment(normalized, mask);
+    cv::Mat normalized = normalize(src,100.0,100.0);
+    //obtenemos la roi y segmentamos la imagen
+    cv::Mat mask = get_roi(normalized,16,0.2);
     cv::Mat segmented;
     normalized.convertTo(segmented,CV_8UC1);
     cv::bitwise_and(segmented,mask,segmented);
 
-    return segmented;
-    cv::Mat enhanced = enhance(segmented, enhancement_method);
+    cv::Mat enhanced = enhance(src, enhancement_method);
+    return enhanced;
     cv::Mat thinned = thin(enhanced,thinning_method);
     //cv::Mat enhanced = enhance(src, enhancement_method);
 
