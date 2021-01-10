@@ -6,7 +6,12 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
-
+#include "database.h"
+#include "appsettings.h"
+#include "preprocesser.h"
+#include "analyzer.h"
+#include "comparator.h"
+#include "utils.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -34,6 +39,7 @@ private:
     Ui::MainWindow *ui;
     fp::Database db;
     AppSettings app_settings;
+    fp::Preprocesser preprocesser;
     fp::Analyzer analyzer;
     void mostrar_imagen(cv::Mat &imagen);
     void load_settings();

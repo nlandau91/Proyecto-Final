@@ -7,7 +7,6 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 {
 
     ui->setupUi(this);
-    qDebug() << QApplication::applicationDirPath();
     ui->comboBox_enh->addItem("gabor");
     ui->comboBox_enh->addItem("none");
 

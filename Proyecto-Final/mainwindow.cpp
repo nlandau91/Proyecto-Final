@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "configdialog.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -11,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     db.init();
     qDebug("Loading settings...");
     app_settings.load_settings();
+    qDebug("Settings up preprocesser modulo...");
+    preprocesser = fp::Preprocesser(app_settings.enhancement_method,app_settings.thinning_method);
     qDebug("Setting up analyzer module...");
     analyzer = fp::Analyzer(app_settings.keypoint_extractor,app_settings.keypoint_threshold,app_settings.feature_extractor,app_settings.matcher_method,app_settings.max_match_dist);
 }
@@ -37,7 +41,7 @@ void MainWindow::on_btn_ingresar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Preprocesser::preprocess(src,app_settings.enhancement_method,app_settings.thinning_method);
+            cv::Mat enhanced = preprocesser.preprocess(src);
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
             qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
@@ -81,7 +85,7 @@ void MainWindow::on_btn_verificar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::EnhancementMethod::GABOR,fp::Preprocesser::ThinningMethod::ZHANGSUEN);
+            cv::Mat enhanced = preprocesser.preprocess(src);
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));;
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
@@ -121,7 +125,7 @@ void MainWindow::on_btn_identificar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //mejoramos la imagen
-            cv::Mat enhanced = fp::Preprocesser::preprocess(src,fp::Preprocesser::EnhancementMethod::GABOR,fp::Preprocesser::ThinningMethod::ZHANGSUEN);
+            cv::Mat enhanced = preprocesser.preprocess(src);
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
@@ -165,5 +169,6 @@ void MainWindow::on_actionOpciones_triggered()
     {
         app_settings.load_settings();
     }
+    preprocesser = fp::Preprocesser(app_settings.enhancement_method,app_settings.thinning_method);
     analyzer = fp::Analyzer(app_settings.keypoint_extractor,app_settings.keypoint_threshold,app_settings.feature_extractor,app_settings.matcher_method,app_settings.max_match_dist);
 }

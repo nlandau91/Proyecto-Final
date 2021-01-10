@@ -1,4 +1,5 @@
 #include "database.h"
+#include <QDebug>
 
 namespace fp
 {

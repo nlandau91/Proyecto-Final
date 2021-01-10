@@ -4,13 +4,6 @@
 namespace fp
 {
 
-
-Preprocesser::Preprocesser()
-{
-    //esta clase solo tiene metodos estaticos
-    //no es necesario instanciarla
-}
-
 //realiza una iteracion de reduccion del algoritmo de zhang-suen, la misma se debe repetir hasta que la imagen este esquelitizada
 void zhangsuen_iteration(cv::Mat& im, int iter)
 {
@@ -574,17 +567,17 @@ cv::Mat gabor(cv::Mat &normalized)
     return filtered;
 }
 
-cv::Mat Preprocesser::enhance(cv::Mat &src, EnhancementMethod enhancement_method)
+cv::Mat Preprocesser::enhance(cv::Mat &src, int enhancement_method)
 {
     cv::Mat enhanced;
     switch (enhancement_method)
     {
-    case EnhancementMethod::NONE:
+    case NONE:
     {
         enhanced = src.clone();
         break;
     }
-    case EnhancementMethod::GABOR:
+    case GABOR:
     {
         enhanced = gabor(src);
 
@@ -596,7 +589,7 @@ cv::Mat Preprocesser::enhance(cv::Mat &src, EnhancementMethod enhancement_method
     return enhanced;
 }
 
-cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
+cv::Mat Preprocesser::thin(cv::Mat &src, int thinning_method)
 {
     cv::Mat thinned;
     cv::Mat binary;
@@ -604,22 +597,22 @@ cv::Mat Preprocesser::thin(cv::Mat &src, ThinningMethod thinning_method)
     thinned = binary.clone();
     switch(thinning_method)
     {
-    case ThinningMethod::NONE:
+    case NONE:
     {
         thinned = src;
         break;
     }
-    case ThinningMethod::ZHANGSUEN:
+    case ZHANGSUEN:
     {
         zhangsuen_thinning(thinned);
         break;
     }
-    case ThinningMethod::MORPH:
+    case MORPH:
     {
         thinned = morphological_thinning(binary);
         break;
     }
-    case ThinningMethod::GUOHALL:
+    case GUOHALL:
     {
         guohall_thinning(thinned);
     }
@@ -669,7 +662,7 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
 
 }
 
-cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_method, ThinningMethod thinning_method)
+cv::Mat Preprocesser::preprocess(cv::Mat &src)
 {
     //pipeline de preprocesamiento
 
@@ -688,7 +681,7 @@ cv::Mat Preprocesser::preprocess(cv::Mat &src, EnhancementMethod enhancement_met
     cv::Mat thinned = thin(enhanced,thinning_method);
 
     //segmentamos la imagen
-    cv::Mat mask = get_roi(normalized,16,0.2);
+    cv::Mat mask = get_roi(normalized,roi_block_size,roi_threshold_ratio);
     cv::bitwise_and(thinned,mask,thinned);
 
     cv::Mat result = thinned;

@@ -1,4 +1,5 @@
 #include "analyzer.h"
+#include <opencv2/xfeatures2d/nonfree.hpp>
 #include <QDebug>
 
 namespace fp
@@ -8,7 +9,7 @@ Analyzer::Analyzer()
     Analyzer(HARRIS, 130, ORB, BRUTEFORCE, 80);
 }
 
-Analyzer::Analyzer(KeypointExtractor keypoint_method, int keypoint_threshold, FeatureExtractor descriptor_method, MatcherMethod matcher_method, int max_match_dist)
+Analyzer::Analyzer(int keypoint_method, int keypoint_threshold, int descriptor_method, int matcher_method, int max_match_dist)
 {
     this->keypoint_threshold = keypoint_threshold;
     this->max_match_dist = max_match_dist;
@@ -96,7 +97,7 @@ std::vector<cv::KeyPoint> Analyzer::calcular_keypoints(cv::Mat &src)
         keypoints = kp_shitomasi(src);
         break;
     }
-    case KSURF:
+    case SURF:
     {
         //keypoints = kp_sift(src);
         keypoints = kp_surf(src);
@@ -119,11 +120,11 @@ cv::Mat Analyzer::calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> k
         orb_descriptor->compute(src,keypoints,descriptors);
         break;
     }
-    case DSURF:
+    case SURF:
     {
         break;
     }
-    case DSIFT:
+    case SIFT:
     {
         break;
     }

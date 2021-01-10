@@ -1,47 +1,55 @@
 #ifndef PREPROCESSER_H
 #define PREPROCESSER_H
 
+#include "common.h"
 #include <opencv2/opencv.hpp>
-#include <QObject>
-#include <QMetaEnum>
 
 namespace fp
 {
 
 //clase que realiza el preprocesamiento de las huellas dactilares
-class Preprocesser : public QObject
+class Preprocesser
 {
-    Q_OBJECT
 public:
-    enum class EnhancementMethod : int
-    {
-        NONE,
-        GABOR
-    };
-    enum class ThinningMethod : int
-    {
-        NONE,
-        ZHANGSUEN,
-        MORPH,
-        GUOHALL
-    };
+    int enhancement_method;
+    int thinning_method;
+    float norm_req_mean;
+    float norm_req_var;
+    int roi_block_size;
+    float roi_threshold_ratio;
 
     /*!
-     * \brief not used
+     * \brief inicializa con valores por defecto
+     * enhacer de gabor
+     * thinning de zhangsuen
      */
-    Preprocesser();
-   // Preprocesser();
+    Preprocesser() : enhancement_method(GABOR),thinning_method(ZHANGSUEN),
+        norm_req_mean(100.0), norm_req_var(100.0),
+        roi_block_size(16),roi_threshold_ratio(0.2){}
 
+    Preprocesser(int enhancement_method, int thinning_method)
+        :enhancement_method(enhancement_method),thinning_method(thinning_method),
+          norm_req_mean(100.0), norm_req_var(100.0),
+          roi_block_size(16),roi_threshold_ratio(0.2){}
     /*!
      * \brief preprocess realiza el preprocesamiento de una huella dactilar para
      * adecuara a la extraccion de caracteristicas. Esta funcion se encarga de llamar
-     * al resto de las funciones en el orden correcto
+     * al resto de las funciones en el orden correcto. Metodo estatico, necesita todos los parametros
      * \param src huella dactilar en formato CV_8UC1
      * \param enhancement_method metodo de mejora
      * \param thinning_method metodo de esqueletizacion
      * \return devuelve la imagen luego de pasar por el pipeline de preprocesamiento, CV_8UC1
      */
-    static cv::Mat preprocess(cv::Mat &src, EnhancementMethod enhancement_method = EnhancementMethod::GABOR, ThinningMethod thinning_method = ThinningMethod::ZHANGSUEN);
+    //static cv::Mat preprocess(cv::Mat &src, int enhancement_method, int thinning_method);
+
+    /*!
+     * \brief preprocess realiza el preprocesamiento de una huella dactilar para
+     * adecuara a la extraccion de caracteristicas. Esta funcion se encarga de llamar
+     * al resto de las funciones en el orden correcto.
+     * \param src huella dactilar en formato CV_8UC1
+     * \return devuelve la imagen luego de pasar por el pipeline de preprocesamiento, CV_8UC1
+     */
+    cv::Mat preprocess(cv::Mat &src);
 
     /*!
      * \brief normaliza una imagen para que tenga media y var elegidas
@@ -68,7 +76,7 @@ public:
      * \param enhancement_method metodo a utilizar
      * \return devuelve la imagen mejorada, CV_32FC1
      */
-    static cv::Mat enhance(cv::Mat &src, EnhancementMethod enhancement_method);
+    static cv::Mat enhance(cv::Mat &src, int enhancement_method);
 
     /*!
      * \brief esqueletiza una huella dactilar
@@ -76,7 +84,7 @@ public:
      * \param thinning_method metodo a utilizar
      * \return la imagen esqueletizada, CV_8UC1
      */
-    static cv::Mat thin(cv::Mat &src, ThinningMethod thinning_method);
+    static cv::Mat thin(cv::Mat &src, int thinning_method);
 };
 }
 #endif // PREPROCESSER_H
