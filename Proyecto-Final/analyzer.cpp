@@ -4,19 +4,19 @@
 
 namespace fp
 {
-Analyzer::Analyzer()
-{
-    Analyzer(HARRIS, 130, ORB, BRUTEFORCE, 80);
-}
+//Analyzer::Analyzer()
+//{
+//    Analyzer(HARRIS, 130, ORB, BRUTEFORCE, 80);
+//}
 
-Analyzer::Analyzer(int keypoint_method, int keypoint_threshold, int descriptor_method, int matcher_method, int max_match_dist)
-{
-    this->keypoint_threshold = keypoint_threshold;
-    this->max_match_dist = max_match_dist;
-    this->keypoint_method = keypoint_method;
-    this->matcher_method = matcher_method;
-    this->descriptor_method = descriptor_method;
-}
+//Analyzer::Analyzer(int keypoint_method, int keypoint_threshold, int descriptor_method, int matcher_method, int max_match_dist)
+//{
+//    this->keypoint_threshold = keypoint_threshold;
+//    this->max_match_dist = max_match_dist;
+//    this->keypoint_method = keypoint_method;
+//    this->matcher_method = matcher_method;
+//    this->descriptor_method = descriptor_method;
+//}
 
 //buscamos los keypoints en una imagen con el detector de esquinas de Harris
 //la imagen ya debe estar preprocesada

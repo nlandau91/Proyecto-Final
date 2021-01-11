@@ -17,18 +17,28 @@ public:
         cv::Mat descriptors;
     };
 
-    Analyzer();
-    Analyzer(int keypoint_method, int keypoint_threshold, int descriptor_method, int matcher_method, int max_match_dist);
+    Analyzer() :
+        keypoint_method(HARRIS),keypoint_threshold(130),descriptor_method(ORB),max_match_dist(80){}
 
-    //analiza la huella digital
+    Analyzer(int keypoint_method, int keypoint_threshold, int descriptor_method, int matcher_method, int max_match_dist)
+        : keypoint_method(keypoint_method), keypoint_threshold(keypoint_threshold),
+          descriptor_method(descriptor_method),matcher_method(matcher_method),
+          max_match_dist(max_match_dist){}
+
+    /*!
+     * \brief analize analiza la huella dactilar
+     * \param src huella dactilar a analizar, se supone ya preprocesada
+     * \return analisis de la huella
+     */
     Analysis analize(cv::Mat &src);
 
 private:
-    int keypoint_threshold;
-    int max_match_dist;
     int keypoint_method;
+    int keypoint_threshold;
     int descriptor_method;
     int matcher_method;
+    int max_match_dist;
+
     std::vector<cv::KeyPoint> calcular_keypoints(cv::Mat &src);
     cv::Mat calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> keypoints);
 };
