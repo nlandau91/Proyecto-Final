@@ -556,6 +556,45 @@ cv::Mat filter_ridge(const cv::Mat &inputImage,
     return enhancedImage;
 }
 
+cv::Mat mat_cos(cv::Mat &src)
+{
+    cv::Mat cos_mat = src.clone();
+    for(int r = 0; r < src.rows; r++)
+    {
+        for(int c = 0; c < src.cols; c++)
+        {
+
+            cos_mat.at<float>(r,c) = cos(src.at<float>(r,c));
+        }
+    }
+    return cos_mat;
+}
+cv::Mat mat_sin(cv::Mat &src)
+{
+    cv::Mat sin_mat = src.clone();
+    for(int r = 0; r < src.rows; r++)
+    {
+        for(int c = 0; c < src.cols; c++)
+        {
+            sin_mat.at<float>(r,c) = sin(src.at<float>(r,c));
+        }
+    }
+    return sin_mat;
+}
+cv::Mat mat_atan2(cv::Mat &src1, cv::Mat &src2)
+{
+    cv::Mat atan2_mat = src.clone();
+    for(int r = 0; r < src.rows; r++)
+    {
+        for(int c = 0; c < src.cols; c++)
+        {
+            atan2_mat.at<float>(r,c) = atan2(src.at<float>(r,c));
+        }
+    }
+    return atan2_mat;
+}
+
+
 cv::Mat filter_ridge2(const cv::Mat &src,
                       const cv::Mat &orientation_map,
                       const cv::Mat &frequency_map)
@@ -722,7 +761,7 @@ cv::Mat filter_ridge2(const cv::Mat &src,
         cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(r,c)];
         cv::Mat mulResult;
         cv::multiply(subim,subFilter,mulResult);
-;
+        ;
         if(cv::sum(mulResult)[0] > 0)
         {
             newim.at<float>(r,c) = 255;
@@ -743,70 +782,79 @@ cv::Mat gabor(cv::Mat &normalized)
     cv::Mat orient_image = orient_ridge(im);
     float freq_val = 0.11;
     cv::Mat freq = cv::Mat::ones(im.rows, im.cols, im.type()) * freq_val;
+    //filtro
+    cv::Mat filtered = filter_ridge(im, orient_image, freq);;
+    //devolvemos la imagen mejorada
+    return filtered;
+}
+
+
+/*!
+ * \brief freqest estima la frecuencia de crestas en un pequenio bloque
+ * \param im imagen a procesar
+ * \param orientim mapa de orientaciones del bloque
+ * \param windsze longitud de la ventana para identificar picos. Impar.
+ * \param minWaveLength longitud de onda minima de las crestas
+ * \param maxWaveLength longitud de onda maxima de las crestas
+ * \return
+ */
+cv::Mat freqest(cv::Mat &im, cv::Mat &orientim, int windsze = 5, int minWaveLength = 5, int maxWaveLength = 15)
+{
+    int rows = im.rows;
+    int cols = im.cols;
+    // Find mean orientation within the block. This is done by averaging the
+    // sines and cosines of the doubled angles before reconstructing the
+    // angle again.  This avoids wraparound problems at the origin.
+    cv::Mat orientimx2 = orientim*2;
+    cv::Mat cosorient = mat_cos(orientim);
+    cv::Mat sinorient = ;
+
+}
+
+
+/*!
+ * \brief ridge_freq estima la frecuencia de crestas en una huella dactilar
+ * \param im imagen a procesar
+ * \param mask roi
+ * \param orientim mapa de orientaciones
+ * \param blksze bloque de tamano a usar
+ * \param windsze longitud de la ventana para identificar picos. Impar.
+ * \param minWaveLength longitud de onda minima de las crestas
+ * \param maxWaveLength longitud de onda maxima de las crestas
+ * \return
+ */
+cv::Mat ridge_freq(cv::Mat &im, cv::Mat &mask, cv::Mat &orientim, int blksze = 32, int windsze = 5, int minWaveLength = 5, int maxWaveLength = 15 )
+{
+    int rows = im.rows;
+    int cols = im.cols;
+    cv::Mat freq = cv::Mat::zeros(im.size(),im.type());
+    for(int r = 1; r < blksze;rows-blksze)
+    {
+        for(int c = 1; c < blksze; cols-blksze)
+        {
+            cv::Rect roi(c,r,c+blksze-1,r+blksze-1);
+            cv::Mat blkim(im(roi));
+            cv::Mat blkor(orientim(roi));
+            freq(roi) = freqest(blkim,blkor,windsze,minWaveLength,maxWaveLength);
+        }
+    }
+    cv::bitwise_and(freq,mask,freq);
+    return freq;
+}
+cv::Mat gabor2(cv::Mat &normalized)
+{
+    cv::Mat im = normalized.clone();
+    //estimacion de la orientacion local
+    cv::Mat orient_image = orient_ridge(im);
+    float freq_val = 0.11;
+    cv::Mat freq = cv::Mat::ones(im.rows, im.cols, im.type()) * freq_val;
 
     //filtro
-    //cv::Mat filtered = filter_ridge(im, orient_image, freq);
     cv::Mat filtered = filter_ridge2(im, orient_image, freq);
     //devolvemos la imagen mejorada
     return filtered;
 }
 
-float GetWeightedAngle(const cv::Mat& mag,const cv::Mat& ang)
-{
-    float res=0;
-    float n=0;
-    for (int i=0;i< mag.rows;++i)
-    {
-        for (int j=0;j< mag.cols;++j)
-        {
-            res+=ang.at<float>(i,j)*mag.at<float>(i,j);
-            n+=mag.at<float>(i,j);
-        }
-    }
-    res/=n;
-    return res;
-}
-
-cv::Mat gabor2(cv::Mat &normalized)
-{
-    cv::Mat thinned=normalized.clone();
-    //Thinning(img,thinned);
-
-    //cv::GaussianBlur(thinned,thinned,Size(3,3),1.0);
-    cv::Mat gx,gy,ang,mag;
-    cv::Sobel(thinned,gx,CV_32FC1,1,0,7);
-    cv::Sobel(thinned,gy,CV_32FC1,0,1,7);
-    cv::phase(gx,gy,ang,false);
-    cv::magnitude(gx,gy,mag);
-
-    cv::normalize(mag,mag,0,1,cv::NORM_MINMAX);
-
-
-    cv::Mat angRes=cv::Mat::zeros(normalized.rows,normalized.cols,CV_8UC1);
-
-    //int blockSize=normalized.cols/15-1;
-    int blockSize=5;
-    float r=blockSize;
-
-    for (int i=0;i< normalized.rows-blockSize;i+= blockSize)
-    {
-        for (int j=0;j< normalized.cols-blockSize;j+= blockSize)
-        {
-            float a=GetWeightedAngle(
-                        mag(cv::Rect(j,i,blockSize,blockSize)),
-                        ang(cv::Rect(j,i,blockSize,blockSize)));
-            float dx=r*cos(a);
-            float dy=r*sin(a);
-            int x=j;
-            int y=i;
-
-            cv::line(angRes,cv::Point(x,y),cv::Point(x+dx,y+dy),cv::Scalar::all(255),1,cv::LINE_AA);
-        }
-    }
-    cv::imwrite("ang.jpg",angRes);
-    cv::imwrite("source.jpg",normalized);
-    return angRes;
-}
 
 cv::Mat Preprocesser::enhance(cv::Mat &src, int enhancement_method)
 {
@@ -821,7 +869,6 @@ cv::Mat Preprocesser::enhance(cv::Mat &src, int enhancement_method)
     case GABOR:
     {
         enhanced = gabor(src);
-        //gabor2(src);
         break;
     }
     default:
