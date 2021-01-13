@@ -21,6 +21,7 @@ SOURCES += \
     comparator.cpp \
     configdialog.cpp \
     database.cpp \
+    gabor2.cpp \
     main.cpp \
     mainwindow.cpp \
     preprocesser.cpp \
