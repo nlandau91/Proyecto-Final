@@ -4,19 +4,6 @@
 
 namespace fp
 {
-//Analyzer::Analyzer()
-//{
-//    Analyzer(HARRIS, 130, ORB, BRUTEFORCE, 80);
-//}
-
-//Analyzer::Analyzer(int keypoint_method, int keypoint_threshold, int descriptor_method, int matcher_method, int max_match_dist)
-//{
-//    this->keypoint_threshold = keypoint_threshold;
-//    this->max_match_dist = max_match_dist;
-//    this->keypoint_method = keypoint_method;
-//    this->matcher_method = matcher_method;
-//    this->descriptor_method = descriptor_method;
-//}
 
 //buscamos los keypoints en una imagen con el detector de esquinas de Harris
 //la imagen ya debe estar preprocesada
@@ -82,7 +69,14 @@ std::vector<cv::KeyPoint> kp_surf(cv::Mat &src, int hessian_threshold = 20000)
     return keypoints;
 }
 
-//calcula los cruces por un pixel
+/*!
+ * \brief crosses calcula si el el pixel corresponde a una minucia
+ * \param bin imagen binaria a procesar
+ * \param col columna del pixel
+ * \param row fila del pixel
+ * \return devuelve 1 si es un ridge ending o 3 si es un crossing o calquier otro valor
+ * si no es una minucia
+ */
 int crosses(cv::Mat &bin, int col, int row)
 {
     int cn = 0;
@@ -113,7 +107,7 @@ int crosses(cv::Mat &bin, int col, int row)
 std::vector<cv::KeyPoint> kp_cn(cv::Mat &src)
 {
     std::vector<cv::KeyPoint> keypoints;
-    cv::Mat bin = src/255;
+    cv::Mat bin = src/255; //pasamos la imagen a binario
 
     //iteramos en toda la imagen menos un borde de 1 pixel por el kernel de 3x3
     for(int col = 1; col < bin.cols - 1; col++)
@@ -124,6 +118,7 @@ std::vector<cv::KeyPoint> kp_cn(cv::Mat &src)
             //1 representa terminacion, 3 representa bifurcacion
             if(cn == 1 || cn == 3)
             {
+                //guardamos el valor de cn como tamanio, para poder discernir luego si era terminacion o bifurcacion
                 cv::KeyPoint kp(col,row,cn);
                 keypoints.push_back(kp);
             }
@@ -132,35 +127,57 @@ std::vector<cv::KeyPoint> kp_cn(cv::Mat &src)
     return keypoints;
 }
 
-std::vector<cv::KeyPoint> Analyzer::calcular_keypoints(cv::Mat &src)
+std::vector<cv::KeyPoint> Analyzer::find_l2_features(cv::Mat &src)
 {
-    std::vector<cv::KeyPoint> keypoints;
-    switch(keypoint_method)
+    std::vector<cv::KeyPoint> l2_features;
+    switch(l2_features_method)
     {
     case HARRIS:
     {
-        keypoints = kp_harris(src, keypoint_threshold);
+        l2_features = kp_harris(src, keypoint_threshold);
         break;
     }
     case SHITOMASI:
     {
-        keypoints = kp_shitomasi(src);
+        l2_features = kp_shitomasi(src);
         break;
     }
     case SURF:
     {
-        keypoints = kp_surf(src);
+        l2_features = kp_surf(src);
         break;
     }
     case CN:
     {
-        keypoints = kp_cn(src);
+        l2_features = kp_cn(src);
         break;
     }
     default:
         break;
     }
-    return keypoints;
+    return l2_features;
+}
+
+std::vector<cv::KeyPoint> poincare(cv::Mat src, cv::Mat orient, cv::Mat mask, float tol, int blk_sze)
+{
+
+}
+
+std::vector<cv::KeyPoint> Analyzer::find_l1_features(cv::Mat &src)
+{
+    std::vector<cv::KeyPoint> l1_features;
+    switch(l1_features_method)
+    {
+    case POINCARE:
+    {
+        l1_features = poincare(src, orient,  mask,  poincare_tol, blk_sze);
+        break;
+    }
+    default:
+        break;
+
+    }
+    return l1_features;
 }
 
 cv::Mat Analyzer::calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> keypoints)
@@ -196,9 +213,9 @@ Analyzer::Analysis Analyzer::analize(cv::Mat &src)
     Analysis analysis;
     analysis.fingerprint = src.clone();
     //buscamos los puntos minuciosos (minutae)
-    analysis.keypoints = calcular_keypoints(analysis.fingerprint);
+    analysis.l2_features = find_l2_features(analysis.fingerprint);
     //calculamos sus descriptores
-    analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.keypoints);
+    analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
     return analysis;
 }
 }

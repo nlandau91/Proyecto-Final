@@ -11,11 +11,22 @@ namespace fp
 class Preprocesser
 {
 public:
+
+    struct Preprocessed
+    {
+        cv::Mat original;
+        cv::Mat normalized;
+        cv::Mat orientation;
+        cv::Mat filtered;
+        cv::Mat roi;
+        cv::Mat result;
+    };
+
     int enhancement_method;
     int thinning_method;
     float norm_req_mean;
     float norm_req_var;
-    int roi_block_size;
+    int blk_sze;
     float roi_threshold_ratio;
     bool segment;
 
@@ -26,24 +37,14 @@ public:
      */
     Preprocesser() : enhancement_method(GABOR),thinning_method(ZHANGSUEN),
         norm_req_mean(100.0), norm_req_var(100.0),
-        roi_block_size(16),roi_threshold_ratio(0.2),
+        blk_sze(16),roi_threshold_ratio(0.2),
     segment(true){}
 
     Preprocesser(int enhancement_method, int thinning_method)
         :enhancement_method(enhancement_method),thinning_method(thinning_method),
           norm_req_mean(100.0), norm_req_var(100.0),
-          roi_block_size(16),roi_threshold_ratio(0.2),
+          blk_sze(16),roi_threshold_ratio(0.2),
     segment(true){}
-    /*!
-     * \brief preprocess realiza el preprocesamiento de una huella dactilar para
-     * adecuara a la extraccion de caracteristicas. Esta funcion se encarga de llamar
-     * al resto de las funciones en el orden correcto. Metodo estatico, necesita todos los parametros
-     * \param src huella dactilar en formato CV_8UC1
-     * \param enhancement_method metodo de mejora
-     * \param thinning_method metodo de esqueletizacion
-     * \return devuelve la imagen luego de pasar por el pipeline de preprocesamiento, CV_8UC1
-     */
-    //static cv::Mat preprocess(cv::Mat &src, int enhancement_method, int thinning_method);
 
     /*!
      * \brief preprocess realiza el preprocesamiento de una huella dactilar para
@@ -52,7 +53,10 @@ public:
      * \param src huella dactilar en formato CV_8UC1
      * \return devuelve la imagen luego de pasar por el pipeline de preprocesamiento, CV_8UC1
      */
-    cv::Mat preprocess(cv::Mat &src);
+    //cv::Mat preprocess(cv::Mat &src);
+
+
+    Preprocessed preprocess(cv::Mat &src);
 
     /*!
      * \brief normaliza una imagen para que tenga media y var elegidas

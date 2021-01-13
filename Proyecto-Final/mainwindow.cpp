@@ -40,7 +40,8 @@ void MainWindow::on_btn_ingresar_clicked()
         if(!src.empty())
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
-            //mejoramos la imagen
+            //preprocesamos la imagen
+            fp::Preprocesser::Preprocessed pre = preprocesser.preprocess(src);
             cv::Mat enhanced = preprocesser.preprocess(src);
             //obtenemos los descriptores
             fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
@@ -50,7 +51,7 @@ void MainWindow::on_btn_ingresar_clicked()
             cv::cvtColor(enhanced,enhanced_marked,cv::COLOR_GRAY2BGR);
             if(app_settings.draw_over_output)
             {
-                cv::drawKeypoints(enhanced_marked,analysis.keypoints,enhanced_marked,cv::Scalar(0,255,0),cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+                cv::drawKeypoints(enhanced_marked,analysis.l2_features,enhanced_marked,cv::Scalar(0,255,0),cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
             }
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
             //solo ingresamos huellas que sean suficientemente buenas

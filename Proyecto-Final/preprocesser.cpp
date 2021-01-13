@@ -356,7 +356,7 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
  */
 cv::Mat filter_ridge(const cv::Mat &im,
                      const cv::Mat &orient,
-                     const cv::Mat &freq, double kx = 0.5, double ky = 0.5)
+                     const cv::Mat &freq, double kx = 0.6, double ky = 0.6)
 {
     bool addBorder = false;
     // Fixed angle increment between filter orientations in degrees
@@ -595,8 +595,40 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
 
 }
 
-cv::Mat Preprocesser::preprocess(cv::Mat &src)
+//cv::Mat Preprocesser::preprocess(cv::Mat &src)
+//{
+//    cv::Mat result;
+//    //pipeline de preprocesamiento
+
+//    //convertimos a 32f
+//    cv::Mat src_32f;
+//    src.convertTo(src_32f,CV_32FC1);
+
+//    //normalizacion
+//    cv::Mat normalized = normalize(src_32f,norm_req_mean,norm_req_var);
+
+//    //mejora
+//    cv::Mat enhanced = enhance(normalized, enhancement_method);
+//    enhanced.convertTo(enhanced,CV_8UC1);
+
+//    //esqueletizamos la imagen
+//    cv::Mat thinned = thin(enhanced,thinning_method);
+//    result = thinned;
+//    //segmentamos la imagen
+//    if(segment)
+//    {
+//        cv::Mat mask = get_roi(normalized,blk_sze,roi_threshold_ratio);
+//        cv::bitwise_and(thinned,mask,result);
+//    }
+
+
+//    return result;
+
+//}
+
+Preprocesser::Preprocessed Preprocesser::preprocess(cv::Mat &src)
 {
+    //cv::Mat src; //fix para que compile
     cv::Mat result;
     //pipeline de preprocesamiento
 
@@ -605,7 +637,7 @@ cv::Mat Preprocesser::preprocess(cv::Mat &src)
     src.convertTo(src_32f,CV_32FC1);
 
     //normalizacion
-    cv::Mat normalized = normalize(src_32f,100.0,100.0);
+    cv::Mat normalized = normalize(src_32f,norm_req_mean,norm_req_var);
 
     //mejora
     cv::Mat enhanced = enhance(normalized, enhancement_method);
@@ -615,14 +647,16 @@ cv::Mat Preprocesser::preprocess(cv::Mat &src)
     cv::Mat thinned = thin(enhanced,thinning_method);
     result = thinned;
     //segmentamos la imagen
+
+    cv::Mat mask = get_roi(normalized,blk_sze,roi_threshold_ratio);
     if(segment)
     {
-        cv::Mat mask = get_roi(normalized,roi_block_size,roi_threshold_ratio);
         cv::bitwise_and(thinned,mask,result);
     }
-
-
-    return result;
+    cv::Mat orient = orient_ridge(src);
+    Preprocessed pre{src,normalized,orient,enhanced,mask,result};
+    return pre;
 
 }
+
 }

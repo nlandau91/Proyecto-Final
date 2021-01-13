@@ -18,6 +18,12 @@ enum Params
     BRUTEFORCE,
     FLANN,
     CN,
+    ENDING,
+    BIFURCATION,
+    POINCARE,
+    LOOP,
+    DELTA,
+    WHORL,
 
 };
 }

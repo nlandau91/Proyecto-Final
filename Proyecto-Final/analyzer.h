@@ -13,15 +13,17 @@ public:
     struct Analysis
     {
         cv::Mat fingerprint;
-        std::vector<cv::KeyPoint> keypoints;
+        std::vector<cv::KeyPoint> l1_features;
+        std::vector<cv::KeyPoint> l2_features;
         cv::Mat descriptors;
     };
 
     Analyzer() :
-        keypoint_method(HARRIS),keypoint_threshold(130),descriptor_method(ORB),max_match_dist(80){}
+        l2_features_method(HARRIS),keypoint_threshold(130),
+        descriptor_method(ORB),max_match_dist(80){}
 
     Analyzer(int keypoint_method, int keypoint_threshold, int descriptor_method, int matcher_method, int max_match_dist)
-        : keypoint_method(keypoint_method), keypoint_threshold(keypoint_threshold),
+        : l2_features_method(keypoint_method), keypoint_threshold(keypoint_threshold),
           descriptor_method(descriptor_method),matcher_method(matcher_method),
           max_match_dist(max_match_dist){}
 
@@ -33,13 +35,33 @@ public:
     Analysis analize(cv::Mat &src);
 
 private:
-    int keypoint_method;
+    int l2_features_method;
     int keypoint_threshold;
     int descriptor_method;
     int matcher_method;
     int max_match_dist;
+    int l1_features_method;
+    cv::Mat mask;
+    cv::Mat orient;
+    float poincare_tol;
+    int blk_sze;
 
-    std::vector<cv::KeyPoint> calcular_keypoints(cv::Mat &src);
+    /*!
+     * \brief find_l1_features calcula las posiciones donde se encuentran features de nivel 1
+     * esto es, loops, deltas o whorls.
+     * \param src imagen de la huella, se supone ya preprocesada
+     * \return vector con las posiciones de los features encontrados.
+     */
+    std::vector<cv::KeyPoint> find_l1_features(cv::Mat &src);
+
+    /*!
+     * \brief find_l2_features calcula las posiciones donde se encuentram features de nivel 2
+     * esto es, las minucias conocidas como bifurcaciones y terminaciones de crestas
+     * \param src imagen de la huella, se supone ya preprocesada
+     * \return vector con los puntos encontrados
+     */
+    std::vector<cv::KeyPoint> find_l2_features(cv::Mat &src);
+
     cv::Mat calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> keypoints);
 };
 }
