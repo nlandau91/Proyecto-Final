@@ -149,9 +149,7 @@ cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var)
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev);
     cv::Mat normalized_im = src - mean[0];
-    cv::Scalar norm_mean,norm_stddev;
-    cv::meanStdDev(normalized_im,norm_mean,norm_stddev);
-    normalized_im = normalized_im / norm_stddev[0];
+    normalized_im = normalized_im / stddev[0];
     normalized_im = req_mean + normalized_im * std::sqrt(req_var);
 
     return normalized_im;
@@ -209,24 +207,23 @@ void gradient(const cv::Mat &image, cv::Mat &xGradient, cv::Mat &yGradient)
     }
 }
 
-/*
-         * Estimate orientation field of fingerprint ridges.
-         */
-cv::Mat orient_ridge(const cv::Mat &im) {
-
-
-    double blockSigma = 5.0;
-    double gradientSigma = 1.0;
-    double orientSmoothSigma = 5.0;
+/*!
+ * \brief orient_ridge crea un mapa de orientacion a partir de la orientacion local
+ * \param im imagen normalizada
+ * \param gradientSigma sigma de la derivada del gaussiano a usar para computar los gradientes
+ * \param blockSigma sigma de peso gaussiano usado para sumar los momentos de gradiente
+ * \param orientSmoothSigma sigma del gaussiano usado para suavisar el campo vectorial de orientaciones
+ * \return el mapa de orientacion en radianes
+ */
+cv::Mat orient_ridge(const cv::Mat &im, double gradientSigma = 1.0, double blockSigma = 3.0, double orientSmoothSigma = 3.0) {
 
     int ddepth = CV_32FC1;
-
 
     cv::Mat gradX, gradY;
     cv::Mat sin2theta;
     cv::Mat cos2theta;
 
-    int kernelSize = 6 * round(gradientSigma);
+    int kernelSize = trunc(6 * gradientSigma);
 
     if (kernelSize % 2 == 0) {
         kernelSize++;
@@ -263,7 +260,7 @@ cv::Mat orient_ridge(const cv::Mat &im) {
     cv::multiply(gradY, gradY, grad_yy);
 
     // Now smooth the covariance data to perform a weighted summation of the data
-    int sze2 = 6 * round(blockSigma);
+    int sze2 = trunc(6 * blockSigma);
 
     if (sze2 % 2 == 0) {
         sze2++;
@@ -348,10 +345,15 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
     cv::repeat(traspose, 1, total, meshY);
 }
 
-//mejora una huella utilizando filtros orientados
-//inputImage: imagen a mejorar
-//orientationImage: mapa de orientaciones
-//frequency: mapa de frecuencias
+/*!
+ * \brief filter_ridge mejora una imagen de huella dactilar a partir de filtros orientados
+ * \param im imagen a ser procesada
+ * \param orient mapa de orientaciones de los riscos
+ * \param freq mapa de frecuencia de la imagen
+ * \param kx controla el ancho de banda del filtro
+ * \param ky controla la selectividad orientacional del filtro
+ * \return la imagen mejorada
+ */
 cv::Mat filter_ridge(const cv::Mat &im,
                      const cv::Mat &orient,
                      const cv::Mat &freq, double kx = 0.5, double ky = 0.5)
@@ -490,6 +492,7 @@ cv::Mat gabor(cv::Mat &normalized)
     cv::Mat im = normalized.clone();
     //estimacion de la orientacion local
     cv::Mat orient_image = orient_ridge(im);
+    //todo, mapa de frecuencia
     float freq_val = 0.11;
     cv::Mat freq = cv::Mat::ones(im.rows, im.cols, im.type()) * freq_val;
     //filtro
