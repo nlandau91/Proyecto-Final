@@ -10,13 +10,6 @@ namespace fp
 class Analyzer
 {
 public:
-    struct Analysis
-    {
-        cv::Mat fingerprint;
-        std::vector<cv::KeyPoint> l1_features;
-        std::vector<cv::KeyPoint> l2_features;
-        cv::Mat descriptors;
-    };
 
     Analyzer() :
         l2_features_method(HARRIS),keypoint_threshold(130),
@@ -33,6 +26,8 @@ public:
      * \return analisis de la huella
      */
     Analysis analize(cv::Mat &src);
+
+
 
 private:
     int l2_features_method;

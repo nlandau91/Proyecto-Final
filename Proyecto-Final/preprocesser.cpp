@@ -356,7 +356,7 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
  */
 cv::Mat filter_ridge(const cv::Mat &im,
                      const cv::Mat &orient,
-                     const cv::Mat &freq, double kx = 0.6, double ky = 0.6)
+                     const cv::Mat &freq, double kx = 0.5, double ky = 0.5)
 {
     bool addBorder = false;
     // Fixed angle increment between filter orientations in degrees
@@ -422,7 +422,6 @@ cv::Mat filter_ridge(const cv::Mat &im,
 
     // Find indices of matrix points greater than maxsze from the image boundary
     int maxsze = szek;
-    qDebug() << maxsze;
     // Convert orientation matrix values from radians to an index value that
     // corresponds to round(degrees/angleInc)
     int maxorientindex = std::round(180 / angleInc);
@@ -626,7 +625,7 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
 
 //}
 
-Preprocesser::Preprocessed Preprocesser::preprocess(cv::Mat &src)
+fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
 {
     //cv::Mat src; //fix para que compile
     cv::Mat result;
@@ -637,24 +636,36 @@ Preprocesser::Preprocessed Preprocesser::preprocess(cv::Mat &src)
     src.convertTo(src_32f,CV_32FC1);
 
     //normalizacion
+    qDebug() << "Preprocesser: normalizing...";
     cv::Mat normalized = normalize(src_32f,norm_req_mean,norm_req_var);
 
     //mejora
+    qDebug() << "Preprocesser: filtering...";
     cv::Mat enhanced = enhance(normalized, enhancement_method);
     enhanced.convertTo(enhanced,CV_8UC1);
 
     //esqueletizamos la imagen
+    qDebug() << "Preprocesser: thinning...";
     cv::Mat thinned = thin(enhanced,thinning_method);
     result = thinned;
-    //segmentamos la imagen
 
+    //segmentamos la imagen
+    qDebug() << "Preprocesser: masking...";
     cv::Mat mask = get_roi(normalized,blk_sze,roi_threshold_ratio);
     if(segment)
     {
         cv::bitwise_and(thinned,mask,result);
     }
-    cv::Mat orient = orient_ridge(src);
-    Preprocessed pre{src,normalized,orient,enhanced,mask,result};
+    cv::Mat orient = orient_ridge(normalized);
+    Preprocessed pre;
+    pre.original = src;
+    pre.normalized = normalized;
+    pre.filtered = enhanced;
+    pre.thinned = thinned;
+    pre.orientation = orient;
+    pre.roi = mask;
+    pre.result = result;
+    qDebug() << "finished preprocess";
     return pre;
 
 }

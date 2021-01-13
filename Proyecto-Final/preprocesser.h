@@ -12,15 +12,7 @@ class Preprocesser
 {
 public:
 
-    struct Preprocessed
-    {
-        cv::Mat original;
-        cv::Mat normalized;
-        cv::Mat orientation;
-        cv::Mat filtered;
-        cv::Mat roi;
-        cv::Mat result;
-    };
+
 
     int enhancement_method;
     int thinning_method;
@@ -38,13 +30,13 @@ public:
     Preprocesser() : enhancement_method(GABOR),thinning_method(ZHANGSUEN),
         norm_req_mean(100.0), norm_req_var(100.0),
         blk_sze(16),roi_threshold_ratio(0.2),
-    segment(true){}
+        segment(true){}
 
     Preprocesser(int enhancement_method, int thinning_method)
         :enhancement_method(enhancement_method),thinning_method(thinning_method),
           norm_req_mean(100.0), norm_req_var(100.0),
           blk_sze(16),roi_threshold_ratio(0.2),
-    segment(true){}
+          segment(true){}
 
     /*!
      * \brief preprocess realiza el preprocesamiento de una huella dactilar para

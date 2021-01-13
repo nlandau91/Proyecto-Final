@@ -207,7 +207,7 @@ cv::Mat Analyzer::calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> k
 }
 
 
-Analyzer::Analysis Analyzer::analize(cv::Mat &src)
+fp::Analysis Analyzer::analize(cv::Mat &src)
 {
 
     Analysis analysis;

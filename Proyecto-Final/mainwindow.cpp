@@ -41,10 +41,10 @@ void MainWindow::on_btn_ingresar_clicked()
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //preprocesamos la imagen
-            fp::Preprocesser::Preprocessed pre = preprocesser.preprocess(src);
-            cv::Mat enhanced = preprocesser.preprocess(src);
+            fp::Preprocessed pre = preprocesser.preprocess(src);
+            cv::Mat enhanced = pre.result;
             //obtenemos los descriptores
-            fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
+            fp::Analysis analysis = analyzer.analize(enhanced);
             qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
@@ -85,11 +85,12 @@ void MainWindow::on_btn_verificar_clicked()
         if(!src.empty())
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
-            //mejoramos la imagen
-            cv::Mat enhanced = preprocesser.preprocess(src);
+            //preprocesamos la imagen
+            fp::Preprocessed pre = preprocesser.preprocess(src);
+            cv::Mat enhanced = pre.result;
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));;
             //obtenemos los descriptores
-            fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
+            fp::Analysis analysis = analyzer.analize(enhanced);
             //solo verificamos si la huella es buena
             bool verificado = false;
             if(analysis.descriptors.rows > 0)
@@ -125,11 +126,12 @@ void MainWindow::on_btn_identificar_clicked()
         if(!src.empty())
         {
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
-            //mejoramos la imagen
-            cv::Mat enhanced = preprocesser.preprocess(src);
+            //preprocesamos la imagen
+            fp::Preprocessed pre = preprocesser.preprocess(src);
+            cv::Mat enhanced = pre.result;
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));
             //obtenemos los descriptores
-            fp::Analyzer::Analysis analysis = analyzer.analize(enhanced);
+            fp::Analysis analysis = analyzer.analize(enhanced);
             //solo verificamos si la huella es buena
             if(analysis.descriptors.rows > 0)
             {
