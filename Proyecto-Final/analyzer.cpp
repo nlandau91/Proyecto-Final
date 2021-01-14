@@ -205,26 +205,24 @@ std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol, int 
     qDebug() << "poincare start...";
     std::vector<cv::KeyPoint> keypoints;
 
-    cv::Mat reduced;
-    cv::resize(orient,reduced,cv::Size(orient.cols/blk_sze,orient.rows/blk_sze));
-    cv::imwrite("reduced.jpg",reduced);
-    for(int y = 1; y < reduced.rows -1; y++)
+    for(int y = 3; y < orient.rows -2; y++)
     {
-        for(int x = 1 ; x < reduced.cols - 1; x++)
+        for(int x = 3 ; x < orient.cols - 2; x++)
         {
-            if(mask.at<uchar>(y*blk_sze,x*blk_sze) > 0)
+            if(mask.at<uchar>(y,x) > 0)
             {
-                float p_index = poincare_index_en(y,x,reduced,tol);
+                float p_index = poincare_index_en(y,x,orient,tol);
                 if(p_index != -1)
                 {
-                    keypoints.push_back(cv::KeyPoint(x*blk_sze,y*blk_sze,p_index));
+                    qDebug() << "debug";
+                    keypoints.push_back(cv::KeyPoint(x,y,p_index));
                 }
             }
         }
     }
-    std::cout << orient << std::endl;
-    std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl;
-    std::cout << reduced << std::endl;
+//    std::cout << orient << std::endl;
+//    std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl;
+//    std::cout << reduced << std::endl;
     qDebug() << "poincare end...";
     return keypoints;
 }
@@ -236,7 +234,7 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(Preprocessed &pre)
     //    {
     //    case POINCARE:
     //    {
-    l1_features = poincare(pre.orientation,  pre.roi,  10);
+    l1_features = poincare(pre.orientation,  pre.roi,  5);
     //        break;
     //    }
     //    default:

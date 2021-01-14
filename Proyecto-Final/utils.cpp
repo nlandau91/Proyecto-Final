@@ -78,15 +78,15 @@ cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> 
     {
         if(kp.size == LOOP)
         {
-            cv::drawMarker(drawed,kp.pt,cv::Scalar(255,0,0,255),cv::MARKER_SQUARE);
+            cv::drawMarker(drawed,kp.pt,cv::Scalar(255,0,0,255),cv::MARKER_SQUARE,10);
         }
         if(kp.size == WHORL)
         {
-            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,255,0,255),cv::MARKER_SQUARE);
+            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,255,0,255),cv::MARKER_SQUARE,10);
         }
         if(kp.size == DELTA)
         {
-            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_SQUARE);
+            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_SQUARE,10);
         }
     }
     return drawed;
