@@ -158,6 +158,9 @@ std::vector<cv::KeyPoint> Analyzer::find_l2_features(Preprocessed &pre)
     return l2_features;
 }
 
+
+//calcula el indice de poincare en la posicion elegida
+//supone que orient esta dividido en bloques
 int poincare_index_en(int row, int col, cv::Mat orient, float tol)
 {
     float to_degrees = 180/M_PI;
@@ -197,41 +200,49 @@ int poincare_index_en(int row, int col, cv::Mat orient, float tol)
 
 }
 
-std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol)
+std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol, int blk_sze = 16)
 {
-    cv::imwrite("mask.jpg",mask);
+    qDebug() << "poincare start...";
     std::vector<cv::KeyPoint> keypoints;
-    for(int y = 3; y < orient.rows -2; y++)
+
+    cv::Mat reduced;
+    cv::resize(orient,reduced,cv::Size(orient.cols/blk_sze,orient.rows/blk_sze));
+    cv::imwrite("reduced.jpg",reduced);
+    for(int y = 1; y < reduced.rows -1; y++)
     {
-        for(int x = 3; x < orient.cols -2; x++)
+        for(int x = 1 ; x < reduced.cols - 1; x++)
         {
-            if(mask.at<uchar>(y,x) > 0)
+            if(mask.at<uchar>(y*blk_sze,x*blk_sze) > 0)
             {
-                float p_index = poincare_index_en(y,x,orient,tol);
+                float p_index = poincare_index_en(y,x,reduced,tol);
                 if(p_index != -1)
                 {
-                    keypoints.push_back(cv::KeyPoint(x,y,p_index));
+                    keypoints.push_back(cv::KeyPoint(x*blk_sze,y*blk_sze,p_index));
                 }
             }
         }
     }
+    std::cout << orient << std::endl;
+    std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl;
+    std::cout << reduced << std::endl;
+    qDebug() << "poincare end...";
     return keypoints;
 }
 
 std::vector<cv::KeyPoint> Analyzer::find_l1_features(Preprocessed &pre)
 {
     std::vector<cv::KeyPoint> l1_features;
-//    switch(l1_features_method)
-//    {
-//    case POINCARE:
-//    {
-        l1_features = poincare(pre.orientation,  pre.roi,  10);
-//        break;
-//    }
-//    default:
-//        break;
+    //    switch(l1_features_method)
+    //    {
+    //    case POINCARE:
+    //    {
+    l1_features = poincare(pre.orientation,  pre.roi,  10);
+    //        break;
+    //    }
+    //    default:
+    //        break;
 
-//    }
+    //    }
     qDebug() << "Singularidades: " << l1_features.size();
     return l1_features;
 }
