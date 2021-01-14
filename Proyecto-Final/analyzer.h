@@ -5,12 +5,17 @@
 #include <opencv2/opencv.hpp>
 namespace fp
 {
-//clase para realizar el analisis y extraccion de caracteristicas de una huella dactilar
-//se asume que las imagenes de huellas ya estan preprocesadas
+/*!
+ * \brief La clase Analyzer se encarga de realizar el analisis y extraccion de caracteristicas
+ * de una huella dactilar
+ */
 class Analyzer
 {
 public:
 
+    /*!
+     * \brief Analyzer
+     */
     Analyzer() :
         l2_features_method(HARRIS),keypoint_threshold(130),
         descriptor_method(ORB),max_match_dist(80){}
@@ -21,13 +26,11 @@ public:
           max_match_dist(max_match_dist){}
 
     /*!
-     * \brief analize analiza la huella dactilar
-     * \param src huella dactilar a analizar, se supone ya preprocesada
-     * \return analisis de la huella
+     * \brief analize analiza la huella dactilar preprocesada
+     * \param preprocessed estructura que contiene el preprocesamiento hecho a la huella dactilar
+     * \return devuelve una estructura que contiene el analisis hecho
      */
-    Analysis analize(cv::Mat &src);
-
-
+    Analysis analize(Preprocessed &preprocessed);
 
 private:
     int l2_features_method;
@@ -36,27 +39,29 @@ private:
     int matcher_method;
     int max_match_dist;
     int l1_features_method;
-    cv::Mat mask;
-    cv::Mat orient;
     float poincare_tol;
     int blk_sze;
 
     /*!
-     * \brief find_l1_features calcula las posiciones donde se encuentran features de nivel 1
-     * esto es, loops, deltas o whorls.
-     * \param src imagen de la huella, se supone ya preprocesada
-     * \return vector con las posiciones de los features encontrados.
+     * \brief find_l1_features
+     * \param pre
+     * \return
      */
-    std::vector<cv::KeyPoint> find_l1_features(cv::Mat &src);
+    std::vector<cv::KeyPoint> find_l1_features(Preprocessed &pre);
 
     /*!
-     * \brief find_l2_features calcula las posiciones donde se encuentram features de nivel 2
-     * esto es, las minucias conocidas como bifurcaciones y terminaciones de crestas
-     * \param src imagen de la huella, se supone ya preprocesada
-     * \return vector con los puntos encontrados
+     * \brief find_l2_features
+     * \param pre
+     * \return
      */
-    std::vector<cv::KeyPoint> find_l2_features(cv::Mat &src);
+    std::vector<cv::KeyPoint> find_l2_features(Preprocessed &pre);
 
+    /*!
+     * \brief calcular_descriptors calcula los decriptores para los puntos claves
+     * \param src
+     * \param keypoints
+     * \return
+     */
     cv::Mat calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> keypoints);
 };
 }

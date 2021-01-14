@@ -42,16 +42,17 @@ void MainWindow::on_btn_ingresar_clicked()
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
-            cv::Mat enhanced = pre.result;
             //obtenemos los descriptores
-            fp::Analysis analysis = analyzer.analize(enhanced);
+            fp::Analysis analysis = analyzer.analize(pre);
             qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
-            cv::cvtColor(enhanced,enhanced_marked,cv::COLOR_GRAY2BGR);
+            cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
             if(app_settings.draw_over_output)
             {
-                cv::drawKeypoints(enhanced_marked,analysis.l2_features,enhanced_marked,cv::Scalar(0,255,0),cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+                //cv::drawKeypoints(enhanced_marked,analysis.l2_features,enhanced_marked,cv::Scalar(0,255,0),cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+                enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+                enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
             }
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
             //solo ingresamos huellas que sean suficientemente buenas
@@ -87,10 +88,9 @@ void MainWindow::on_btn_verificar_clicked()
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
-            cv::Mat enhanced = pre.result;
-            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));;
+            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(pre.result));;
             //obtenemos los descriptores
-            fp::Analysis analysis = analyzer.analize(enhanced);
+            fp::Analysis analysis = analyzer.analize(pre);
             //solo verificamos si la huella es buena
             bool verificado = false;
             if(analysis.descriptors.rows > 0)
@@ -128,10 +128,9 @@ void MainWindow::on_btn_identificar_clicked()
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
-            cv::Mat enhanced = pre.result;
-            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced));
+            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(pre.result));
             //obtenemos los descriptores
-            fp::Analysis analysis = analyzer.analize(enhanced);
+            fp::Analysis analysis = analyzer.analize(pre);
             //solo verificamos si la huella es buena
             if(analysis.descriptors.rows > 0)
             {

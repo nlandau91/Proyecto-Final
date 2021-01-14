@@ -323,6 +323,7 @@ cv::Mat orient_ridge(const cv::Mat &im, double gradientSigma = 1.0, double block
             orientim_i[j] = (M_PI + std::atan2(sin2theta_i[j], cos2theta_i[j])) / 2;
         }
     }
+
     return orientim;
 }
 

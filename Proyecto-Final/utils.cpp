@@ -51,5 +51,45 @@ QPixmap cvMatToQPixmap( const cv::Mat &inMat )
     return QPixmap::fromImage( cvMatToQImage( inMat ) );
 }
 
+cv::Mat draw_minutiae( const cv::Mat &src, const std::vector<cv::KeyPoint> &mintiaes)
+{
+    cv::Mat drawed = src.clone();
+    for(cv::KeyPoint kp : mintiaes)
+    {
+        //ridge ending
+        if(kp.size == 1)
+        {
+            cv::drawMarker(drawed,kp.pt,cv::Scalar(255,255,0,255),cv::MARKER_CROSS,3);
+        }
+        //ridge bifurcation
+        if(kp.size == 3)
+        {
+            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,255,255,255),cv::MARKER_CROSS,3);
+        }
+
+    }
+    return drawed;
+}
+
+cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> &singularities)
+{
+    cv::Mat drawed = src.clone();
+    for(cv::KeyPoint kp : singularities)
+    {
+        if(kp.size == LOOP)
+        {
+            cv::drawMarker(drawed,kp.pt,cv::Scalar(255,0,0,255),cv::MARKER_SQUARE);
+        }
+        if(kp.size == WHORL)
+        {
+            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,255,0,255),cv::MARKER_SQUARE);
+        }
+        if(kp.size == DELTA)
+        {
+            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_SQUARE);
+        }
+    }
+    return drawed;
+}
 
 }

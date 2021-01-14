@@ -127,29 +127,29 @@ std::vector<cv::KeyPoint> kp_cn(cv::Mat &src)
     return keypoints;
 }
 
-std::vector<cv::KeyPoint> Analyzer::find_l2_features(cv::Mat &src)
+std::vector<cv::KeyPoint> Analyzer::find_l2_features(Preprocessed &pre)
 {
     std::vector<cv::KeyPoint> l2_features;
     switch(l2_features_method)
     {
     case HARRIS:
     {
-        l2_features = kp_harris(src, keypoint_threshold);
+        l2_features = kp_harris(pre.result, keypoint_threshold);
         break;
     }
     case SHITOMASI:
     {
-        l2_features = kp_shitomasi(src);
+        l2_features = kp_shitomasi(pre.result);
         break;
     }
     case SURF:
     {
-        l2_features = kp_surf(src);
+        l2_features = kp_surf(pre.result);
         break;
     }
     case CN:
     {
-        l2_features = kp_cn(src);
+        l2_features = kp_cn(pre.result);
         break;
     }
     default:
@@ -158,25 +158,81 @@ std::vector<cv::KeyPoint> Analyzer::find_l2_features(cv::Mat &src)
     return l2_features;
 }
 
-std::vector<cv::KeyPoint> poincare(cv::Mat src, cv::Mat orient, cv::Mat mask, float tol, int blk_sze)
+int poincare_index_en(int row, int col, cv::Mat orient, float tol)
 {
+    float to_degrees = 180/M_PI;
+
+    float p0 = to_degrees * orient.at<float>(row+1,col-1);
+    float p1 = to_degrees * orient.at<float>(row,col-1);
+    float p2 = to_degrees * orient.at<float>(row-1,col-1);
+    float p3 = to_degrees * orient.at<float>(row-1,col);
+    float p4 = to_degrees * orient.at<float>(row-1,col+1);
+    float p5 = to_degrees * orient.at<float>(row,col+1);
+    float p6 = to_degrees * orient.at<float>(row+1,col+1);
+    float p7 = to_degrees * orient.at<float>(row+1,col);
+    float p8 = p0;
+    float p_vals[9] = {p0,p1,p2,p3,p4,p5,p6,p7,p8};
+    float p_index;
+    for(int i = 0; i < 8;i++)
+    {
+        float dif = p_vals[i] - p_vals[i+1];
+        if(dif > 90)
+        {
+            dif -= 180;
+        }
+        else
+        {
+            if(dif < -90)
+            {
+                dif += 180;
+            }
+        }
+        p_index += dif;
+    }
+    int result = -1;
+    if(180-tol <= p_index && p_index <= 180 + tol) result = LOOP;
+    if(-180 - tol <= p_index && p_index <= -180+tol) result = DELTA;
+    if(360-tol <= p_index && p_index <= 360+tol) result = WHORL;
+    return result;
 
 }
 
-std::vector<cv::KeyPoint> Analyzer::find_l1_features(cv::Mat &src)
+std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol)
+{
+    cv::imwrite("mask.jpg",mask);
+    std::vector<cv::KeyPoint> keypoints;
+    for(int y = 3; y < orient.rows -2; y++)
+    {
+        for(int x = 3; x < orient.cols -2; x++)
+        {
+            if(mask.at<uchar>(y,x) > 0)
+            {
+                float p_index = poincare_index_en(y,x,orient,tol);
+                if(p_index != -1)
+                {
+                    keypoints.push_back(cv::KeyPoint(x,y,p_index));
+                }
+            }
+        }
+    }
+    return keypoints;
+}
+
+std::vector<cv::KeyPoint> Analyzer::find_l1_features(Preprocessed &pre)
 {
     std::vector<cv::KeyPoint> l1_features;
-    switch(l1_features_method)
-    {
-    case POINCARE:
-    {
-        l1_features = poincare(src, orient,  mask,  poincare_tol, blk_sze);
-        break;
-    }
-    default:
-        break;
+//    switch(l1_features_method)
+//    {
+//    case POINCARE:
+//    {
+        l1_features = poincare(pre.orientation,  pre.roi,  10);
+//        break;
+//    }
+//    default:
+//        break;
 
-    }
+//    }
+    qDebug() << "Singularidades: " << l1_features.size();
     return l1_features;
 }
 
@@ -207,13 +263,15 @@ cv::Mat Analyzer::calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> k
 }
 
 
-fp::Analysis Analyzer::analize(cv::Mat &src)
+fp::Analysis Analyzer::analize(fp::Preprocessed &preprocessed)
 {
 
     Analysis analysis;
-    analysis.fingerprint = src.clone();
+    analysis.fingerprint = preprocessed.result.clone();
+    //buscamos las features de nivel 1
+    analysis.l1_features = find_l1_features(preprocessed);
     //buscamos los puntos minuciosos (minutae)
-    analysis.l2_features = find_l2_features(analysis.fingerprint);
+    analysis.l2_features = find_l2_features(preprocessed);
     //calculamos sus descriptores
     analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
     return analysis;
