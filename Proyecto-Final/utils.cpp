@@ -92,4 +92,85 @@ cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> 
     return drawed;
 }
 
+cv::Mat mat_cos( const cv::Mat &src)
+{
+    cv::Mat cos_mat = src.clone();
+    for(int r = 0; r < src.rows; r++)
+    {
+        for(int c = 0; c < src.cols; c++)
+        {
+
+            cos_mat.at<float>(r,c) = cos(src.at<float>(r,c));
+        }
+    }
+    return cos_mat;
+}
+cv::Mat mat_sin( const cv::Mat &src)
+{
+    cv::Mat sin_mat = src.clone();
+    for(int r = 0; r < src.rows; r++)
+    {
+        for(int c = 0; c < src.cols; c++)
+        {
+            sin_mat.at<float>(r,c) = sin(src.at<float>(r,c));
+        }
+    }
+    return sin_mat;
+}
+
+std::vector<float> unique(const cv::Mat& input, bool sort)
+{
+    if (input.channels() > 1 || input.type() != CV_32F)
+    {
+        std::cerr << "unique !!! Only works with CV_32F 1-channel Mat" << std::endl;
+        return std::vector<float>();
+    }
+
+    std::vector<float> out;
+    for (int y = 0; y < input.rows; ++y)
+    {
+        const float* row_ptr = input.ptr<float>(y);
+        for (int x = 0; x < input.cols; ++x)
+        {
+            float value = row_ptr[x];
+
+            if ( std::find(out.begin(), out.end(), value) == out.end() )
+                out.push_back(value);
+        }
+    }
+
+    if (sort)
+        std::sort(out.begin(), out.end());
+
+    return out;
+}
+
+cv::Mat visualize_angles( const cv::Mat im, const cv::Mat angles, int W)
+{
+    int y = im.rows;
+    int x = im.cols;
+    cv::Mat result;
+    cv::cvtColor(cv::Mat::zeros(im.size(),CV_8UC1),result,cv::COLOR_GRAY2BGR);
+    for(int i = 1; i < x; i+=W)
+    {
+        for(int j = 1; j < y; j+=W)
+        {
+            float tang = tan(angles.at<float>((j-1)/W,(i-1)/W));
+            cv::Point begin,end;
+            if(-1 <=tang && tang <= 1)
+            {
+                begin = cv::Point(i,round((-W/2) * tang + j + W/2));
+                end = cv::Point(i+W,round((W/2) * tang + j + W/2));
+            }
+            else
+            {
+                begin = cv::Point(round(i + W/2 + W/(2 * tang)), j + W/2);
+                end = cv::Point(round(i + W/2 - W/(2 * tang)), j - W/2);
+            }
+            cv::line(result,begin,end,cv::Scalar(255,255,255,255));
+        }
+    }
+    return result;
+}
+
 }
