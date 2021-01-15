@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <QDebug>
 
 namespace fp
 {
@@ -145,17 +146,19 @@ std::vector<float> unique(const cv::Mat& input, bool sort)
     return out;
 }
 
-cv::Mat visualize_angles( const cv::Mat im, const cv::Mat angles, int W)
+cv::Mat visualize_angles( const cv::Mat &im, const cv::Mat &angles, int W)
 {
+    qDebug() << "visualiziing1...";
     int y = im.rows;
     int x = im.cols;
-    cv::Mat result;
-    cv::cvtColor(cv::Mat::zeros(im.size(),CV_8UC1),result,cv::COLOR_GRAY2BGR);
+    cv::Mat result = cv::Mat::zeros(im.size(),CV_8UC1);
+    cv::cvtColor(result,result,cv::COLOR_GRAY2BGR);
+    qDebug() << "visualiziing2...";
     for(int i = 1; i < x; i+=W)
     {
         for(int j = 1; j < y; j+=W)
         {
-            float tang = tan(angles.at<float>((j-1)/W,(i-1)/W));
+            float tang = tan(angles.at<float>(trunc((j-1)/W),trunc((i-1)/W)));
             cv::Point begin,end;
             if(-1 <=tang && tang <= 1)
             {
@@ -167,6 +170,7 @@ cv::Mat visualize_angles( const cv::Mat im, const cv::Mat angles, int W)
                 begin = cv::Point(round(i + W/2 + W/(2 * tang)), j + W/2);
                 end = cv::Point(round(i + W/2 - W/(2 * tang)), j - W/2);
             }
+
             cv::line(result,begin,end,cv::Scalar(255,255,255,255));
         }
     }

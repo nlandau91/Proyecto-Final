@@ -485,23 +485,22 @@ cv::Mat filter_ridge(const cv::Mat &im,
 
 
 
-cv::Mat calculate_angles(cv::Mat im, int W)
+cv::Mat calculate_angles(cv::Mat &im, int W)
 {
     int x = im.cols;
     int y = im.rows;
 
-    //ojo, quizas deberia pasar a CV_16UC1 y sacar el abs
+
     cv::Mat Gx_;
     cv::Sobel(im/125,Gx_,-1,1,0);
     Gx_ *=125;
     cv::Mat Gy_;
     cv::Sobel(im/125,Gy_,-1,0,1);
     Gy_ *= 125;
-    cv::Mat result(y/W,x/W,CV_32FC1);
-    qDebug() << "armando...";
-    for(int j = 1; j < y; j+=W)
+    cv::Mat result = cv::Mat::zeros(trunc(y/W),trunc(x/W),CV_32FC1);
+    for(int j = 0; j < y - W; j+=W)
     {
-        for(int i = 1; i < x; i+=W)
+        for(int i = 0; i < x - W; i+=W)
         {
             int denominator = 0;
             int nominator = 0;
@@ -518,21 +517,19 @@ cv::Mat calculate_angles(cv::Mat im, int W)
                     denominator += j2;
                 }
             }
-            //deberia redondear?
+            cv::Point p(trunc((i)/W),trunc((j)/W));
             if(nominator || denominator)
             {
                 float angle = (M_PI + atan2(nominator,denominator))/2;
-                //float orientation = M_PI/2 + atan2(nominator,denominator)/2;
-                result.at<float>((j-1)/W,(i-1)/W) = angle;
+                result.at<float>(p) = angle;
             }
             else
             {
-                result.at<float>((j-1)/W,(i-1)/W) = 0;
+                result.at<float>(p) = 0;
             }
 
         }
     }
-
     return result;
 }
 
@@ -621,9 +618,6 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
         term3 = fp::mat_cos(2*M_PI*unfreq[i]*x);
 
         cv::Mat reffilter = cv::Mat::zeros(x.size(),CV_32FC1);
-        std::cout << term1.type() << std::endl;
-        std::cout << term2.type() << std::endl;
-        std::cout << reffilter.type() << std::endl;
         cv::exp(-(term1 + term2)/2,reffilter);
         reffilter *= term3;
 
@@ -640,7 +634,7 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
             cv::warpAffine(reffilter,new_filter,M,reffilter.size());
             filter[i][o] = new_filter;
             //descomentar para guardar los filtros en disco
-            //cv::imwrite(std::to_string(i)+"_"+std::to_string(o)+"filter.jpg",new_filter*255);
+            cv::imwrite(std::to_string(i)+"_"+std::to_string(o)+"filter.jpg",new_filter*255);
         }
 
     }
@@ -668,7 +662,8 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
             }
         }
     }
-qDebug() << "2";
+    std::cout << orientindex.size() << std::endl;
+    qDebug() << "2";
     //Find indices of matrix points greater than maxsze from the image boundary
     int maxsze = sze[0];
     std::vector<int> finalind;
@@ -680,6 +675,7 @@ qDebug() << "2";
             finalind.push_back(i);
         }
     }
+
     qDebug() << "3";
     // Finally do the filtering
     cv::Mat newim(im.size(),im.type());
@@ -688,6 +684,8 @@ qDebug() << "2";
 
         int r = validr[finalind[i]];
         int c = validc[finalind[i]];
+        qDebug() << r;
+        qDebug() << c;
 
         //find filter corresponding to freq(r,c)
         int filterindex = freqindex[(int)round(freq.at<float>(r,c)*100)];
@@ -696,7 +694,7 @@ qDebug() << "2";
 
         cv::Rect roi(c-s,r-s,2*s,2*s);
         cv::Mat subim(im(roi));
-        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(r,c)];
+        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/8),trunc(c/8))];
         cv::Mat mulResult;
         cv::multiply(subim,subFilter,mulResult);
         ;
@@ -719,11 +717,12 @@ cv::Mat gabor(cv::Mat &normalized)
     //estimacion de la orientacion local
     qDebug() << "calculating angles...";
     // cv::Mat orient_image = orient_ridge(im);
-    cv::Mat orient_image = calculate_angles(im,16);
-    cv::imwrite("angles.jpg", fp::visualize_angles(im,orient_image,16));
+    cv::Mat orient_image = calculate_angles(im,8);
     //todo, mapa de frecuencia
+    qDebug() << "Armando frecuencia1...";
     float freq_val = 0.11;
-    cv::Mat freq = cv::Mat::ones(im.rows, im.cols, im.type()) * freq_val;
+    cv::Mat freq = cv::Mat::ones(im.size(),im.type());
+    freq *= freq_val;
     //filtro
     qDebug() << "filtering...";
     //cv::Mat filtered = filter_ridge(im, orient_image, freq);;
