@@ -9,6 +9,13 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->setupUi(this);
 
     //preprocessing
+    ui->comboBox_blk->addItem("1");
+    ui->comboBox_blk->addItem("2");
+    ui->comboBox_blk->addItem("4");
+    ui->comboBox_blk->addItem("8");
+    ui->comboBox_blk->addItem("16");
+    ui->comboBox_blk->addItem("32");
+
     ui->comboBox_enh->addItem("gabor");
     ui->comboBox_enh->addItem("none");
 
@@ -52,6 +59,8 @@ void ConfigDialog::load_settings()
     QString file = QApplication::applicationDirPath()+"/settings.ini";
     QSettings settings(file, QSettings::IniFormat);
     //preprocessing
+    ui->comboBox_blk->setCurrentText(settings.value("blk_size").toString());
+
     ui->comboBox_enh->setCurrentText(settings.value("enhancement_method").toString());
     ui->comboBox_thi->setCurrentText(settings.value("thinning_method").toString());
     ui->checkBox_seg->setChecked(settings.value("segment").toBool());
@@ -71,6 +80,8 @@ void ConfigDialog::save_settings()
     QString file = QApplication::applicationDirPath()+"/settings.ini";
     QSettings settings(file, QSettings::IniFormat);
     //preprocessing
+    settings.setValue("blk_size", ui->comboBox_blk->currentText());
+
     settings.setValue("enhancement_method", ui->comboBox_enh->currentText());
     settings.setValue("thinning_method", ui->comboBox_thi->currentText());
     settings.setValue("segment",ui->checkBox_seg->isChecked());

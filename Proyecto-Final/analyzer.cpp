@@ -214,15 +214,11 @@ std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol, int 
                 float p_index = poincare_index_en(y,x,orient,tol);
                 if(p_index != -1)
                 {
-                    qDebug() << "debug";
                     keypoints.push_back(cv::KeyPoint(x,y,p_index));
                 }
             }
         }
     }
-//    std::cout << orient << std::endl;
-//    std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl;
-//    std::cout << reduced << std::endl;
     qDebug() << "poincare end...";
     return keypoints;
 }

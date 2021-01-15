@@ -144,18 +144,16 @@ cv::Mat morphological_thinning(cv::Mat &src)
 }
 
 //normaliza una imagen para que tenga la media y varianza deseadas
-cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var)
+cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var, const cv::_InputOutputArray mask)
 {
     cv::Scalar mean,stddev;
-    cv::meanStdDev(src,mean,stddev);
+    cv::meanStdDev(src,mean,stddev,mask);
     cv::Mat normalized_im = src - mean[0];
     normalized_im = normalized_im / stddev[0];
     normalized_im = req_mean + normalized_im * std::sqrt(req_var);
 
     return normalized_im;
 }
-
-
 /*
          * Calculate gradient in x- and y-direction of the image
          */
@@ -364,6 +362,7 @@ cv::Mat filter_ridge(const cv::Mat &im,
     // Deberia ser divisor de 180
     int angleInc = 3;
 
+
     im.convertTo(im, CV_32FC1);
     int rows = im.rows;
     int cols = im.cols;
@@ -542,8 +541,7 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
 
     cv::Mat im;
     src.convertTo(im, CV_32FC1);
-    int rows = im.rows;
-    int cols = im.cols;
+    int blk_sze = im.rows/orientation_map.rows;
 
     cv::Mat orient;
     orientation_map.convertTo(orient, CV_32FC1);
@@ -594,8 +592,8 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
     for(size_t i = 0; i < unfreq.size(); i++)
     {
         qDebug() << "armando reffilter...";
-        float sigmax = (1/unfreq[i]) * kx;
-        float sigmay = (1/unfreq[i]) * ky;
+        float sigmax = (1.0/unfreq[i]) * kx;
+        float sigmay = (1.0/unfreq[i]) * ky;
         sze[i] = round(3*std::max(sigmax,sigmay));
         cv::Mat x, y;
         meshgrid(sze[i],x,y);
@@ -628,42 +626,44 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
         for(int o = 0; o < 180/angleInc; o++)
         {
             //qDebug() << o;
-            cv::Mat new_filter;
+            cv::Mat new_filter(reffilter.size(),reffilter.type());
             float angle = -(o*angleInc+90);
             cv::Mat M = cv::getRotationMatrix2D(cv::Point((reffilter.cols-1)/2,(reffilter.rows-1)/2),angle,1);
             cv::warpAffine(reffilter,new_filter,M,reffilter.size());
             filter[i][o] = new_filter;
             //descomentar para guardar los filtros en disco
-            cv::imwrite(std::to_string(i)+"_"+std::to_string(o)+"filter.jpg",new_filter*255);
+            cv::imwrite("reffilter.jpg",reffilter*255);
+            // cv::imwrite(std::to_string(i)+"_"+std::to_string(o)+"filter.jpg",new_filter);
         }
 
     }
-    qDebug() << "1";
     // Convert orientation matrix values from radians to an index value
     // that corresponds to round(degrees/angleInc)
     int maxOrientIndex = round(180/angleInc);
-    cv::Mat orientindex = orient;
-    orientindex /= M_PI;
-    orientindex *= 180;
-    orientindex /= angleInc;
-    orientindex.convertTo(orientindex,CV_8UC1);
+    //cv::Mat orientindex = orient;
+    cv::Mat orientindex(orient.size(),CV_8UC1);
+    //orientindex /= M_PI;
+    //orientindex *= 180;
+    //orientindex /= angleInc;
+    //orientindex.convertTo(orientindex,CV_8UC1);
     for(int r = 0; r < orientindex.rows; r++)
     {
         for(int c = 0; c < orientindex.cols; c++)
         {
+            int orientpix = static_cast<int>(
+                        std::round(orient.at<float>(r,c) / M_PI * 180 / angleInc));
 
-            if(orientindex.at<uchar>(r,c) < 1)
-            {
-                orientindex.at<uchar>(r,c) += maxOrientIndex;
+            if (orientpix < 0) {
+                orientpix += maxOrientIndex;
             }
-            if(orientindex.at<uchar>(r,c) >= maxOrientIndex)
-            {
-                orientindex.at<uchar>(r,c) -= maxOrientIndex;
+            if (orientpix >= maxOrientIndex) {
+                orientpix -= maxOrientIndex;
             }
+
+            orientindex.at<uchar>(r,c) = orientpix;
         }
     }
-    std::cout << orientindex.size() << std::endl;
-    qDebug() << "2";
+    std::cout << orientindex.size() << std::endl;;
     //Find indices of matrix points greater than maxsze from the image boundary
     int maxsze = sze[0];
     std::vector<int> finalind;
@@ -675,8 +675,6 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
             finalind.push_back(i);
         }
     }
-
-    qDebug() << "3";
     // Finally do the filtering
     cv::Mat newim(im.size(),im.type());
     for(long unsigned i = 0; i < finalind.size(); i++)
@@ -684,17 +682,16 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
 
         int r = validr[finalind[i]];
         int c = validc[finalind[i]];
-        qDebug() << r;
-        qDebug() << c;
 
         //find filter corresponding to freq(r,c)
         int filterindex = freqindex[(int)round(freq.at<float>(r,c)*100)];
 
         int s = sze[filterindex];
 
+        //cv::Rect roi(c-s,r-s,2*s,2*s);
         cv::Rect roi(c-s,r-s,2*s,2*s);
         cv::Mat subim(im(roi));
-        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/8),trunc(c/8))];
+        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
         cv::Mat mulResult;
         cv::multiply(subim,subFilter,mulResult);
         ;
@@ -711,13 +708,14 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
 //supone que la imagen ya esta normalizada
 //entrada : imagen CV_32FC1
 //salida : imagen CV_32FC1
-cv::Mat gabor(cv::Mat &normalized)
+cv::Mat gabor(cv::Mat &normalized, int blk_sze)
 {
     cv::Mat im = normalized.clone();
     //estimacion de la orientacion local
     qDebug() << "calculating angles...";
     // cv::Mat orient_image = orient_ridge(im);
-    cv::Mat orient_image = calculate_angles(im,8);
+    cv::Mat orient_image = calculate_angles(im,blk_sze);
+    cv::imwrite("orient_image.jpg",visualize_angles(im,orient_image,blk_sze));
     //todo, mapa de frecuencia
     qDebug() << "Armando frecuencia1...";
     float freq_val = 0.11;
@@ -726,7 +724,7 @@ cv::Mat gabor(cv::Mat &normalized)
     //filtro
     qDebug() << "filtering...";
     //cv::Mat filtered = filter_ridge(im, orient_image, freq);;
-    cv::Mat filtered = filter_ridge2(im,orient_image,freq);
+    cv::Mat filtered = filter_ridge2(im,orient_image,freq,0.5,0.5);
     //devolvemos la imagen mejorada
     return filtered;
 }
@@ -743,7 +741,7 @@ cv::Mat Preprocesser::enhance(cv::Mat &src, int enhancement_method)
     }
     case GABOR:
     {
-        enhanced = gabor(src);
+        enhanced = gabor(src,blk_sze);
         break;
     }
     default:
@@ -825,36 +823,6 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
 
 }
 
-//cv::Mat Preprocesser::preprocess(cv::Mat &src)
-//{
-//    cv::Mat result;
-//    //pipeline de preprocesamiento
-
-//    //convertimos a 32f
-//    cv::Mat src_32f;
-//    src.convertTo(src_32f,CV_32FC1);
-
-//    //normalizacion
-//    cv::Mat normalized = normalize(src_32f,norm_req_mean,norm_req_var);
-
-//    //mejora
-//    cv::Mat enhanced = enhance(normalized, enhancement_method);
-//    enhanced.convertTo(enhanced,CV_8UC1);
-
-//    //esqueletizamos la imagen
-//    cv::Mat thinned = thin(enhanced,thinning_method);
-//    result = thinned;
-//    //segmentamos la imagen
-//    if(segment)
-//    {
-//        cv::Mat mask = get_roi(normalized,blk_sze,roi_threshold_ratio);
-//        cv::bitwise_and(thinned,mask,result);
-//    }
-
-
-//    return result;
-
-//}
 
 fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
 {

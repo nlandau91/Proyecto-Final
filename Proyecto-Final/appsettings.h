@@ -18,6 +18,7 @@ public:
     int matcher_method;
     int max_match_dist;
     bool draw_over_output;
+    int blk_size;
 };
 
 #endif // APPSETTINGS_H

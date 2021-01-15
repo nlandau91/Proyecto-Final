@@ -17,6 +17,7 @@ void AppSettings::load_settings()
     QSettings settings(file, QSettings::IniFormat);
 
     //preprocesser
+    blk_size = settings.value("blk_size").toInt();
     enhancement_method = string_to_enum(settings.value("enhancement_method").toString());
     thinning_method = string_to_enum(settings.value("thinning_method").toString());
     segment = settings.value("segment").toBool();

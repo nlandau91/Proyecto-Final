@@ -173,5 +173,6 @@ void MainWindow::on_actionOpciones_triggered()
     }
     preprocesser = fp::Preprocesser(app_settings.enhancement_method,app_settings.thinning_method);
     preprocesser.segment = app_settings.segment;
+    preprocesser.blk_sze = app_settings.blk_size;
     analyzer = fp::Analyzer(app_settings.keypoint_extractor,app_settings.keypoint_threshold,app_settings.feature_extractor,app_settings.matcher_method,app_settings.max_match_dist);
 }

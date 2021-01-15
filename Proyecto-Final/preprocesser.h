@@ -51,13 +51,14 @@ public:
     Preprocessed preprocess(cv::Mat &src);
 
     /*!
-     * \brief normaliza una imagen para que tenga media y var elegidas
-     * \param src imagen CV_32FC1
-     * \param req_mean media elegida
-     * \param req_var var elegida
-     * \return imagen normalizada CV_32FC1
+     * \brief normalize normaliza una imagen para que tenga la media y var elegidas
+     * \param src imagen a normalizar
+     * \param req_mean media requerida, 0.0 por defecto
+     * \param req_var var requerida, 1.0 por defecto
+     * \param mask mascara opcional
+     * \return
      */
-    cv::Mat normalize(cv::Mat &src, float req_mean, float req_var);
+    cv::Mat normalize(cv::Mat &src, float req_mean = 0.0, float req_var = 1.0,const cv::_InputOutputArray mask = cv::noArray());
 
     /*!
      * \brief calcula y devuelve una mascara representando la roi de la imagen
