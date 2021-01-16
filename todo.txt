@@ -1,7 +1,7 @@
-Refactorizar segun el pipeline
-Agregar funcionalidad a la UI
-Agregar variantes de extraccion de features
-Agregar mensajes de logging
-Mejorar comentarios
+Limpiar clase Preprocesser
+Terminar de agregar parametros a preprocesser, ver cuales funcionan mejor y hacerlos default
+Extraccion de features lvl 1 en clase analyzer
+Ver errores de uso de * en analyzer y comparator
+Ver si es necesario refactorizar funciones hacia la clase utils
+Documentacion
 Informe
-Propuesta
