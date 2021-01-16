@@ -16,6 +16,7 @@ cv::Mat mat_cos( const cv::Mat &src);
 cv::Mat mat_sin( const cv::Mat &src);
 std::vector<float> unique(const cv::Mat &input, bool sort = false);
 cv::Mat visualize_angles( const cv::Mat &im, const cv::Mat &angles, int W);
+cv::Mat apply_mask(const cv::Mat &src, const cv::Mat &mask);
 }
 
 #endif // UTILS_H

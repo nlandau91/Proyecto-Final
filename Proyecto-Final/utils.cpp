@@ -177,4 +177,11 @@ cv::Mat visualize_angles( const cv::Mat &im, const cv::Mat &angles, int W)
     return result;
 }
 
+cv::Mat apply_mask(const cv::Mat &src, const cv::Mat &mask)
+{
+    cv::Mat masked(src.size(),src.type());
+    bitwise_and(src,src,masked,mask);
+    return masked;
+}
+
 }

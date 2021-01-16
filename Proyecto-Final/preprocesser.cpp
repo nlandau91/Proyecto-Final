@@ -59,12 +59,12 @@ void zhangsuen_thinning(cv::Mat& im)
 }
 
 /**
-         * Perform one thinning iteration.
-         * Normally you wouldn't call this function directly from your code.
-         *
-         * @param  im    Binary image with range = 0-1
-         * @param  iter  0=even, 1=odd
-         */
+ * Perform one thinning iteration.
+ * Normally you wouldn't call this function directly from your code.
+ *
+ * @param  im    Binary image with range = 0-1
+ * @param  iter  0=even, 1=odd
+ */
 void guohall_iteration(cv::Mat& im, int iter)
 {
     cv::Mat marker = cv::Mat::zeros(im.size(), CV_8UC1);
@@ -98,10 +98,10 @@ void guohall_iteration(cv::Mat& im, int iter)
 }
 
 /**
-         * Function for thinning the given binary image
-         *
-         * @param  im  Binary image with range = 0-255
-         */
+* Function for thinning the given binary image
+*
+* @param  im  Binary image with range = 0-255
+*/
 void guohall_thinning(cv::Mat& im)
 {
     im /= 255;
@@ -144,19 +144,18 @@ cv::Mat morphological_thinning(cv::Mat &src)
 }
 
 //normaliza una imagen para que tenga la media y varianza deseadas
-cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var, const cv::_InputOutputArray mask)
+cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var, const cv::_InputOutputArray &mask)
 {
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev,mask);
-    cv::Mat normalized_im = src - mean[0];
+    cv::Mat normalized_im(src.size(),CV_32FC1);
+    normalized_im = src - mean[0];
     normalized_im = normalized_im / stddev[0];
     normalized_im = req_mean + normalized_im * std::sqrt(req_var);
-
     return normalized_im;
 }
-/*
-         * Calculate gradient in x- and y-direction of the image
-         */
+
+//Calculate gradient in x- and y-direction of the image
 void gradient(const cv::Mat &image, cv::Mat &xGradient, cv::Mat &yGradient)
 {
 
@@ -704,6 +703,17 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
     return newim;
 }
 
+cv::Mat ridge_freq(cv::Mat &im, cv::Mat &mask, cv::Mat &angles,int blk_sze)
+{
+    Q_UNUSED(angles);
+    Q_UNUSED(blk_sze;)
+    //todo, por el momento devuelve un valor fijo
+    float freq = 0.11;
+    cv::Mat freq_map = freq * cv::Mat::ones(im.size(),im.type());
+    cv::bitwise_and(freq_map,freq_map,freq_map,mask);
+    return freq_map;
+}
+
 //mejora una imagen aplicando filtros de gabor
 //supone que la imagen ya esta normalizada
 //entrada : imagen CV_32FC1
@@ -784,18 +794,17 @@ cv::Mat Preprocesser::thin(cv::Mat &src, int thinning_method)
 }
 
 //calcula la roi de una imagen a partir de la variacion local
-cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio)
+cv::Mat Preprocesser::get_roi(cv::Mat &src,int blk_sze, float threshold_ratio)
 {
-    int w = block_size;
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev);
     float threshold = stddev[0] * threshold_ratio;
     cv::Mat image_variance(src.size(),CV_32FC1);
-    for(int i = 0; i < src.cols; i+=w)
+    for(int i = 0; i < src.cols; i+=blk_sze)
     {
-        for(int j = 0; j < src.rows; j+=w)
+        for(int j = 0; j < src.rows; j+=blk_sze)
         {
-            cv::Rect rect(i,j,std::min(w,src.cols-i-1),std::min(w,src.rows-j-1));
+            cv::Rect rect(i,j,std::min(blk_sze,src.cols-i-1),std::min(blk_sze,src.rows-j-1));
             cv::Scalar b_mean, b_stddev;
             cv::meanStdDev(src(rect),b_mean,b_stddev);
             float block_stddev = b_stddev[0];
@@ -815,7 +824,7 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
         }
     }
     cv::Mat kernel;
-    cv::Size k_size(2*w,2*w);
+    cv::Size k_size(2*blk_sze,2*blk_sze);
     kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,k_size);
     cv::morphologyEx(mask,mask,cv::MORPH_OPEN,kernel);
     cv::morphologyEx(mask,mask,cv::MORPH_CLOSE,kernel);
@@ -826,7 +835,6 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int block_size, float threshold_ratio
 
 fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
 {
-    //cv::Mat src; //fix para que compile
     cv::Mat result;
     //pipeline de preprocesamiento
 
@@ -834,13 +842,46 @@ fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
     cv::Mat src_32f;
     src.convertTo(src_32f,CV_32FC1);
 
-    //normalizacion
-    qDebug() << "Preprocesser: normalizing...";
-    cv::Mat normalized = normalize(src_32f,norm_req_mean,norm_req_var);
+    //normalizacion para eliminar ruido e imperfectiones
+    qDebug() << "Preprocesser: normalizing 1...";
+    cv::Mat norm_req = normalize(src_32f,norm_req_mean,norm_req_var);
 
-    //mejora
+    //obtencion del roi
+    qDebug() << "Preprocesser: calculating roi...";
+    cv::Mat mask = get_roi(norm_req,blk_sze,roi_threshold_ratio);
+
+    //normalizacion a media 0 y desviacion unitaria
+    qDebug() << "Preprocesser: normalizing 2...";
+    cv::Mat norm_m0d1 = normalize(src_32f,0.0,1.0,mask);
+
+    //segmentacion
+    qDebug() << "Preprocesser: segmentando...";
+    cv::Mat segmented;
+    cv::bitwise_and(norm_req,norm_req,segmented,mask);
+
+    //    //mejora
     qDebug() << "Preprocesser: enhancing...";
-    cv::Mat enhanced = enhance(normalized, enhancement_method);
+    //    cv::Mat enhanced = enhance(norm_req, enhancement_method);
+    //    enhanced.convertTo(enhanced,CV_8UC1);
+
+    cv::Mat enhanced;
+    if(enhancement_method == GABOR)
+    {
+        //estimacion de la orientacion local
+        qDebug() << "calculating angles...";
+        cv::Mat angles = calculate_angles(norm_req,blk_sze);
+        cv::imwrite("orient_image.jpg",visualize_angles(segmented,angles,blk_sze));
+        //todo, mapa de frecuencia
+        qDebug() << "Armando frecuencia...";
+        cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
+        //filtro
+        qDebug() << "filtering...";
+        enhanced = filter_ridge2(norm_m0d1,angles,freq,0.5,0.5);
+    }
+    else
+    {
+        enhanced = norm_req.clone();
+    }
     enhanced.convertTo(enhanced,CV_8UC1);
 
     //esqueletizamos la imagen
@@ -848,17 +889,10 @@ fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
     cv::Mat thinned = thin(enhanced,thinning_method);
     result = thinned;
 
-    //segmentamos la imagen
-    qDebug() << "Preprocesser: masking...";
-    cv::Mat mask = get_roi(normalized,blk_sze,roi_threshold_ratio);
-    if(segment)
-    {
-        cv::bitwise_and(thinned,mask,result);
-    }
-    cv::Mat orient = orient_ridge(normalized);
+    cv::Mat orient = orient_ridge(norm_req);
     Preprocessed pre;
     pre.original = src;
-    pre.normalized = normalized;
+    pre.normalized = norm_req;
     pre.filtered = enhanced;
     pre.thinned = thinned;
     pre.orientation = orient;

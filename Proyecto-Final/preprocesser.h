@@ -58,7 +58,7 @@ public:
      * \param mask mascara opcional
      * \return
      */
-    cv::Mat normalize(cv::Mat &src, float req_mean = 0.0, float req_var = 1.0,const cv::_InputOutputArray mask = cv::noArray());
+    cv::Mat normalize(cv::Mat &src, float req_mean = 0.0, float req_var = 1.0,const cv::_InputOutputArray &mask = cv::noArray());
 
     /*!
      * \brief calcula y devuelve una mascara representando la roi de la imagen
