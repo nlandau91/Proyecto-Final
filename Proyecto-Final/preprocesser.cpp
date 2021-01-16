@@ -155,175 +155,6 @@ cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var, con
     return normalized_im;
 }
 
-//Calculate gradient in x- and y-direction of the image
-void gradient(const cv::Mat &image, cv::Mat &xGradient, cv::Mat &yGradient)
-{
-
-    int ddepth = CV_32FC1;
-    xGradient = cv::Mat::zeros(image.rows, image.cols, ddepth);
-    yGradient = cv::Mat::zeros(image.rows, image.cols, ddepth);
-
-    // Pointer access more effective than Mat.at<T>()
-    for (int i = 1; i < image.rows - 1; i++) {
-        const auto *image_i = image.ptr<float>(i);
-        auto *xGradient_i = xGradient.ptr<float>(i);
-        auto *yGradient_i = yGradient.ptr<float>(i);
-        for (int j = 1; j < image.cols - 1; j++) {
-            float xPixel1 = image_i[j - 1];
-            float xPixel2 = image_i[j + 1];
-
-            float yPixel1 = image.at<float>(i - 1, j);
-            float yPixel2 = image.at<float>(i + 1, j);
-
-            float xGrad;
-            float yGrad;
-
-            if (j == 0) {
-                xPixel1 = image_i[j];
-                xGrad = xPixel2 - xPixel1;
-            } else if (j == image.cols - 1) {
-                xPixel2 = image_i[j];
-                xGrad = xPixel2 - xPixel1;
-            } else {
-                xGrad = 0.5f * (xPixel2 - xPixel1);
-            }
-
-            if (i == 0) {
-                yPixel1 = image_i[j];
-                yGrad = yPixel2 - yPixel1;
-            } else if (i == image.rows - 1) {
-                yPixel2 = image_i[j];
-                yGrad = yPixel2 - yPixel1;
-            } else {
-                yGrad = 0.5f * (yPixel2 - yPixel1);
-            }
-
-            xGradient_i[j] = xGrad;
-            yGradient_i[j] = yGrad;
-        }
-    }
-}
-
-/*!
- * \brief orient_ridge crea un mapa de orientacion a partir de la orientacion local
- * \param im imagen normalizada
- * \param gradientSigma sigma de la derivada del gaussiano a usar para computar los gradientes
- * \param blockSigma sigma de peso gaussiano usado para sumar los momentos de gradiente
- * \param orientSmoothSigma sigma del gaussiano usado para suavisar el campo vectorial de orientaciones
- * \return el mapa de orientacion en radianes
- */
-cv::Mat orient_ridge(const cv::Mat &im, double gradientSigma = 1.0, double blockSigma = 5.0, double orientSmoothSigma = 5.0) {
-
-    int ddepth = CV_32FC1;
-
-    cv::Mat gradX, gradY;
-    cv::Mat sin2theta;
-    cv::Mat cos2theta;
-
-    int kernelSize = trunc(6 * gradientSigma);
-
-    if (kernelSize % 2 == 0) {
-        kernelSize++;
-    }
-
-    // Define Gaussian kernel
-    cv::Mat gaussKernelX =
-            cv::getGaussianKernel(kernelSize, gradientSigma, CV_32FC1);
-    cv::Mat gaussKernelY =
-            cv::getGaussianKernel(kernelSize, gradientSigma, CV_32FC1);
-    cv::Mat gaussKernel = gaussKernelX * gaussKernelY.t();
-
-    // Peform Gaussian filtering
-    cv::Mat fx, fy;
-    cv::Mat kernelx = (cv::Mat_<float>(1, 3) << -0.5, 0, 0.5);
-    cv::Mat kernely = (cv::Mat_<float>(3, 1) << -0.5, 0, 0.5);
-    cv::filter2D(gaussKernel, fx, -1, kernelx);
-    cv::filter2D(gaussKernel, fy, -1, kernely);
-
-    // Gradient of Gaussian
-    gradient(gaussKernel, fx, fy);
-
-    gradX.convertTo(gradX, CV_32FC1);
-    gradY.convertTo(gradY, CV_32FC1);
-
-    // Gradient of the image in x
-    cv::filter2D(im, gradX, -1, fx, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
-    // Gradient of the image in y
-    cv::filter2D(im, gradY, -1, fy, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
-
-    cv::Mat grad_xx, grad_xy, grad_yy;
-    cv::multiply(gradX, gradX, grad_xx);
-    cv::multiply(gradX, gradY, grad_xy);
-    cv::multiply(gradY, gradY, grad_yy);
-
-    // Now smooth the covariance data to perform a weighted summation of the data
-    int sze2 = trunc(6 * blockSigma);
-
-    if (sze2 % 2 == 0) {
-        sze2++;
-    }
-
-    cv::Mat gaussKernelX2 = cv::getGaussianKernel(sze2, blockSigma, CV_32FC1);
-    cv::Mat gaussKernelY2 = cv::getGaussianKernel(sze2, blockSigma, CV_32FC1);
-    cv::Mat gaussKernel2 = gaussKernelX2 * gaussKernelY2.t();
-
-    cv::filter2D(grad_xx, grad_xx, -1, gaussKernel2, cv::Point(-1, -1), 0,
-                 cv::BORDER_DEFAULT);
-    cv::filter2D(grad_xy, grad_xy, -1, gaussKernel2, cv::Point(-1, -1), 0,
-                 cv::BORDER_DEFAULT);
-    cv::filter2D(grad_yy, grad_yy, -1, gaussKernel2, cv::Point(-1, -1), 0,
-                 cv::BORDER_DEFAULT);
-
-    grad_xy *= 2;
-
-    // Analytic solution of principal direction
-    cv::Mat G1, G2, G3;
-    cv::multiply(grad_xy, grad_xy, G1);
-    G2 = grad_xx - grad_yy;
-    cv::multiply(G2, G2, G2);
-
-    cv::Mat denom;
-    G3 = G1 + G2;
-    cv::sqrt(G3, denom);
-
-    cv::divide(grad_xy, denom, sin2theta);
-    cv::Mat sub1 = grad_xx - grad_yy;
-    cv::divide(sub1, denom, cos2theta);
-
-    int sze3 = 6 * round(orientSmoothSigma);
-
-    if (sze3 % 2 == 0) {
-        sze3 += 1;
-    }
-
-    cv::Mat gaussKernelX3 =
-            cv::getGaussianKernel(sze3, orientSmoothSigma, CV_32FC1);
-    cv::Mat gaussKernelY3 =
-            cv::getGaussianKernel(sze3, orientSmoothSigma, CV_32FC1);
-    cv::Mat gaussKernel3 = gaussKernelX3 * gaussKernelY3.t();
-
-    cv::filter2D(cos2theta, cos2theta, -1, gaussKernel3, cv::Point(-1, -1), 0,
-                 cv::BORDER_DEFAULT);
-    cv::filter2D(sin2theta, sin2theta, -1, gaussKernel3, cv::Point(-1, -1), 0,
-                 cv::BORDER_DEFAULT);
-
-    sin2theta.convertTo(sin2theta, ddepth);
-    cos2theta.convertTo(cos2theta, ddepth);
-    cv::Mat orientim = cv::Mat::zeros(sin2theta.rows, sin2theta.cols, ddepth);
-
-    // Pointer access more effective than Mat.at<T>()
-    for (int i = 0; i < sin2theta.rows; i++) {
-        const float *sin2theta_i = sin2theta.ptr<float>(i);
-        const float *cos2theta_i = cos2theta.ptr<float>(i);
-        auto *orientim_i = orientim.ptr<float>(i);
-        for (int j = 0; j < sin2theta.cols; j++) {
-            orientim_i[j] = (M_PI + std::atan2(sin2theta_i[j], cos2theta_i[j])) / 2;
-        }
-    }
-
-    return orientim;
-}
-
 
 //This is equivalent to Matlab's 'meshgrid' function
 void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
@@ -354,16 +185,6 @@ cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
     cv::Mat Gy_;
     cv::Sobel(im/125,Gy_,-1,0,1);
     Gy_ *= 125;
-
-    //    cv::Mat sobelOperator = (cv::Mat_<float>(3,3) << -1,0,1,-2,0,2,-1,0,1);
-    //    cv::Mat ySobel = sobelOperator.clone();
-    //    cv::Mat xSobel = ySobel.t();
-    //    cv::Mat Gx_;
-    //    cv::filter2D(im/125,Gx_,-1,ySobel);
-    //    Gx_ *= 125;
-    //    cv::Mat Gy_;
-    //    cv::filter2D(im/125,Gy_,-1,xSobel);
-    //    Gy_ *= 125;
 
     cv::Mat result = cv::Mat::zeros(trunc(y/W),trunc(x/W),CV_32FC1);
     for(int j = 0; j < y - W; j+=W)
@@ -420,7 +241,7 @@ cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
     return result;
 }
 
-cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv::Mat &frequency_map, float kx = 0.5, float ky = 0.5)
+cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv::Mat &frequency_map, float kx = 0.5, float ky = 0.5)
 {
 
     // Fixed angle increment between filter orientations in degrees
@@ -621,7 +442,7 @@ cv::Mat gabor(cv::Mat &normalized, int blk_sze)
     //filtro
     qDebug() << "filtering...";
     //cv::Mat filtered = filter_ridge(im, orient_image, freq);;
-    cv::Mat filtered = filter_ridge2(im,orient_image,freq,0.5,0.5);
+    cv::Mat filtered = filter_ridge(im,orient_image,freq,0.5,0.5);
     //devolvemos la imagen mejorada
     return filtered;
 }
@@ -721,15 +542,15 @@ fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
     src.convertTo(src_32f,CV_32FC1);
 
     //normalizacion para eliminar ruido e imperfectiones
-    qDebug() << "Preprocesser: normalizing 1...";
+    qDebug() << "Preprocesser: normalizando para mejorar contraste 1...";
     cv::Mat norm_req = normalize(src_32f,norm_req_mean,norm_req_var);
 
     //obtencion del roi
-    qDebug() << "Preprocesser: calculating roi...";
+    qDebug() << "Preprocesser: calculando roi...";
     cv::Mat mask = get_roi(norm_req,blk_sze,roi_threshold_ratio);
 
     //normalizacion a media 0 y desviacion unitaria
-    qDebug() << "Preprocesser: normalizing 2...";
+    qDebug() << "Preprocesser: normalizando a media 0 y desviacion unitaria...";
     cv::Mat norm_m0d1 = normalize(src_32f,0.0,1.0,mask);
 
     //segmentacion
@@ -737,43 +558,41 @@ fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
     cv::Mat segmented;
     cv::bitwise_and(norm_req,norm_req,segmented,mask);
 
-    //    //mejora
-    qDebug() << "Preprocesser: enhancing...";
-    //    cv::Mat enhanced = enhance(norm_req, enhancement_method);
-    //    enhanced.convertTo(enhanced,CV_8UC1);
-
     cv::Mat enhanced;
+    cv::Mat angles;
     if(enhancement_method == GABOR)
     {
         //estimacion de la orientacion local
-        qDebug() << "calculating angles...";
-        cv::Mat angles = calculate_angles(norm_req,blk_sze,true);
+        qDebug() << "Preprocesser: calculanddo mapa de orientacion...";
+        angles = calculate_angles(norm_req,blk_sze,true);
         cv::imwrite("orient_image.jpg",visualize_angles(segmented,angles,blk_sze));
         //todo, mapa de frecuencia
-        qDebug() << "Armando frecuencia...";
+        qDebug() << "Preprocesser: calculando mapa de frecuencias...";
         cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
         //filtro
-        qDebug() << "filtering...";
-        enhanced = filter_ridge2(norm_m0d1,angles,freq,0.5,0.5);
+        qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
+        enhanced = filter_ridge(norm_m0d1,angles,freq,0.5,0.5);
     }
     else
     {
         enhanced = norm_req.clone();
+        //estimacion de la orientacion local
+        qDebug() << "Preprocesser: calculanddo mapa de orientacion...";
+        angles = calculate_angles(norm_req,blk_sze,true);
     }
     enhanced.convertTo(enhanced,CV_8UC1);
 
     //esqueletizamos la imagen
-    qDebug() << "Preprocesser: thinning...";
+    qDebug() << "Preprocesser: esqueletizamos...";
     cv::Mat thinned = thin(enhanced,thinning_method);
-    result = thinned;
+    result = thinned.mul(mask);
 
-    cv::Mat orient = orient_ridge(norm_req);
     Preprocessed pre;
     pre.original = src;
     pre.normalized = norm_req;
     pre.filtered = enhanced;
     pre.thinned = thinned;
-    pre.orientation = orient;
+    pre.orientation = angles;
     pre.roi = mask;
     pre.result = result;
     qDebug() << "finished preprocess";

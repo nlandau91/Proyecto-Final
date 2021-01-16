@@ -9,7 +9,6 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->setupUi(this);
 
     //preprocessing
-    ui->comboBox_blk->addItem("1");
     ui->comboBox_blk->addItem("2");
     ui->comboBox_blk->addItem("4");
     ui->comboBox_blk->addItem("8");
