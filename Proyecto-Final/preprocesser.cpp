@@ -212,7 +212,7 @@ void gradient(const cv::Mat &image, cv::Mat &xGradient, cv::Mat &yGradient)
  * \param orientSmoothSigma sigma del gaussiano usado para suavisar el campo vectorial de orientaciones
  * \return el mapa de orientacion en radianes
  */
-cv::Mat orient_ridge(const cv::Mat &im, double gradientSigma = 1.0, double blockSigma = 3.0, double orientSmoothSigma = 3.0) {
+cv::Mat orient_ridge(const cv::Mat &im, double gradientSigma = 1.0, double blockSigma = 5.0, double orientSmoothSigma = 5.0) {
 
     int ddepth = CV_32FC1;
 
@@ -324,9 +324,8 @@ cv::Mat orient_ridge(const cv::Mat &im, double gradientSigma = 1.0, double block
     return orientim;
 }
 
-/*
-         * This is equivalent to Matlab's 'meshgrid' function
-        */
+
+//This is equivalent to Matlab's 'meshgrid' function
 void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
     std::vector<int> t;
 
@@ -343,147 +342,7 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
     cv::repeat(traspose, 1, total, meshY);
 }
 
-/*!
- * \brief filter_ridge mejora una imagen de huella dactilar a partir de filtros orientados
- * \param im imagen a ser procesada
- * \param orient mapa de orientaciones de los riscos
- * \param freq mapa de frecuencia de la imagen
- * \param kx controla el ancho de banda del filtro
- * \param ky controla la selectividad orientacional del filtro
- * \return la imagen mejorada
- */
-cv::Mat filter_ridge(const cv::Mat &im,
-                     const cv::Mat &orient,
-                     const cv::Mat &freq, double kx = 0.5, double ky = 0.5)
-{
-    bool addBorder = false;
-    // Fixed angle increment between filter orientations in degrees
-    // Deberia ser divisor de 180
-    int angleInc = 3;
-
-
-    im.convertTo(im, CV_32FC1);
-    int rows = im.rows;
-    int cols = im.cols;
-
-    orient.convertTo(orient, CV_32FC1);
-
-    cv::Mat enhancedImage = cv::Mat::zeros(rows, cols, CV_32FC1);
-
-    std::vector<int> validr;
-    std::vector<int> validc;
-
-    double unfreq = freq.at<float>(1, 1);
-
-    double sigmax = (1 / unfreq) * kx;
-    double sigmax_squared = sigmax * sigmax;
-    double sigmay = (1 / unfreq) * ky;
-    double sigmay_squared = sigmay * sigmay;
-
-    int szek = (int) round(3 * (std::max(sigmax, sigmay)));
-
-    cv::Mat meshX, meshY;
-    meshgrid(szek, meshX, meshY);
-
-    cv::Mat refFilter = cv::Mat::zeros(meshX.rows, meshX.cols, CV_32FC1);
-
-    meshX.convertTo(meshX, CV_32FC1);
-    meshY.convertTo(meshY, CV_32FC1);
-
-    double pi_by_unfreq_by_2 = 2 * M_PI * unfreq;
-    for(int r = 0; r < meshX.rows; r++)
-    {
-        for(int c = 0; c < meshX.cols; c++)
-        {
-
-            float x_val = meshX.at<float>(r,c);
-            float y_val = meshY.at<float>(r,c);
-            float result = exp(-((x_val*x_val)/sigmax_squared + (y_val*y_val)/sigmay_squared)/2);
-            result *= cos(pi_by_unfreq_by_2*x_val);
-            refFilter.at<float>(r,c) = result;
-        }
-    }
-
-    std::vector<cv::Mat> filters;
-
-    for (int m = 0; m < 180 / angleInc; m++) {
-        double angle = -(m * angleInc + 90);
-        cv::Mat rot_mat =
-                cv::getRotationMatrix2D(cv::Point((float) (refFilter.rows / 2.0F),
-                                                  (float) (refFilter.cols / 2.0F)),
-                                        angle, 1.0);
-        cv::Mat rotResult;
-        cv::warpAffine(refFilter, rotResult, rot_mat, refFilter.size());
-        //descomentar para guardar los filtros
-        //cv::imwrite(std::to_string(m)+"_filter.jpg",rotResult*255);
-        filters.push_back(rotResult);
-    }
-
-    // Find indices of matrix points greater than maxsze from the image boundary
-    int maxsze = szek;
-    // Convert orientation matrix values from radians to an index value that
-    // corresponds to round(degrees/angleInc)
-    int maxorientindex = std::round(180 / angleInc);
-
-    cv::Mat orientindex(rows, cols, CV_32FC1);
-
-    int rows_maxsze = rows - maxsze;
-    int cols_maxsze = cols - maxsze;
-
-    for (int y = 0; y < rows; y++) {
-        const auto *orientationImage_y = orient.ptr<float>(y);
-        auto *orientindex_y = orientindex.ptr<float>(y);
-        for (int x = 0; x < cols; x++) {
-            if (x > maxsze && x < cols_maxsze && y > maxsze && y < rows_maxsze) {
-                validr.push_back(y);
-                validc.push_back(x);
-            }
-
-            int orientpix = static_cast<int>(
-                        std::round(orientationImage_y[x] / M_PI * 180 / angleInc));
-
-            if (orientpix < 0) {
-                orientpix += maxorientindex;
-            }
-            if (orientpix >= maxorientindex) {
-                orientpix -= maxorientindex;
-            }
-
-            orientindex_y[x] = orientpix;
-        }
-    }
-
-    // Finally, do the filtering
-    for (long unsigned k = 0; k < validr.size(); k++) {
-        int r = validr[k];
-        int c = validc[k];
-        cv::Rect roi(c - szek - 1, r - szek - 1, meshX.cols, meshX.rows);
-        cv::Mat subim(im(roi));
-        cv::Mat subFilter = filters.at(orientindex.at<float>(r, c));
-        cv::Mat mulResult;
-        cv::multiply(subim, subFilter, mulResult);
-        if (cv::sum(mulResult)[0] > 0) {
-            enhancedImage.at<float>(r, c) = 255;
-        }
-    }
-
-
-    // Add a border.
-    if (addBorder) {
-        enhancedImage.rowRange(0, rows).colRange(0, szek + 1).setTo(255);
-        enhancedImage.rowRange(0, szek + 1).colRange(0, cols).setTo(255);
-        enhancedImage.rowRange(rows - szek, rows).colRange(0, cols).setTo(255);
-        enhancedImage.rowRange(0, rows)
-                .colRange(cols - 2 * (szek + 1) - 1, cols)
-                .setTo(255);
-    }
-
-    return enhancedImage;
-}
-
-
-
-cv::Mat calculate_angles(cv::Mat &im, int W)
+cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
 {
     int x = im.cols;
     int y = im.rows;
@@ -495,6 +354,17 @@ cv::Mat calculate_angles(cv::Mat &im, int W)
     cv::Mat Gy_;
     cv::Sobel(im/125,Gy_,-1,0,1);
     Gy_ *= 125;
+
+    //    cv::Mat sobelOperator = (cv::Mat_<float>(3,3) << -1,0,1,-2,0,2,-1,0,1);
+    //    cv::Mat ySobel = sobelOperator.clone();
+    //    cv::Mat xSobel = ySobel.t();
+    //    cv::Mat Gx_;
+    //    cv::filter2D(im/125,Gx_,-1,ySobel);
+    //    Gx_ *= 125;
+    //    cv::Mat Gy_;
+    //    cv::filter2D(im/125,Gy_,-1,xSobel);
+    //    Gy_ *= 125;
+
     cv::Mat result = cv::Mat::zeros(trunc(y/W),trunc(x/W),CV_32FC1);
     for(int j = 0; j < y - W; j+=W)
     {
@@ -515,19 +385,38 @@ cv::Mat calculate_angles(cv::Mat &im, int W)
                     denominator += j2;
                 }
             }
-            cv::Point p(trunc((i)/W),trunc((j)/W));
+            cv::Point p(trunc(i/W),trunc(j/W));
             if(nominator || denominator)
             {
-                float angle = (M_PI + atan2(nominator,denominator))/2;
+                float angle = (M_PI + atan2(nominator,denominator))/2.0;
                 result.at<float>(p) = angle;
             }
             else
             {
                 result.at<float>(p) = 0;
             }
-
         }
     }
+
+    //filtro pasabajo al campo direccional
+    if(smooth)
+    {
+        int sigma = trunc(W/2);
+        if(sigma % 2 == 0)
+        {
+            sigma++;
+        }
+        cv::Mat cos_angles = mat_cos(2.0*result);
+        cv::Mat sin_angles = mat_sin(2.0*result);
+        cv::Mat kernel = cv::getGaussianKernel(6 * sigma,sigma);
+        cv::filter2D(cos_angles/125.0,cos_angles,-1,kernel);
+        cos_angles *= 125.0;
+        cv::filter2D(sin_angles/125.0,sin_angles,-1,kernel);
+        sin_angles *= 125.0;
+        result = mat_atan2(sin_angles,cos_angles);
+        result *= 1.0/2;
+    }
+
     return result;
 }
 
@@ -593,7 +482,7 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
         qDebug() << "armando reffilter...";
         float sigmax = (1.0/unfreq[i]) * kx;
         float sigmay = (1.0/unfreq[i]) * ky;
-        sze[i] = round(3*std::max(sigmax,sigmay));
+        sze[i] = round(3.0*std::max(sigmax,sigmay));
         cv::Mat x, y;
         meshgrid(sze[i],x,y);
         x.convertTo(x,CV_32FC1);
@@ -612,11 +501,11 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
         cv::pow(y,2,term2);
         term2 *= 1.0f / (sigmay*sigmay);
 
-        term3 = fp::mat_cos(2*M_PI*unfreq[i]*x);
+        term3 = fp::mat_cos(2.0*M_PI*unfreq[i]*x);
 
         cv::Mat reffilter = cv::Mat::zeros(x.size(),CV_32FC1);
-        cv::exp(-(term1 + term2)/2,reffilter);
-        reffilter *= term3;
+        cv::exp(-(term1 + term2)/2.0,reffilter);
+        reffilter = reffilter.mul(term3);
 
         // Generate rotated versions of the filter.  Note orientation
         // image provides orientation *along* the ridges, hence +90
@@ -627,7 +516,7 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
             //qDebug() << o;
             cv::Mat new_filter(reffilter.size(),reffilter.type());
             float angle = -(o*angleInc+90);
-            cv::Mat M = cv::getRotationMatrix2D(cv::Point((reffilter.cols-1)/2,(reffilter.rows-1)/2),angle,1);
+            cv::Mat M = cv::getRotationMatrix2D(cv::Point((reffilter.cols)/2,(reffilter.rows)/2),angle,1);
             cv::warpAffine(reffilter,new_filter,M,reffilter.size());
             filter[i][o] = new_filter;
             //descomentar para guardar los filtros en disco
@@ -652,17 +541,16 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
             int orientpix = static_cast<int>(
                         std::round(orient.at<float>(r,c) / M_PI * 180 / angleInc));
 
-            if (orientpix < 0) {
+            if (orientpix < 1) {
                 orientpix += maxOrientIndex;
             }
-            if (orientpix >= maxOrientIndex) {
+            if (orientpix > maxOrientIndex) {
                 orientpix -= maxOrientIndex;
             }
 
             orientindex.at<uchar>(r,c) = orientpix;
         }
     }
-    std::cout << orientindex.size() << std::endl;;
     //Find indices of matrix points greater than maxsze from the image boundary
     int maxsze = sze[0];
     std::vector<int> finalind;
@@ -690,16 +578,15 @@ cv::Mat filter_ridge2(const cv::Mat &src,const cv::Mat &orientation_map,const cv
         //cv::Rect roi(c-s,r-s,2*s,2*s);
         cv::Rect roi(c-s,r-s,2*s,2*s);
         cv::Mat subim(im(roi));
-        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
+        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))-1];
         cv::Mat mulResult;
         cv::multiply(subim,subFilter,mulResult);
-        ;
+
         if(cv::sum(mulResult)[0] > 0)
         {
             newim.at<float>(r,c) = 255;
         }
     }
-    qDebug() << "done filter!";
     return newim;
 }
 
@@ -811,18 +698,9 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int blk_sze, float threshold_ratio)
             image_variance(rect).setTo(block_stddev);
         }
     }
-    cv::Mat mask(src.size(),CV_8UC1,255);
-    for(int i = 0; i < mask.cols; i++)
-    {
-        for(int j = 0; j < mask.rows; j++)
-        {
-            if(image_variance.at<float>(j,i) < threshold)
-            {
 
-                mask.at<uchar>(j,i) = 0;
-            }
-        }
-    }
+    cv::Mat mask = (image_variance >= threshold);
+
     cv::Mat kernel;
     cv::Size k_size(2*blk_sze,2*blk_sze);
     kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,k_size);
@@ -869,7 +747,7 @@ fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
     {
         //estimacion de la orientacion local
         qDebug() << "calculating angles...";
-        cv::Mat angles = calculate_angles(norm_req,blk_sze);
+        cv::Mat angles = calculate_angles(norm_req,blk_sze,true);
         cv::imwrite("orient_image.jpg",visualize_angles(segmented,angles,blk_sze));
         //todo, mapa de frecuencia
         qDebug() << "Armando frecuencia...";

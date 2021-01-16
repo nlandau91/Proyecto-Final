@@ -118,6 +118,18 @@ cv::Mat mat_sin( const cv::Mat &src)
     }
     return sin_mat;
 }
+cv::Mat mat_atan2( const cv::Mat &src1, const cv::Mat &src2)
+{
+    cv::Mat atan2_mat(src1.size(),src1.type());
+    for(int r = 0; r < src1.rows; r++)
+    {
+        for(int c = 0; c < src1.cols; c++)
+        {
+            atan2_mat.at<float>(r,c) = atan2(src1.at<float>(r,c),src2.at<float>(r,c));
+        }
+    }
+    return atan2_mat;
+}
 
 std::vector<float> unique(const cv::Mat& input, bool sort)
 {
