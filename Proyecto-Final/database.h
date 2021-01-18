@@ -3,7 +3,6 @@
 
 #include "common.h"
 
-#include <opencv2/opencv.hpp>
 #include <QSqlDatabase>
 #include <QSqlDriver>
 #include <QSqlError>

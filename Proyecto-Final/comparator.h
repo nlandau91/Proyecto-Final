@@ -1,7 +1,7 @@
 #ifndef COMPARATOR_H
 #define COMPARATOR_H
 
-#include <opencv2/opencv.hpp>
+#include "common.h"
 
 namespace fp{
 

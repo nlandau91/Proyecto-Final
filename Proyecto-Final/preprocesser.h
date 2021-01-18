@@ -2,7 +2,7 @@
 #define PREPROCESSER_H
 
 #include "common.h"
-#include <opencv2/opencv.hpp>
+#include "utils.h"
 
 namespace fp
 {
@@ -69,14 +69,6 @@ public:
      * \return la mascara que representa el roi de la imagen, CV_8UC1
      */
     cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2);
-
-    /*!
-     * \brief mejora una imagen de una huella dactilar
-     * \param src imagen a mejorar, se supone normalizada, CV_32FC1
-     * \param enhancement_method metodo a utilizar
-     * \return devuelve la imagen mejorada, CV_32FC1
-     */
-    cv::Mat enhance(cv::Mat &src, int enhancement_method);
 
     /*!
      * \brief esqueletiza una huella dactilar

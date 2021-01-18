@@ -2,7 +2,6 @@
 #define ANALYZER_H
 
 #include "common.h"
-#include <opencv2/opencv.hpp>
 namespace fp
 {
 /*!

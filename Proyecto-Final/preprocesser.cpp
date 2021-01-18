@@ -4,146 +4,28 @@
 namespace fp
 {
 
-//realiza una iteracion de reduccion del algoritmo de zhang-suen, la misma se debe repetir hasta que la imagen este esquelitizada
-void zhangsuen_iteration(cv::Mat& im, int iter)
-{
-    cv::Mat marker =cv::Mat::zeros(im.size(), CV_8UC1);
-    for (int i = 1; i < im.rows-1; i++)
-    {
-        for (int j = 1; j < im.cols-1; j++)
-        {
-            uchar p2 = im.at<uchar>(i-1, j);
-            uchar p3 = im.at<uchar>(i-1, j+1);
-            uchar p4 = im.at<uchar>(i, j+1);
-            uchar p5 = im.at<uchar>(i+1, j+1);
-            uchar p6 = im.at<uchar>(i+1, j);
-            uchar p7 = im.at<uchar>(i+1, j-1);
-            uchar p8 = im.at<uchar>(i, j-1);
-            uchar p9 = im.at<uchar>(i-1, j-1);
-
-            int A  = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
-                    (p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
-                    (p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
-                    (p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
-            int B  = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
-            int m1 = iter == 0 ? (p2 * p4 * p6) : (p2 * p4 * p8);
-            int m2 = iter == 0 ? (p4 * p6 * p8) : (p2 * p6 * p8);
-
-            if (A == 1 && (B >= 2 && B <= 6) && m1 == 0 && m2 == 0)
-                marker.at<uchar>(i,j) = 1;
-        }
-    }
-
-    im &= ~marker;
-}
-
-//funcion para reducir una imagen binaria, debe estar en el rango de 0-255.
-//basado en el algoritmo de Zhang-Suen https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm
-void zhangsuen_thinning(cv::Mat& im)
-{
-    // Enforce the range tob e in between 0 - 255
-    im /= 255;
-
-    cv::Mat prev = cv::Mat::zeros(im.size(), CV_8UC1);
-    cv::Mat diff;
-
-    do {
-        zhangsuen_iteration(im, 0);
-        zhangsuen_iteration(im, 1);
-        cv::absdiff(im, prev, diff);
-        im.copyTo(prev);
-    }
-    while (cv::countNonZero(diff) > 0);
-
-    im *= 255;
-}
-
-/**
- * Perform one thinning iteration.
- * Normally you wouldn't call this function directly from your code.
- *
- * @param  im    Binary image with range = 0-1
- * @param  iter  0=even, 1=odd
- */
-void guohall_iteration(cv::Mat& im, int iter)
-{
-    cv::Mat marker = cv::Mat::zeros(im.size(), CV_8UC1);
-
-    for (int i = 1; i < im.rows; i++)
-    {
-        for (int j = 1; j < im.cols; j++)
-        {
-            uchar p2 = im.at<uchar>(i-1, j);
-            uchar p3 = im.at<uchar>(i-1, j+1);
-            uchar p4 = im.at<uchar>(i, j+1);
-            uchar p5 = im.at<uchar>(i+1, j+1);
-            uchar p6 = im.at<uchar>(i+1, j);
-            uchar p7 = im.at<uchar>(i+1, j-1);
-            uchar p8 = im.at<uchar>(i, j-1);
-            uchar p9 = im.at<uchar>(i-1, j-1);
-
-            int C  = ((!p2) & (p3 | p4)) + ((!p4) & (p5 | p6)) +
-                    ((!p6) & (p7 | p8)) + ((!p8) & (p9 | p2));
-            int N1 = (p9 | p2) + (p3 | p4) + (p5 | p6) + (p7 | p8);
-            int N2 = (p2 | p3) + (p4 | p5) + (p6 | p7) + (p8 | p9);
-            int N  = N1 < N2 ? N1 : N2;
-            int m  = iter == 0 ? ((p6 | p7 | (!p9)) & p8) : ((p2 | p3 | (!p5)) & p4);
-
-            if (C == 1 && (N >= 2 && N <= 3) & (m == 0))
-                marker.at<uchar>(i,j) = 1;
-        }
-    }
-
-    im &= ~marker;
-}
-
-/**
-* Function for thinning the given binary image
-*
-* @param  im  Binary image with range = 0-255
-*/
-void guohall_thinning(cv::Mat& im)
-{
-    im /= 255;
-
-    cv::Mat prev = cv::Mat::zeros(im.size(), CV_8UC1);
-    cv::Mat diff;
-
-    do {
-        guohall_iteration(im, 0);
-        guohall_iteration(im, 1);
-        cv::absdiff(im, prev, diff);
-        im.copyTo(prev);
-    }
-    while (cv::countNonZero(diff) > 0);
-
-    im *= 255;
-}
-
 cv::Mat morphological_thinning(cv::Mat &src)
 {
     cv::Mat bin;
     cv::threshold(src,bin,127,255,cv::THRESH_BINARY);
     cv::Mat skel(src.size(), CV_8UC1,cv::Scalar(0));
-    cv::Mat temp(src.size(),CV_8UC1);
+    cv::Mat temp;
+    cv::Mat eroded;
     cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS,cv::Size(3,3));
     bool done;
     do
     {
-        cv::morphologyEx(src, temp, cv::MORPH_OPEN, element);
-        cv::bitwise_not(temp, temp);
-        cv::bitwise_and(src, temp, temp);
+        cv::erode(bin, eroded, element);
+        cv::dilate(eroded, temp, element); // temp = open(img)
+        cv::subtract(bin, temp, temp);
         cv::bitwise_or(skel, temp, skel);
-        cv::erode(src, src, element);
+        eroded.copyTo(bin);
 
-        double max;
-        cv::minMaxLoc(src, 0, &max);
-        done = (max == 0);
+        done = (cv::countNonZero(bin) == 0);
     } while (!done);
     return skel;
 }
 
-//normaliza una imagen para que tenga la media y varianza deseadas
 cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var, const cv::_InputOutputArray &mask)
 {
     cv::Scalar mean,stddev;
@@ -422,52 +304,6 @@ cv::Mat ridge_freq(cv::Mat &im, cv::Mat &mask, cv::Mat &angles,int blk_sze)
     return freq_map;
 }
 
-//mejora una imagen aplicando filtros de gabor
-//supone que la imagen ya esta normalizada
-//entrada : imagen CV_32FC1
-//salida : imagen CV_32FC1
-cv::Mat gabor(cv::Mat &normalized, int blk_sze)
-{
-    cv::Mat im = normalized.clone();
-    //estimacion de la orientacion local
-    qDebug() << "calculating angles...";
-    // cv::Mat orient_image = orient_ridge(im);
-    cv::Mat orient_image = calculate_angles(im,blk_sze);
-    cv::imwrite("orient_image.jpg",visualize_angles(im,orient_image,blk_sze));
-    //todo, mapa de frecuencia
-    qDebug() << "Armando frecuencia1...";
-    float freq_val = 0.11;
-    cv::Mat freq = cv::Mat::ones(im.size(),im.type());
-    freq *= freq_val;
-    //filtro
-    qDebug() << "filtering...";
-    //cv::Mat filtered = filter_ridge(im, orient_image, freq);;
-    cv::Mat filtered = filter_ridge(im,orient_image,freq,0.5,0.5);
-    //devolvemos la imagen mejorada
-    return filtered;
-}
-
-cv::Mat Preprocesser::enhance(cv::Mat &src, int enhancement_method)
-{
-    cv::Mat enhanced;
-    switch (enhancement_method)
-    {
-    case NONE:
-    {
-        enhanced = src.clone();
-        break;
-    }
-    case GABOR:
-    {
-        enhanced = gabor(src,blk_sze);
-        break;
-    }
-    default:
-        break;
-    }
-    return enhanced;
-}
-
 cv::Mat Preprocesser::thin(cv::Mat &src, int thinning_method)
 {
     cv::Mat thinned;
@@ -483,7 +319,8 @@ cv::Mat Preprocesser::thin(cv::Mat &src, int thinning_method)
     }
     case ZHANGSUEN:
     {
-        zhangsuen_thinning(thinned);
+        //zhangsuen_thinning(thinned);
+        cv::ximgproc::thinning(binary,thinned,cv::ximgproc::THINNING_ZHANGSUEN);
         break;
     }
     case MORPH:
@@ -493,7 +330,8 @@ cv::Mat Preprocesser::thin(cv::Mat &src, int thinning_method)
     }
     case GUOHALL:
     {
-        guohall_thinning(thinned);
+        //guohall_thinning(thinned);
+        cv::ximgproc::thinning(binary,thinned,cv::ximgproc::THINNING_GUOHALL);
     }
     default:
         break;
@@ -541,7 +379,7 @@ fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
     cv::Mat src_32f;
     src.convertTo(src_32f,CV_32FC1);
 
-    //normalizacion para eliminar ruido e imperfectiones
+    //normalizacion para eliminar ruido e imperfecciones
     qDebug() << "Preprocesser: normalizando para mejorar contraste 1...";
     cv::Mat norm_req = normalize(src_32f,norm_req_mean,norm_req_var);
 
@@ -558,44 +396,42 @@ fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
     cv::Mat segmented;
     cv::bitwise_and(norm_req,norm_req,segmented,mask);
 
-    cv::Mat enhanced;
-    cv::Mat angles;
+    cv::Mat filtered;
+    //estimacion de la orientacion local
+    qDebug() << "Preprocesser: calculando mapa de orientacion...";
+    cv::Mat angles = calculate_angles(norm_req,blk_sze,true);
     if(enhancement_method == GABOR)
     {
         //estimacion de la orientacion local
-        qDebug() << "Preprocesser: calculanddo mapa de orientacion...";
-        angles = calculate_angles(norm_req,blk_sze,true);
-        cv::imwrite("orient_image.jpg",visualize_angles(segmented,angles,blk_sze));
+        qDebug() << "Preprocesser: calculando mapa de orientacion...";
+        cv::Mat angles = calculate_angles(norm_req,blk_sze,true);
         //todo, mapa de frecuencia
         qDebug() << "Preprocesser: calculando mapa de frecuencias...";
         cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
         //filtro
         qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
-        enhanced = filter_ridge(norm_m0d1,angles,freq,0.5,0.5);
+        filtered = filter_ridge(norm_m0d1,angles,freq,0.5,0.5);
     }
     else
     {
-        enhanced = norm_req.clone();
-        //estimacion de la orientacion local
-        qDebug() << "Preprocesser: calculanddo mapa de orientacion...";
-        angles = calculate_angles(norm_req,blk_sze,true);
+        filtered = norm_req.clone();
     }
-    enhanced.convertTo(enhanced,CV_8UC1);
+    filtered.convertTo(filtered,CV_8UC1);
 
     //esqueletizamos la imagen
     qDebug() << "Preprocesser: esqueletizamos...";
-    cv::Mat thinned = thin(enhanced,thinning_method);
+    cv::Mat thinned = thin(filtered,thinning_method);
     result = thinned.mul(mask);
 
     Preprocessed pre;
     pre.original = src;
     pre.normalized = norm_req;
-    pre.filtered = enhanced;
+    pre.filtered = filtered;
     pre.thinned = thinned;
     pre.orientation = angles;
     pre.roi = mask;
     pre.result = result;
-    qDebug() << "finished preprocess";
+    qDebug() << "Preprocess:: listo.";
     return pre;
 
 }

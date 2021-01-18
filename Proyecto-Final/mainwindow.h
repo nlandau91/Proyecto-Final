@@ -2,16 +2,15 @@
 #define MAINWINDOW_H
 
 #include <common.h>
-#include <opencv2/opencv.hpp>
-
-#include <QMainWindow>
-#include <QFileDialog>
 #include "database.h"
 #include "appsettings.h"
 #include "preprocesser.h"
 #include "analyzer.h"
 #include "comparator.h"
 #include "utils.h"
+
+#include <QMainWindow>
+#include <QFileDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

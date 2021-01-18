@@ -135,7 +135,7 @@ std::vector<float> unique(const cv::Mat& input, bool sort)
 {
     if (input.channels() > 1 || input.type() != CV_32F)
     {
-        std::cerr << "unique !!! Only works with CV_32F 1-channel Mat" << std::endl;
+        qDebug() << "unique !!! Only works with CV_32F 1-channel Mat";
         return std::vector<float>();
     }
 
