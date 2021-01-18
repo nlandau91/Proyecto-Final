@@ -165,20 +165,20 @@ int poincare_index_en(int row, int col, cv::Mat orient, float tol)
 {
     float to_degrees = 180/M_PI;
 
-    float p0 = to_degrees * orient.at<float>(row+1,col-1);
-    float p1 = to_degrees * orient.at<float>(row,col-1);
-    float p2 = to_degrees * orient.at<float>(row-1,col-1);
-    float p3 = to_degrees * orient.at<float>(row-1,col);
-    float p4 = to_degrees * orient.at<float>(row-1,col+1);
-    float p5 = to_degrees * orient.at<float>(row,col+1);
-    float p6 = to_degrees * orient.at<float>(row+1,col+1);
-    float p7 = to_degrees * orient.at<float>(row+1,col);
-    float p8 = p0;
-    float p_vals[9] = {p0,p1,p2,p3,p4,p5,p6,p7,p8};
-    float p_index;
+    float d0 = to_degrees * orient.at<float>(row+1,col-1);
+    float d1 = to_degrees * orient.at<float>(row,col-1);
+    float d2 = to_degrees * orient.at<float>(row-1,col-1);
+    float d3 = to_degrees * orient.at<float>(row-1,col);
+    float d4 = to_degrees * orient.at<float>(row-1,col+1);
+    float d5 = to_degrees * orient.at<float>(row,col+1);
+    float d6 = to_degrees * orient.at<float>(row+1,col+1);
+    float d7 = to_degrees * orient.at<float>(row+1,col);
+
+    float p_vals[8] = {d0,d1,d2,d3,d4,d5,d6,d7};
+    float p_index = 0;;
     for(int i = 0; i < 8;i++)
     {
-        float dif = p_vals[i] - p_vals[i+1];
+        float dif = p_vals[i] - p_vals[(i+1) % 8];
         if(dif > 90)
         {
             dif -= 180;
@@ -200,21 +200,26 @@ int poincare_index_en(int row, int col, cv::Mat orient, float tol)
 
 }
 
-std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol, int blk_sze = 16)
+std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol)
 {
+
     qDebug() << "poincare start...";
+    int blk_sze = trunc((float)mask.cols / (float)orient.cols);
+    cv::imwrite("orient.jpg",visualize_angles(mask,orient,blk_sze));
     std::vector<cv::KeyPoint> keypoints;
 
     for(int y = 3; y < orient.rows -2; y++)
     {
         for(int x = 3 ; x < orient.cols - 2; x++)
         {
-            if(mask.at<uchar>(y,x) > 0)
+            bool masked = false;
+
+            if(!masked)
             {
                 float p_index = poincare_index_en(y,x,orient,tol);
                 if(p_index != -1)
                 {
-                    keypoints.push_back(cv::KeyPoint(x,y,p_index));
+                    keypoints.push_back(cv::KeyPoint((x*blk_sze)+blk_sze/2,(y*blk_sze)+blk_sze/2,p_index));
                 }
             }
         }
@@ -230,7 +235,7 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(Preprocessed &pre)
     //    {
     //    case POINCARE:
     //    {
-    l1_features = poincare(pre.orientation,  pre.roi,  5);
+    l1_features = poincare(pre.orientation,  pre.roi, 1);
     //        break;
     //    }
     //    default:

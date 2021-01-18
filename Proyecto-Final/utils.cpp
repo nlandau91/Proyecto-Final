@@ -160,12 +160,10 @@ std::vector<float> unique(const cv::Mat& input, bool sort)
 
 cv::Mat visualize_angles( const cv::Mat &im, const cv::Mat &angles, int W)
 {
-    qDebug() << "visualiziing1...";
     int y = im.rows;
     int x = im.cols;
     cv::Mat result = cv::Mat::zeros(im.size(),CV_8UC1);
     cv::cvtColor(result,result,cv::COLOR_GRAY2BGR);
-    qDebug() << "visualiziing2...";
     for(int i = 1; i < x; i+=W)
     {
         for(int j = 1; j < y; j+=W)
@@ -194,6 +192,14 @@ cv::Mat apply_mask(const cv::Mat &src, const cv::Mat &mask)
     cv::Mat masked(src.size(),src.type());
     bitwise_and(src,src,masked,mask);
     return masked;
+}
+
+cv::Mat translate_mat(const cv::Mat &img, int offsetx, int offsety)
+{
+    cv::Mat translated = img.clone();
+    cv::Mat trans_mat = (cv::Mat_<double>(2,3) << 1, 0, offsetx, 0, 1, offsety);
+    cv::warpAffine(img,translated,trans_mat,img.size());
+    return translated;
 }
 
 }

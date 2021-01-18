@@ -2,6 +2,7 @@
 #define ANALYZER_H
 
 #include "common.h"
+#include "utils.h"
 namespace fp
 {
 /*!

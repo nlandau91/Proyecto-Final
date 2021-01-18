@@ -6,6 +6,7 @@ namespace fp
 
 cv::Mat morphological_thinning(cv::Mat &src)
 {
+
     cv::Mat bin;
     cv::threshold(src,bin,127,255,cv::THRESH_BINARY);
     cv::Mat skel(src.size(), CV_8UC1,cv::Scalar(0));
@@ -24,6 +25,7 @@ cv::Mat morphological_thinning(cv::Mat &src)
         done = (cv::countNonZero(bin) == 0);
     } while (!done);
     return skel;
+
 }
 
 cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var, const cv::_InputOutputArray &mask)
@@ -104,23 +106,23 @@ cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
     //filtro pasabajo al campo direccional
     if(smooth)
     {
-        int sigma = trunc(W/2);
-        if(sigma % 2 == 0)
-        {
-            sigma++;
-        }
+        int ksize = 3;
+        float sigma = 1.0;
+        cv::Mat kernel = cv::getGaussianKernel(ksize,sigma);
+
         cv::Mat cos_angles = mat_cos(2.0*result);
         cv::Mat sin_angles = mat_sin(2.0*result);
-        cv::Mat kernel = cv::getGaussianKernel(6 * sigma,sigma);
+
         cv::filter2D(cos_angles/125.0,cos_angles,-1,kernel);
         cos_angles *= 125.0;
         cv::filter2D(sin_angles/125.0,sin_angles,-1,kernel);
         sin_angles *= 125.0;
         result = mat_atan2(sin_angles,cos_angles);
         result *= 1.0/2;
-    }
 
+    }
     return result;
+
 }
 
 cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv::Mat &frequency_map, float kx = 0.5, float ky = 0.5)
