@@ -163,22 +163,22 @@ std::vector<cv::KeyPoint> Analyzer::find_l2_features(Preprocessed &pre)
 //supone que orient esta dividido en bloques
 int poincare_index_en(int row, int col, cv::Mat orient, float tol)
 {
-    float to_degrees = 180/M_PI;
+    float to_degrees = 180.0/M_PI;
 
-    float d0 = to_degrees * orient.at<float>(row+1,col-1);
-    float d1 = to_degrees * orient.at<float>(row,col-1);
-    float d2 = to_degrees * orient.at<float>(row-1,col-1);
-    float d3 = to_degrees * orient.at<float>(row-1,col);
-    float d4 = to_degrees * orient.at<float>(row-1,col+1);
-    float d5 = to_degrees * orient.at<float>(row,col+1);
-    float d6 = to_degrees * orient.at<float>(row+1,col+1);
-    float d7 = to_degrees * orient.at<float>(row+1,col);
+    float d1 = to_degrees * orient.at<float>(row-1,col-1);
+    float d2 = to_degrees * orient.at<float>(row-1,col);
+    float d3 = to_degrees * orient.at<float>(row-1,col+1);
+    float d4 = to_degrees * orient.at<float>(row,col+1);
+    float d5 = to_degrees * orient.at<float>(row+1,col+1);
+    float d6 = to_degrees * orient.at<float>(row+1,col);
+    float d7 = to_degrees * orient.at<float>(row+1,col-1);
+    float d8 = to_degrees * orient.at<float>(row,col-1);
 
-    float p_vals[8] = {d0,d1,d2,d3,d4,d5,d6,d7};
-    float p_index = 0;;
+    float p_vals[8] = {d1,d2,d3,d4,d5,d6,d7,d8};
+    float p_index = 0;
     for(int i = 0; i < 8;i++)
     {
-        float dif = p_vals[i] - p_vals[(i+1) % 8];
+        float dif = p_vals[(i+1) % 8] - p_vals[i];
         if(dif > 90)
         {
             dif -= 180;
@@ -193,7 +193,7 @@ int poincare_index_en(int row, int col, cv::Mat orient, float tol)
         p_index += dif;
     }
     int result = -1;
-    if(180-tol <= p_index && p_index <= 180 + tol) result = LOOP;
+    if(180-tol <= p_index && p_index <= 180 + tol) result = LOOP; //o core
     if(-180 - tol <= p_index && p_index <= -180+tol) result = DELTA;
     if(360-tol <= p_index && p_index <= 360+tol) result = WHORL;
     return result;

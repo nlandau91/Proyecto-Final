@@ -77,7 +77,7 @@ cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> 
     cv::Mat drawed = src.clone();
     for(cv::KeyPoint kp : singularities)
     {
-        if(kp.size == LOOP)
+        if(kp.size == LOOP) // o core
         {
             cv::drawMarker(drawed,kp.pt,cv::Scalar(255,0,0,255),cv::MARKER_SQUARE,10);
         }
