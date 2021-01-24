@@ -87,7 +87,7 @@ cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> 
         }
         if(kp.size == DELTA)
         {
-            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_SQUARE,10);
+            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_DIAMOND,10);
         }
     }
     return drawed;
