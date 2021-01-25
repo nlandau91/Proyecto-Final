@@ -48,7 +48,7 @@ public:
     //cv::Mat preprocess(cv::Mat &src);
 
 
-    Preprocessed preprocess(cv::Mat &src);
+    Preprocessed preprocess(const cv::Mat &src);
 
     /*!
      * \brief normalize normaliza una imagen para que tenga la media y var elegidas
@@ -58,7 +58,7 @@ public:
      * \param mask mascara opcional
      * \return
      */
-    cv::Mat normalize(cv::Mat &src, float req_mean = 0.0, float req_var = 1.0,const cv::_InputOutputArray &mask = cv::noArray());
+    cv::Mat normalize(const cv::Mat &src, float req_mean = 0.0, float req_var = 1.0,const cv::_InputOutputArray &mask = cv::noArray());
 
     /*!
      * \brief calcula y devuelve una mascara representando la roi de la imagen
@@ -68,7 +68,7 @@ public:
      * \param threshold_ratio afecta al threshold calculado, un valor mayor enmascara mas cantidad
      * \return la mascara que representa el roi de la imagen, CV_8UC1
      */
-    cv::Mat get_roi(cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2);
+    cv::Mat get_roi(const cv::Mat &src,int block_size = 16, float threshold_ratio = 0.2);
 
     /*!
      * \brief esqueletiza una huella dactilar
@@ -76,7 +76,7 @@ public:
      * \param thinning_method metodo a utilizar
      * \return la imagen esqueletizada, CV_8UC1
      */
-    cv::Mat thin(cv::Mat &src, int thinning_method);
+    cv::Mat thin(const cv::Mat &src, int thinning_method);
 };
 }
 #endif // PREPROCESSER_H

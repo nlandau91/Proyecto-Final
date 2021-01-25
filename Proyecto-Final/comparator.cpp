@@ -42,7 +42,7 @@ int Comparator::compare(cv::Mat &descriptors, std::vector<cv::Mat> &lista_descri
             {
                 lowest_dist = dist;
             }
-            //std::cout << score << std::endl;
+           // std::cout << lowest_dist << std::endl;
         }
     }
     return lowest_dist;

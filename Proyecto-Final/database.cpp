@@ -11,8 +11,8 @@ void Database::init()
     if(QSqlDatabase::isDriverAvailable(DRIVER))
     {
         db = QSqlDatabase::addDatabase(DRIVER);
-        db.setDatabaseName(":memory:");
-        //db.setDatabaseName("../db/fingerprint.db");
+        //db.setDatabaseName(":memory:");
+        db.setDatabaseName("../db/fingerprint.db");
         if(!db.open())
         {
             qWarning() << "ERROR: " << db.lastError();

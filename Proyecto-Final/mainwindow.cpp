@@ -149,6 +149,10 @@ void MainWindow::on_btn_identificar_clicked()
                     }
 
                 }
+                if(!verificado)
+                {
+                    std::cout << "No verificado" << std::endl;
+                }
             }
             else
             {

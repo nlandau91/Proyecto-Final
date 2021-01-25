@@ -4,7 +4,7 @@
 namespace fp
 {
 
-cv::Mat morphological_thinning(cv::Mat &src)
+cv::Mat morphological_thinning(const cv::Mat &src)
 {
 
     cv::Mat bin;
@@ -28,7 +28,7 @@ cv::Mat morphological_thinning(cv::Mat &src)
 
 }
 
-cv::Mat Preprocesser::normalize(cv::Mat &src, float req_mean, float req_var, const cv::_InputOutputArray &mask)
+cv::Mat Preprocesser::normalize(const cv::Mat &src, float req_mean, float req_var, const cv::_InputOutputArray &mask)
 {
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev,mask);
@@ -59,7 +59,7 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
 
 //calcula el mapa de orientacion de la imagen
 //devuelve valores entre 0 y pi.
-cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
+cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
 {
     int x = im.cols;
     int y = im.rows;
@@ -118,6 +118,7 @@ cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
         for (int j = 0; j < sines.cols; j++)
         {
             result_i[j] = (M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2;
+            qDebug() << result_i[j];
         }
     }
     return result;
@@ -225,7 +226,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
             filter[i][o] = new_filter;
             //descomentar para guardar los filtros en disco
             cv::imwrite("reffilter.jpg",reffilter*255);
-            // cv::imwrite(std::to_string(i)+"_"+std::to_string(o)+"filter.jpg",new_filter);
+            cv::imwrite(std::to_string(i)+"_"+std::to_string(o)+"filter.jpg",new_filter*255);
         }
 
     }
@@ -245,10 +246,10 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
             int orientpix = static_cast<int>(
                         std::round(orient.at<float>(r,c) / M_PI * 180 / angleInc));
 
-            if (orientpix < 1) {
+            if (orientpix < 0) {
                 orientpix += maxOrientIndex;
             }
-            if (orientpix > maxOrientIndex) {
+            if (orientpix >= maxOrientIndex) {
                 orientpix -= maxOrientIndex;
             }
 
@@ -282,7 +283,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
         //cv::Rect roi(c-s,r-s,2*s,2*s);
         cv::Rect roi(c-s,r-s,2*s,2*s);
         cv::Mat subim(im(roi));
-        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))-1];
+        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
         cv::Mat mulResult;
         cv::multiply(subim,subFilter,mulResult);
 
@@ -305,7 +306,7 @@ cv::Mat ridge_freq(cv::Mat &im, cv::Mat &mask, cv::Mat &angles,int blk_sze)
     return freq_map;
 }
 
-cv::Mat Preprocesser::thin(cv::Mat &src, int thinning_method)
+cv::Mat Preprocesser::thin(const cv::Mat &src, int thinning_method)
 {
     cv::Mat thinned;
     cv::Mat binary;
@@ -341,7 +342,7 @@ cv::Mat Preprocesser::thin(cv::Mat &src, int thinning_method)
 }
 
 //calcula la roi de una imagen a partir de la variacion local
-cv::Mat Preprocesser::get_roi(cv::Mat &src,int blk_sze, float threshold_ratio)
+cv::Mat Preprocesser::get_roi(const cv::Mat &src,int blk_sze, float threshold_ratio)
 {
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev);
@@ -371,7 +372,7 @@ cv::Mat Preprocesser::get_roi(cv::Mat &src,int blk_sze, float threshold_ratio)
 }
 
 
-fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
+fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 {
     cv::Mat result;
     //pipeline de preprocesamiento
@@ -429,6 +430,15 @@ fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
     pre.orientation = angles;
     pre.roi = mask;
     pre.result = result;
+
+    cv::imwrite("src.jpg",src);
+    cv::imwrite("norm_req.jpg",norm_req);
+    cv::imwrite("filtered.jpg",filtered);
+    cv::imwrite("thinned.jpg",thinned);
+    cv::imwrite("angles.jpg",visualize_angles(src,angles,blk_sze));
+    cv::imwrite("mask.jpg",mask);
+    cv::imwrite("result.jpg",result);
+
     qDebug() << "Preprocess:: listo.";
     return pre;
 
