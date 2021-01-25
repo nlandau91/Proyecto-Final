@@ -126,6 +126,7 @@ cv::Mat mat_atan2( const cv::Mat &src1, const cv::Mat &src2)
         for(int c = 0; c < src1.cols; c++)
         {
             atan2_mat.at<float>(r,c) = atan2(src1.at<float>(r,c),src2.at<float>(r,c));
+            //qDebug() << atan2_mat.at<float>(r,c);
         }
     }
     return atan2_mat;

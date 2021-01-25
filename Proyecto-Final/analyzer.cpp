@@ -205,7 +205,6 @@ std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol)
 
     qDebug() << "poincare start...";
     int blk_sze = trunc((float)mask.cols / (float)orient.cols);
-    cv::imwrite("orient.jpg",visualize_angles(mask,orient,blk_sze));
     std::vector<cv::KeyPoint> keypoints;
 
     for(int y = 3; y < orient.rows -2; y++)

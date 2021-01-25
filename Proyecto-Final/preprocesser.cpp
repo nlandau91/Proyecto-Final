@@ -57,6 +57,8 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
     cv::repeat(traspose, 1, total, meshY);
 }
 
+//calcula el mapa de orientacion de la imagen
+//devuelve valores entre 0 y pi.
 cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
 {
     int x = im.cols;
@@ -71,6 +73,8 @@ cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
     Gy_ *= 125;
 
     cv::Mat result = cv::Mat::zeros(trunc(y/W),trunc(x/W),CV_32FC1);
+    cv::Mat sines = result.clone();
+    cv::Mat cosines = result.clone();
     for(int j = 0; j < y - W; j+=W)
     {
         for(int i = 0; i < x - W; i+=W)
@@ -91,15 +95,8 @@ cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
                 }
             }
             cv::Point p(trunc(i/W),trunc(j/W));
-            if(nominator || denominator)
-            {
-                float angle = (M_PI + atan2(nominator,denominator))/2.0;
-                result.at<float>(p) = angle;
-            }
-            else
-            {
-                result.at<float>(p) = 0;
-            }
+            cosines.at<float>(p) = denominator;
+            sines.at<float>(p) = nominator;
         }
     }
 
@@ -109,18 +106,20 @@ cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
         int ksize = 3;
         float sigma = 1.0;
         cv::Mat kernel = cv::getGaussianKernel(ksize,sigma);
-
-        cv::Mat cos_angles = mat_cos(2.0*result);
-        cv::Mat sin_angles = mat_sin(2.0*result);
-
-        cv::filter2D(cos_angles/125.0,cos_angles,-1,kernel);
-        cos_angles *= 125.0;
-        cv::filter2D(sin_angles/125.0,sin_angles,-1,kernel);
-        sin_angles *= 125.0;
-        result = mat_atan2(sin_angles,cos_angles);
-        result *= 1.0/2;
-
+        cv::filter2D(cosines, cosines, -1, kernel);
+        cv::filter2D(sines, sines, -1, kernel);
     }
+    for (int i = 0; i < sines.rows; i++)
+    {
+        const float *sines_i = sines.ptr<float>(i);
+        const float *cosines_i = cosines.ptr<float>(i);
+        auto *result_i = result.ptr<float>(i);
+        for (int j = 0; j < sines.cols; j++)
+        {
+            result_i[j] = (M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2;
+        }
+    }
+    std::cout << result<< std::endl;
     return result;
 
 }
@@ -404,9 +403,6 @@ fp::Preprocessed Preprocesser::preprocess(cv::Mat &src)
     cv::Mat angles = calculate_angles(norm_req,blk_sze,true);
     if(enhancement_method == GABOR)
     {
-        //estimacion de la orientacion local
-        qDebug() << "Preprocesser: calculando mapa de orientacion...";
-        cv::Mat angles = calculate_angles(norm_req,blk_sze,true);
         //todo, mapa de frecuencia
         qDebug() << "Preprocesser: calculando mapa de frecuencias...";
         cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
