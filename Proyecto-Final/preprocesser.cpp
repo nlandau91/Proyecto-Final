@@ -109,6 +109,7 @@ cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
         cv::filter2D(cosines, cosines, -1, kernel);
         cv::filter2D(sines, sines, -1, kernel);
     }
+    //finalmente armamos el mapa de angulos
     for (int i = 0; i < sines.rows; i++)
     {
         const float *sines_i = sines.ptr<float>(i);
@@ -119,7 +120,6 @@ cv::Mat calculate_angles(cv::Mat &im, int W, bool smooth = true)
             result_i[j] = (M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2;
         }
     }
-    std::cout << result<< std::endl;
     return result;
 
 }

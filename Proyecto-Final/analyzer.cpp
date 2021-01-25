@@ -203,17 +203,17 @@ int poincare_index_en(int row, int col, cv::Mat orient, float tol)
 std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol)
 {
 
-    qDebug() << "poincare start...";
     int blk_sze = trunc((float)mask.cols / (float)orient.cols);
     std::vector<cv::KeyPoint> keypoints;
 
-    for(int y = 3; y < orient.rows -2; y++)
+    for(int y = 1; y < orient.rows -1; y++)
     {
-        for(int x = 3 ; x < orient.cols - 2; x++)
+        for(int x = 1 ; x < orient.cols - 1; x++)
         {
-            bool masked = false;
-
-            if(!masked)
+            //solo nos fijamos dentro del roi
+            cv::Mat roi = mask(cv::Rect((x-1)*blk_sze,(y-1)*blk_sze,3*blk_sze,3*blk_sze));
+            int valid_blocks = cv::countNonZero(roi);
+            if(valid_blocks == 9*blk_sze*blk_sze)
             {
                 float p_index = poincare_index_en(y,x,orient,tol);
                 if(p_index != -1)
@@ -223,7 +223,6 @@ std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol)
             }
         }
     }
-    qDebug() << "poincare end...";
     return keypoints;
 }
 
