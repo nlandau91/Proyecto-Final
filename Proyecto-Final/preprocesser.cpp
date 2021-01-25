@@ -66,11 +66,13 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
 
 
     cv::Mat Gx_;
-    cv::Sobel(im/125,Gx_,-1,1,0);
-    Gx_ *=125;
+    //cv::Sobel(im/125,Gx_,-1,1,0);
+    cv::Sobel(im,Gx_,-1,1,0);
+    //Gx_ *=125;
     cv::Mat Gy_;
-    cv::Sobel(im/125,Gy_,-1,0,1);
-    Gy_ *= 125;
+    //cv::Sobel(im/125,Gy_,-1,0,1);
+    //Gy_ *= 125;
+    cv::Sobel(im,Gy_,-1,0,1);
 
     cv::Mat result = cv::Mat::zeros(trunc(y/W),trunc(x/W),CV_32FC1);
     cv::Mat sines = result.clone();
@@ -282,6 +284,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
 
         //cv::Rect roi(c-s,r-s,2*s,2*s);
         cv::Rect roi(c-s,r-s,2*s,2*s);
+        std::cout << roi << std::endl;
         cv::Mat subim(im(roi));
         cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
         cv::Mat mulResult;
