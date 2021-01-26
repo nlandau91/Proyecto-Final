@@ -26,7 +26,7 @@ public:
      * \param descriptors descriptores
      * \param id identificador
      */
-    void ingresar_descriptor(cv::Mat &descriptors, const QString &id);
+    void ingresar_descriptor(const cv::Mat &descriptors, const QString &id);
 
     /*!
      * \brief obtener_lista_descriptores devuelve devuelve una lista con los discriptores de las muestras asociadas al id

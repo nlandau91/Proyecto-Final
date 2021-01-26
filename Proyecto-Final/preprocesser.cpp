@@ -298,7 +298,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     return newim;
 }
 
-cv::Mat ridge_freq(cv::Mat &im, cv::Mat &mask, cv::Mat &angles,int blk_sze)
+cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &angles,int blk_sze)
 {
     Q_UNUSED(angles);
     Q_UNUSED(blk_sze;)

@@ -33,7 +33,7 @@ Database::Database()
 
 }
 
-void Database::ingresar_descriptor(cv::Mat &descriptors, const QString &id)
+void Database::ingresar_descriptor(const cv::Mat &descriptors, const QString &id)
 {
     if(!descriptors.empty())
     {

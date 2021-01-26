@@ -7,7 +7,7 @@ namespace fp
 
 //buscamos los keypoints en una imagen con el detector de esquinas de Harris
 //la imagen ya debe estar preprocesada
-std::vector<cv::KeyPoint> kp_harris(cv::Mat preprocesado, float keypoint_threshold)
+std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_threshold)
 {
     cv::Mat harris_corners, harris_normalised;
     harris_corners = cv::Mat::zeros(preprocesado.size(), CV_32FC1);
@@ -35,7 +35,7 @@ std::vector<cv::KeyPoint> kp_harris(cv::Mat preprocesado, float keypoint_thresho
     return keypoints;
 }
 
-std::vector<cv::KeyPoint> kp_shitomasi(cv::Mat &src)
+std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src)
 {
     cv::Mat kp_positions;
     cv::goodFeaturesToTrack(src,kp_positions,25,0.01,10);
@@ -49,7 +49,7 @@ std::vector<cv::KeyPoint> kp_shitomasi(cv::Mat &src)
     return keypoints;
 }
 
-std::vector<cv::KeyPoint> kp_sift(cv::Mat &src)
+std::vector<cv::KeyPoint> kp_sift(const cv::Mat &src)
 {
 
     cv::Ptr<cv::SIFT> siftPtr = cv::SIFT::create();
@@ -59,7 +59,7 @@ std::vector<cv::KeyPoint> kp_sift(cv::Mat &src)
     return keypoints;
 }
 
-std::vector<cv::KeyPoint> kp_surf(cv::Mat &src, int hessian_threshold = 20000)
+std::vector<cv::KeyPoint> kp_surf(const cv::Mat &src, int hessian_threshold = 20000)
 {
 
     cv::Ptr<cv::xfeatures2d::SURF> surf = cv::xfeatures2d::SURF::create(hessian_threshold);
@@ -77,7 +77,7 @@ std::vector<cv::KeyPoint> kp_surf(cv::Mat &src, int hessian_threshold = 20000)
  * \return devuelve 1 si es un ridge ending o 3 si es un crossing o calquier otro valor
  * si no es una minucia
  */
-int crosses(cv::Mat &bin, int col, int row)
+int crosses(const cv::Mat &bin, int col, int row)
 {
     int cn = 0;
     //el pixel del medio es blanco (cresta, esta invertido)
@@ -104,7 +104,7 @@ int crosses(cv::Mat &bin, int col, int row)
 
 //encuentra las minutiae en una huella digital
 //src se supone que ya es esqueletizada,invertida y en rango 0-255
-std::vector<cv::KeyPoint> kp_cn(cv::Mat &src)
+std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src)
 {
     std::vector<cv::KeyPoint> keypoints;
     cv::Mat bin = src/255; //pasamos la imagen a binario
@@ -127,7 +127,7 @@ std::vector<cv::KeyPoint> kp_cn(cv::Mat &src)
     return keypoints;
 }
 
-std::vector<cv::KeyPoint> Analyzer::find_l2_features(Preprocessed &pre)
+std::vector<cv::KeyPoint> Analyzer::find_l2_features(const Preprocessed &pre)
 {
     std::vector<cv::KeyPoint> l2_features;
     switch(l2_features_method)
@@ -161,7 +161,7 @@ std::vector<cv::KeyPoint> Analyzer::find_l2_features(Preprocessed &pre)
 
 //calcula el indice de poincare en la posicion elegida
 //supone que orient esta dividido en bloques
-int poincare_index_en(int row, int col, cv::Mat orient, float tol)
+int poincare_index_en(int row, int col, const cv::Mat orient, float tol)
 {
     float to_degrees = 180.0/M_PI;
 
@@ -200,7 +200,7 @@ int poincare_index_en(int row, int col, cv::Mat orient, float tol)
 
 }
 
-std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol)
+std::vector<cv::KeyPoint> poincare(const cv::Mat orient, const cv::Mat mask, float tol)
 {
 
     int blk_sze = trunc((float)mask.cols / (float)orient.cols);
@@ -226,7 +226,7 @@ std::vector<cv::KeyPoint> poincare(cv::Mat orient, cv::Mat mask, float tol)
     return keypoints;
 }
 
-std::vector<cv::KeyPoint> Analyzer::find_l1_features(Preprocessed &pre)
+std::vector<cv::KeyPoint> Analyzer::find_l1_features(const Preprocessed &pre)
 {
     std::vector<cv::KeyPoint> l1_features;
     //    switch(l1_features_method)
@@ -244,7 +244,7 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(Preprocessed &pre)
     return l1_features;
 }
 
-cv::Mat Analyzer::calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> keypoints)
+cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPoint> keypoints)
 {
     cv::Mat descriptors;
     switch(descriptor_method)
@@ -271,7 +271,7 @@ cv::Mat Analyzer::calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> k
 }
 
 
-fp::Analysis Analyzer::analize(fp::Preprocessed &preprocessed)
+fp::Analysis Analyzer::analize(const fp::Preprocessed &preprocessed)
 {
 
     Analysis analysis;

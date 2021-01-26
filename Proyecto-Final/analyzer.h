@@ -30,7 +30,7 @@ public:
      * \param preprocessed estructura que contiene el preprocesamiento hecho a la huella dactilar
      * \return devuelve una estructura que contiene el analisis hecho
      */
-    Analysis analize(Preprocessed &preprocessed);
+    Analysis analize(const Preprocessed &preprocessed);
 
 private:
     int l2_features_method;
@@ -47,14 +47,14 @@ private:
      * \param pre
      * \return
      */
-    std::vector<cv::KeyPoint> find_l1_features(Preprocessed &pre);
+    std::vector<cv::KeyPoint> find_l1_features(const Preprocessed &pre);
 
     /*!
      * \brief find_l2_features
      * \param pre
      * \return
      */
-    std::vector<cv::KeyPoint> find_l2_features(Preprocessed &pre);
+    std::vector<cv::KeyPoint> find_l2_features(const Preprocessed &pre);
 
     /*!
      * \brief calcular_descriptors calcula los decriptores para los puntos claves
@@ -62,7 +62,7 @@ private:
      * \param keypoints
      * \return
      */
-    cv::Mat calcular_descriptors(cv::Mat &src, std::vector<cv::KeyPoint> keypoints);
+    cv::Mat calcular_descriptors(const cv::Mat &src,const  std::vector<cv::KeyPoint> keypoints);
 };
 }
 #endif // ANALYZER_H

@@ -8,7 +8,7 @@ Comparator::Comparator()
 }
 
 //busca matches entre descriptores de una imagen y una un arreglo de descriptores
-std::vector<std::vector<cv::DMatch>> obtener_matches(cv::Mat &descriptors, std::vector<cv::Mat> &lista_descriptores)
+std::vector<std::vector<cv::DMatch>> obtener_matches(const cv::Mat &descriptors, const std::vector<cv::Mat> &lista_descriptores)
 {
     // Create the matcher interface
     cv::BFMatcher matcher = cv::BFMatcher(cv::NORM_HAMMING, true);
@@ -22,7 +22,7 @@ std::vector<std::vector<cv::DMatch>> obtener_matches(cv::Mat &descriptors, std::
     return all_matches;
 }
 
-int Comparator::compare(cv::Mat &descriptors, std::vector<cv::Mat> &lista_descriptores)
+int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &lista_descriptores)
 {
     int lowest_dist = 999;
     std::vector<std::vector<cv::DMatch>> all_matches;
