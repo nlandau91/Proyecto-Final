@@ -196,11 +196,8 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
         y.convertTo(y,CV_32FC1);
 
         cv::Mat term1(x.size(),CV_32FC1);
-
         cv::Mat term2(x.size(),CV_32FC1);
-
         cv::Mat term3(x.size(),CV_32FC1);
-
 
         cv::pow(x,2,term1);
         term1 *= 1.0f / (sigmax*sigmax);
@@ -227,8 +224,8 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
             cv::warpAffine(reffilter,new_filter,M,reffilter.size());
             filter[i][o] = new_filter;
             //descomentar para guardar los filtros en disco
-            cv::imwrite("reffilter.jpg",reffilter*255);
-            cv::imwrite(std::to_string(i)+"_"+std::to_string(o)+"filter.jpg",new_filter*255);
+            //cv::imwrite("reffilter.jpg",reffilter*255);
+            //cv::imwrite(std::to_string(i)+"_"+std::to_string(o)+"filter.jpg",new_filter*255);
         }
 
     }
@@ -270,7 +267,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
         }
     }
     // Finally do the filtering
-    cv::Mat newim(im.size(),im.type());
+    cv::Mat newim = cv::Mat::zeros(im.size(),im.type());
     for(long unsigned i = 0; i < finalind.size(); i++)
     {
 
@@ -282,9 +279,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
 
         int s = sze[filterindex];
 
-        //cv::Rect roi(c-s,r-s,2*s,2*s);
         cv::Rect roi(c-s,r-s,2*s,2*s);
-        std::cout << roi << std::endl;
         cv::Mat subim(im(roi));
         cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
         cv::Mat mulResult;
@@ -295,6 +290,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
             newim.at<float>(r,c) = 255;
         }
     }
+
     return newim;
 }
 
