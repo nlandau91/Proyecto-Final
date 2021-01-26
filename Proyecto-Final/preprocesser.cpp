@@ -126,7 +126,7 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
 
 }
 
-cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv::Mat &frequency_map, float kx = 0.5, float ky = 0.5)
+cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv::Mat &frequency_map, cv::Mat &mask, float kx = 0.5, float ky = 0.5)
 {
 
     // Fixed angle increment between filter orientations in degrees
@@ -290,6 +290,11 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     newim.rowRange(im.rows - maxsze, im.rows).colRange(0, im.cols).setTo(255);
     newim.rowRange(0, im.rows).colRange(im.cols - 2 * (maxsze + 1) - 1, im.cols).setTo(255);
 
+    mask.rowRange(0, mask.rows).colRange(0, maxsze + 1).setTo(0);
+    mask.rowRange(0, maxsze + 1).colRange(0, mask.cols).setTo(0);
+    mask.rowRange(mask.rows - maxsze, mask.rows).colRange(0, mask.cols).setTo(0);
+    mask.rowRange(0, mask.rows).colRange(mask.cols - 2 * (maxsze + 1) - 1, mask.cols).setTo(0);
+
     return newim;
 }
 
@@ -335,6 +340,7 @@ cv::Mat Preprocesser::thin(const cv::Mat &src, int thinning_method)
     default:
         break;
     }
+    cv::threshold(thinned,thinned,0,255,cv::THRESH_BINARY_INV);
     return thinned;
 }
 
@@ -369,7 +375,6 @@ cv::Mat Preprocesser::get_roi(const cv::Mat &src,int blk_sze, float threshold_ra
 
 fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 {
-    cv::Mat result;
     //pipeline de preprocesamiento
 
     //convertimos a 32f
@@ -404,18 +409,20 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
         cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
         //filtro
         qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
-        filtered = filter_ridge(norm_m0d1,angles,freq,0.5,0.5);
+        filtered = filter_ridge(norm_m0d1,angles,freq,mask,0.5,0.5);
     }
     else
     {
         filtered = norm_req.clone();
     }
     filtered.convertTo(filtered,CV_8UC1);
-    //mask = get_roi(filtered,blk_sze,roi_threshold_ratio);
     //esqueletizamos la imagen
     qDebug() << "Preprocesser: esqueletizamos...";
-    cv::Mat thinned = thin(filtered.mul(mask),thinning_method);
-    result = thinned.mul(mask);
+    cv::Mat thinned = thin(filtered,thinning_method);
+    cv::Mat result = cv::Mat::zeros(thinned.size(),thinned.type());
+    cv::Mat mask_inv;
+    cv::bitwise_not(mask,mask_inv);
+    result = thinned + mask_inv;
 
     Preprocessed pre;
     pre.original = src;

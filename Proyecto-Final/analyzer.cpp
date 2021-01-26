@@ -81,7 +81,7 @@ int crosses(const cv::Mat &bin, int col, int row)
 {
     int cn = 0;
     //el pixel del medio es blanco (cresta, esta invertido)
-    if(bin.at<uchar>(row,col) == 1)
+    if(bin.at<uchar>(row,col) == 0)
     {
         int p1 = bin.at<uchar>(row-1,col-1);
         int p2 = bin.at<uchar>(row-1,col);
