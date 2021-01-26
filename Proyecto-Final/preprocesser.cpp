@@ -57,8 +57,13 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
     cv::repeat(traspose, 1, total, meshY);
 }
 
-//calcula el mapa de orientacion de la imagen
-//devuelve valores entre 0 y pi.
+/*!
+ * \brief calculate_angles calcula el mapa de orientacion de la imagen
+ * \param im imagen a la que se le calculara el mapa de orientacion
+ * \param W tamaño de bloque a utilizar
+ * \param smooth decide si se realiza un suavizado a los angulos
+ * \return mapa con los angulos de la imagen. Tamaño de im/W
+ */
 cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
 {
     int x = im.cols;
@@ -126,6 +131,16 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
 
 }
 
+/*!
+ * \brief filter_ridge aplica filtro orientados de gabor a una imagen
+ * \param src imagen que sera filtrada
+ * \param orientation_map mapa de orientaciones de la imagen
+ * \param frequency_map mapa de frecuencias de la imagen
+ * \param mask mascara de la imagen, sera modificada para incluir el borde a partir del procesamiento en bloques
+ * \param kx controla el ancho de banda del filtro
+ * \param ky controla la selectividad rotacional del filtro
+ * \return
+ */
 cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv::Mat &frequency_map, cv::Mat &mask, float kx = 0.5, float ky = 0.5)
 {
 
@@ -298,6 +313,14 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     return newim;
 }
 
+/*!
+ * \brief ridge_freq calcula el mapa de frecuencia de la imagen
+ * \param im imagen a la que se le calculara el mapa de frecuencias
+ * \param mask mascara a utilizar
+ * \param angles mapa de orientacion
+ * \param blk_sze tamaño de bloque
+ * \return mapa de frecuencias
+ */
 cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &angles,int blk_sze)
 {
     Q_UNUSED(angles);
@@ -371,7 +394,6 @@ cv::Mat Preprocesser::get_roi(const cv::Mat &src,int blk_sze, float threshold_ra
     return mask;
 
 }
-
 
 fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 {

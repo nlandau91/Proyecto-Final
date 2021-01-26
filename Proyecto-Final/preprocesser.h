@@ -38,15 +38,6 @@ public:
           blk_sze(16),roi_threshold_ratio(0.2),
           segment(true){}
 
-    /*!
-     * \brief preprocess realiza el preprocesamiento de una huella dactilar para
-     * adecuara a la extraccion de caracteristicas. Esta funcion se encarga de llamar
-     * al resto de las funciones en el orden correcto.
-     * \param src huella dactilar en formato CV_8UC1
-     * \return devuelve la imagen luego de pasar por el pipeline de preprocesamiento, CV_8UC1
-     */
-    //cv::Mat preprocess(cv::Mat &src);
-
 
     Preprocessed preprocess(const cv::Mat &src);
 
