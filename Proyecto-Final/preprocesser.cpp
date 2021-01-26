@@ -411,10 +411,10 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
         filtered = norm_req.clone();
     }
     filtered.convertTo(filtered,CV_8UC1);
-
+    //mask = get_roi(filtered,blk_sze,roi_threshold_ratio);
     //esqueletizamos la imagen
     qDebug() << "Preprocesser: esqueletizamos...";
-    cv::Mat thinned = thin(filtered,thinning_method);
+    cv::Mat thinned = thin(filtered.mul(mask),thinning_method);
     result = thinned.mul(mask);
 
     Preprocessed pre;
