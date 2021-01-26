@@ -46,7 +46,6 @@ void MainWindow::on_btn_ingresar_clicked()
             cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
             if(app_settings.draw_over_output)
             {
-                //cv::drawKeypoints(enhanced_marked,analysis.l2_features,enhanced_marked,cv::Scalar(0,255,0),cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
                 enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
                 enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
             }

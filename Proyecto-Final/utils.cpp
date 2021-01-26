@@ -95,7 +95,7 @@ cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> 
 
 cv::Mat mat_cos( const cv::Mat &src)
 {
-    cv::Mat cos_mat = src.clone();
+    cv::Mat cos_mat = cv::Mat::zeros(src.size(),CV_32FC1);
     for(int r = 0; r < src.rows; r++)
     {
         for(int c = 0; c < src.cols; c++)
@@ -108,7 +108,7 @@ cv::Mat mat_cos( const cv::Mat &src)
 }
 cv::Mat mat_sin( const cv::Mat &src)
 {
-    cv::Mat sin_mat = src.clone();
+    cv::Mat sin_mat = cv::Mat::zeros(src.size(),CV_32FC1);
     for(int r = 0; r < src.rows; r++)
     {
         for(int c = 0; c < src.cols; c++)
@@ -120,13 +120,12 @@ cv::Mat mat_sin( const cv::Mat &src)
 }
 cv::Mat mat_atan2( const cv::Mat &src1, const cv::Mat &src2)
 {
-    cv::Mat atan2_mat(src1.size(),src1.type());
+    cv::Mat atan2_mat = cv::Mat::zeros(src1.size(),CV_32FC1);
     for(int r = 0; r < src1.rows; r++)
     {
         for(int c = 0; c < src1.cols; c++)
         {
             atan2_mat.at<float>(r,c) = atan2(src1.at<float>(r,c),src2.at<float>(r,c));
-            //qDebug() << atan2_mat.at<float>(r,c);
         }
     }
     return atan2_mat;
@@ -190,14 +189,14 @@ cv::Mat visualize_angles( const cv::Mat &im, const cv::Mat &angles, int W)
 
 cv::Mat apply_mask(const cv::Mat &src, const cv::Mat &mask)
 {
-    cv::Mat masked(src.size(),src.type());
+    cv::Mat masked = cv::Mat::zeros(src.size(),src.type());
     bitwise_and(src,src,masked,mask);
     return masked;
 }
 
 cv::Mat translate_mat(const cv::Mat &img, int offsetx, int offsety)
 {
-    cv::Mat translated = img.clone();
+    cv::Mat translated = cv::Mat::zeros(img.size(),img.type());
     cv::Mat trans_mat = (cv::Mat_<double>(2,3) << 1, 0, offsetx, 0, 1, offsety);
     cv::warpAffine(img,translated,trans_mat,img.size());
     return translated;

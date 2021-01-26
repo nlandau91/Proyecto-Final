@@ -104,7 +104,7 @@ int crosses(const cv::Mat &bin, int col, int row)
 
 //encuentra las minutiae en una huella digital
 //src se supone que ya es esqueletizada,invertida y en rango 0-255
-std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src)
+std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src, const cv::Mat &mask)
 {
     std::vector<cv::KeyPoint> keypoints;
     cv::Mat bin = src/255; //pasamos la imagen a binario
@@ -114,13 +114,18 @@ std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src)
     {
         for(int row = 1; row < bin.rows - 1; row++)
         {
-            int cn = crosses(bin, col, row);
-            //1 representa terminacion, 3 representa bifurcacion
-            if(cn == 1 || cn == 3)
+            cv::Rect neighbours(col-1,row-1,3,3);
+            int valid_neighbours = cv::countNonZero(mask(neighbours));
+            if(valid_neighbours == 9)
             {
-                //guardamos el valor de cn como tamanio, para poder discernir luego si era terminacion o bifurcacion
-                cv::KeyPoint kp(col,row,cn);
-                keypoints.push_back(kp);
+                int cn = crosses(bin, col, row);
+                //1 representa terminacion, 3 representa bifurcacion
+                if(cn == 1 || cn == 3)
+                {
+                    //guardamos el valor de cn como tamanio, para poder discernir luego si era terminacion o bifurcacion
+                    cv::KeyPoint kp(col,row,cn);
+                    keypoints.push_back(kp);
+                }
             }
         }
     }
@@ -149,7 +154,7 @@ std::vector<cv::KeyPoint> Analyzer::find_l2_features(const Preprocessed &pre)
     }
     case CN:
     {
-        l2_features = kp_cn(pre.result);
+        l2_features = kp_cn(pre.result,pre.roi);
         break;
     }
     default:
@@ -240,7 +245,6 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(const Preprocessed &pre)
     //        break;
 
     //    }
-    qDebug() << "Singularidades: " << l1_features.size();
     return l1_features;
 }
 
@@ -277,11 +281,15 @@ fp::Analysis Analyzer::analize(const fp::Preprocessed &preprocessed)
     Analysis analysis;
     analysis.fingerprint = preprocessed.result.clone();
     //buscamos las features de nivel 1
+    qDebug() << "Analyzer: buscando singularidades...";
     analysis.l1_features = find_l1_features(preprocessed);
     //buscamos los puntos minuciosos (minutae)
+    qDebug() << "Analizer: buscando minutiae...";
     analysis.l2_features = find_l2_features(preprocessed);
     //calculamos sus descriptores
+    qDebug() << "Analizer: calculando descriptores...";
     analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
+    qDebug() << "Analizer: listo.";
     return analysis;
 }
 }

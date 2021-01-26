@@ -32,7 +32,7 @@ cv::Mat Preprocesser::normalize(const cv::Mat &src, float req_mean, float req_va
 {
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev,mask);
-    cv::Mat normalized_im(src.size(),CV_32FC1);
+    cv::Mat normalized_im = cv::Mat::zeros(src.size(),CV_32FC1);
     normalized_im = src - mean[0];
     normalized_im = normalized_im / stddev[0];
     normalized_im = req_mean + normalized_im * std::sqrt(req_var);
@@ -120,7 +120,6 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
         for (int j = 0; j < sines.cols; j++)
         {
             result_i[j] = (M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2;
-            qDebug() << result_i[j];
         }
     }
     return result;
@@ -186,7 +185,6 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     uchar sze[unfreq.size()];
     for(size_t i = 0; i < unfreq.size(); i++)
     {
-        qDebug() << "armando reffilter...";
         float sigmax = (1.0/unfreq[i]) * kx;
         float sigmay = (1.0/unfreq[i]) * ky;
         sze[i] = round(3.0*std::max(sigmax,sigmay));
@@ -232,12 +230,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     // Convert orientation matrix values from radians to an index value
     // that corresponds to round(degrees/angleInc)
     int maxOrientIndex = round(180/angleInc);
-    //cv::Mat orientindex = orient;
     cv::Mat orientindex(orient.size(),CV_8UC1);
-    //orientindex /= M_PI;
-    //orientindex *= 180;
-    //orientindex /= angleInc;
-    //orientindex.convertTo(orientindex,CV_8UC1);
     for(int r = 0; r < orientindex.rows; r++)
     {
         for(int c = 0; c < orientindex.cols; c++)
@@ -291,6 +284,12 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
         }
     }
 
+    //ponemos un borde
+    newim.rowRange(0, im.rows).colRange(0, maxsze + 1).setTo(255);
+    newim.rowRange(0, maxsze + 1).colRange(0, im.cols).setTo(255);
+    newim.rowRange(im.rows - maxsze, im.rows).colRange(0, im.cols).setTo(255);
+    newim.rowRange(0, im.rows).colRange(im.cols - 2 * (maxsze + 1) - 1, im.cols).setTo(255);
+
     return newim;
 }
 
@@ -307,15 +306,14 @@ cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &angles
 
 cv::Mat Preprocesser::thin(const cv::Mat &src, int thinning_method)
 {
-    cv::Mat thinned;
     cv::Mat binary;
     cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
-    thinned = binary.clone();
+    cv::Mat thinned = cv::Mat::zeros(binary.size(),binary.type());
     switch(thinning_method)
     {
     case NONE:
     {
-        thinned = src;
+        thinned = src.clone();
         break;
     }
     case ZHANGSUEN:
@@ -346,7 +344,7 @@ cv::Mat Preprocesser::get_roi(const cv::Mat &src,int blk_sze, float threshold_ra
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev);
     float threshold = stddev[0] * threshold_ratio;
-    cv::Mat image_variance(src.size(),CV_32FC1);
+    cv::Mat image_variance = cv::Mat::zeros(src.size(),CV_32FC1);
     for(int i = 0; i < src.cols; i+=blk_sze)
     {
         for(int j = 0; j < src.rows; j+=blk_sze)
@@ -361,9 +359,7 @@ cv::Mat Preprocesser::get_roi(const cv::Mat &src,int blk_sze, float threshold_ra
 
     cv::Mat mask = (image_variance >= threshold);
 
-    cv::Mat kernel;
-    cv::Size k_size(2*blk_sze,2*blk_sze);
-    kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,k_size);
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(2*blk_sze,2*blk_sze));
     cv::morphologyEx(mask,mask,cv::MORPH_OPEN,kernel);
     cv::morphologyEx(mask,mask,cv::MORPH_CLOSE,kernel);
     return mask;
@@ -394,7 +390,7 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 
     //segmentacion
     qDebug() << "Preprocesser: segmentando...";
-    cv::Mat segmented;
+    cv::Mat segmented = cv::Mat::zeros(norm_req.size(),norm_req.type());
     cv::bitwise_and(norm_req,norm_req,segmented,mask);
 
     cv::Mat filtered;
