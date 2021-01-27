@@ -1,0 +1,6 @@
+DB armada con los siguientes parametros: 
+
+blk_size=16
+enhancement_method=gabor
+keypoint_extractor=cn
+thinning_method=zhangsuen
