@@ -62,10 +62,17 @@ cv::Mat draw_minutiae( const cv::Mat &src, const std::vector<cv::KeyPoint> &mint
         {
             cv::drawMarker(drawed,kp.pt,cv::Scalar(255,0,0,255),cv::MARKER_CROSS,5);
         }
-        //ridge bifurcation
-        if(kp.size == 3)
+        else
         {
-            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_CROSS,5);
+            //ridge bifurcation
+            if(kp.size == 3)
+            {
+                cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_CROSS,5);
+            }
+            else
+            {
+                cv::drawMarker(drawed,kp.pt,cv::Scalar(0,255,0,255),cv::MARKER_CROSS,5);
+            }
         }
 
     }

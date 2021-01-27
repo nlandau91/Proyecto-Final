@@ -80,7 +80,7 @@ std::vector<cv::KeyPoint> kp_surf(const cv::Mat &src, int hessian_threshold = 20
 int crosses(const cv::Mat &bin, int col, int row)
 {
     int cn = 0;
-    //el pixel del medio es blanco (cresta, esta invertido)
+    //estamos sobre una cresta?
     if(bin.at<uchar>(row,col) == 0)
     {
         int p1 = bin.at<uchar>(row-1,col-1);
@@ -103,7 +103,7 @@ int crosses(const cv::Mat &bin, int col, int row)
 }
 
 //encuentra las minutiae en una huella digital
-//src se supone que ya es esqueletizada,invertida y en rango 0-255
+//src se supone que ya es esqueletizada y en rango 0-255
 std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src, const cv::Mat &mask)
 {
     std::vector<cv::KeyPoint> keypoints;
@@ -248,7 +248,7 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(const Preprocessed &pre)
     return l1_features;
 }
 
-cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPoint> keypoints)
+cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPoint> &keypoints)
 {
     cv::Mat descriptors;
     switch(descriptor_method)
@@ -279,7 +279,8 @@ fp::Analysis Analyzer::analize(const fp::Preprocessed &preprocessed)
 {
 
     Analysis analysis;
-    analysis.fingerprint = preprocessed.result.clone();
+    cv::bitwise_not(preprocessed.result,analysis.fingerprint);
+    //analysis.fingerprint = preprocessed.result.clone();
     //buscamos las features de nivel 1
     qDebug() << "Analyzer: buscando singularidades...";
     analysis.l1_features = find_l1_features(preprocessed);
