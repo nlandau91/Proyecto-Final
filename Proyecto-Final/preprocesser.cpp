@@ -348,22 +348,24 @@ cv::Mat Preprocesser::thin(const cv::Mat &src, int thinning_method)
     {
         //zhangsuen_thinning(thinned);
         cv::ximgproc::thinning(binary,thinned,cv::ximgproc::THINNING_ZHANGSUEN);
+        cv::threshold(thinned,thinned,0,255,cv::THRESH_BINARY_INV);
         break;
     }
     case MORPH:
     {
         thinned = morphological_thinning(binary);
+        cv::threshold(thinned,thinned,0,255,cv::THRESH_BINARY_INV);
         break;
     }
     case GUOHALL:
     {
         //guohall_thinning(thinned);
         cv::ximgproc::thinning(binary,thinned,cv::ximgproc::THINNING_GUOHALL);
+        cv::threshold(thinned,thinned,0,255,cv::THRESH_BINARY_INV);
     }
     default:
         break;
     }
-    cv::threshold(thinned,thinned,0,255,cv::THRESH_BINARY_INV);
     return thinned;
 }
 
@@ -442,9 +444,16 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     qDebug() << "Preprocesser: esqueletizamos...";
     cv::Mat thinned = thin(filtered,thinning_method);
     cv::Mat result = cv::Mat::zeros(thinned.size(),thinned.type());
-    cv::Mat mask_inv;
-    cv::bitwise_not(mask,mask_inv);
-    result = thinned + mask_inv;
+    if(segment)
+    {
+        cv::Mat mask_inv;
+        cv::bitwise_not(mask,mask_inv);
+        result = thinned + mask_inv;
+    }
+    else
+    {
+        result = thinned;
+    }
 
     Preprocessed pre;
     pre.original = src;
