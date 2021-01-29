@@ -52,7 +52,7 @@ int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &
 {
     int lowest_dist = 999;
     std::vector<std::vector<cv::DMatch>> all_matches;
-    all_matches = obtener_matches(descriptors, lista_descriptores);
+    all_matches = obtener_matches2(descriptors, lista_descriptores);
     for(std::vector<cv::DMatch> vm : all_matches)
     {
         if(vm.size() > 0)
@@ -61,11 +61,10 @@ int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &
             float sum = 0.0;
             for(cv::DMatch m : vm)
             {
-                sum = sum + m.distance;
-                std::cout << m.distance << std::endl;
+                sum = sum + m.distance;                
             }
             dist = sum/vm.size();
-            //std::cout << dist << std::endl;
+            std::cout << dist << std::endl;
             if(dist < lowest_dist)
             {
                 lowest_dist = dist;
