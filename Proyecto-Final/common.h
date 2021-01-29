@@ -5,6 +5,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/features2d.hpp>
+#include <opencv2/xfeatures2d.hpp>
 #include <opencv2/ximgproc.hpp>
 #include <iostream>
 
@@ -22,6 +23,7 @@ enum Params
     SURF,
     ORB,
     SIFT,
+    BRIEF,
     BRUTEFORCE,
     FLANN,
     CN,

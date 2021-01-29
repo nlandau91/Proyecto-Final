@@ -95,7 +95,7 @@ void MainWindow::on_btn_verificar_clicked()
                 std::vector<cv::Mat> lista_descriptores;
                 lista_descriptores = db.obtener_lista_descriptores(id);
                 //verificamos
-                verificado = 80>=fp::Comparator::compare(analysis.descriptors, lista_descriptores);
+                verificado = 80>=comparator.compare(analysis.descriptors, lista_descriptores);
             }
             if(verificado)
             {
@@ -141,7 +141,7 @@ void MainWindow::on_btn_identificar_clicked()
                     std::vector<cv::Mat> lista_descriptores;
                     lista_descriptores = db.obtener_lista_descriptores(id);
                     //obtenemos el mejor resultado entre los match de los descriptores
-                    verificado = 80>=fp::Comparator::compare(analysis.descriptors, lista_descriptores);
+                    verificado = 80>=comparator.compare(analysis.descriptors, lista_descriptores);
                     if(verificado)
                     {
                         std::cout << "Match encontrado: " << id.toStdString() << std::endl;;
@@ -168,7 +168,8 @@ void MainWindow::load_settings()
     preprocesser.segment = app_settings.segment;
     preprocesser.blk_sze = app_settings.blk_size;
     analyzer = fp::Analyzer(app_settings.keypoint_extractor,app_settings.keypoint_threshold,app_settings.feature_extractor,app_settings.matcher_method,app_settings.max_match_dist);
-
+    comparator = fp::Comparator();
+    comparator.matcher_method = fp::ORB;
 }
 
 void MainWindow::on_actionOpciones_triggered()

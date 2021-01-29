@@ -8,7 +8,7 @@ Comparator::Comparator()
 }
 
 //busca matches entre descriptores de una imagen y una un arreglo de descriptores
-std::vector<std::vector<cv::DMatch>> obtener_matches(const cv::Mat &descriptors, const std::vector<cv::Mat> &lista_descriptores)
+std::vector<std::vector<cv::DMatch>> matches_orb(const cv::Mat &descriptors, const std::vector<cv::Mat> &lista_descriptores)
 {
     // Create the matcher interface
     cv::BFMatcher matcher = cv::BFMatcher(cv::NORM_HAMMING, true);
@@ -24,7 +24,7 @@ std::vector<std::vector<cv::DMatch>> obtener_matches(const cv::Mat &descriptors,
 
 //busca matches entre descriptores de una imagen y una un arreglo de descriptores
 //utiliza el test del ratio de lowe
-std::vector<std::vector<cv::DMatch>> obtener_matches2(const cv::Mat &descriptors, const std::vector<cv::Mat> &lista_descriptores)
+std::vector<std::vector<cv::DMatch>> matches_orb(const cv::Mat &descriptors, const std::vector<cv::Mat> &lista_descriptores, float lowe_ratio)
 {
     // Create the matcher interface
     cv::BFMatcher matcher = cv::BFMatcher(cv::NORM_HAMMING);
@@ -38,7 +38,7 @@ std::vector<std::vector<cv::DMatch>> obtener_matches2(const cv::Mat &descriptors
         for(std::vector<cv::DMatch> match_pair : all_matches)
         {
             //test de ratio de lowe
-            if(match_pair[0].distance < 0.75*match_pair[1].distance)
+            if(match_pair[0].distance < lowe_ratio*match_pair[1].distance)
             {
                 matches.push_back(match_pair[0]);
             }
@@ -48,11 +48,29 @@ std::vector<std::vector<cv::DMatch>> obtener_matches2(const cv::Mat &descriptors
     return good_matches;
 }
 
+std::vector<std::vector<cv::DMatch>> obtener_matches(const cv::Mat &descriptors, const std::vector<cv::Mat> &lista_descriptores, int matcher_method)
+{
+    std::vector<std::vector<cv::DMatch>> matches;
+    switch(matcher_method)
+    {
+    case ORB:
+    {
+        matches = matches_orb(descriptors,lista_descriptores,0.75);
+        break;
+    }
+    case SURF:
+    {
+        break;
+    }
+    }
+    return matches;
+}
+
 int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &lista_descriptores)
 {
     int lowest_dist = 999;
     std::vector<std::vector<cv::DMatch>> all_matches;
-    all_matches = obtener_matches2(descriptors, lista_descriptores);
+    all_matches = obtener_matches(descriptors, lista_descriptores,matcher_method);
     for(std::vector<cv::DMatch> vm : all_matches)
     {
         if(vm.size() > 0)
@@ -61,7 +79,7 @@ int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &
             float sum = 0.0;
             for(cv::DMatch m : vm)
             {
-                sum = sum + m.distance;                
+                sum = sum + m.distance;
             }
             dist = sum/vm.size();
             std::cout << dist << std::endl;

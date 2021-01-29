@@ -250,17 +250,26 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(const Preprocessed &pre)
 
 cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPoint> &keypoints)
 {
+    cv::Ptr<cv::Feature2D> extractor;
     cv::Mat descriptors;
     switch(descriptor_method)
     {
     case ORB:
     {
-        cv::Ptr<cv::Feature2D> orb_descriptor = cv::ORB::create();
-        orb_descriptor->compute(src,keypoints,descriptors);
+        extractor = cv::ORB::create();
+        extractor->compute(src,keypoints,descriptors);
+        break;
+    }
+    case BRIEF:
+    {
+        extractor =  cv::xfeatures2d::BriefDescriptorExtractor::create();
+        extractor->compute(src,keypoints,descriptors);
         break;
     }
     case SURF:
     {
+        extractor =  cv::xfeatures2d::SURF::create();
+        extractor->compute(src,keypoints,descriptors);
         break;
     }
     case SIFT:
