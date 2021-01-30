@@ -19,6 +19,8 @@ std::vector<float> unique(const cv::Mat &input, bool sort = false);
 cv::Mat visualize_angles( const cv::Mat &im, const cv::Mat &angles, int W);
 cv::Mat apply_mask(const cv::Mat &src, const cv::Mat &mask);
 cv::Mat translate_mat(const cv::Mat &img, int offsetx, int offsety);
+bool write_descriptor( const std::string& file, const cv::Mat& descriptor );
+bool read_descriptor( const std::string& file, cv::Mat& descriptor );
 }
 
 #endif // UTILS_H

@@ -209,4 +209,26 @@ cv::Mat translate_mat(const cv::Mat &img, int offsetx, int offsety)
     return translated;
 }
 
+bool write_descriptor( const std::string& file, const cv::Mat& descriptor )
+{
+    cv::FileStorage fs( file, cv::FileStorage::WRITE );
+    if( fs.isOpened() )
+    {
+        fs << "imageDescriptor" << descriptor;
+        return true;
+    }
+    return false;
+}
+
+bool read_descriptor( const std::string& file, cv::Mat& descriptor )
+{
+    cv::FileStorage fs( file, cv::FileStorage::READ );
+    if( fs.isOpened() )
+    {
+        fs["imageDescriptor"] >> descriptor;
+        return true;
+    }
+    return false;
+}
+
 }

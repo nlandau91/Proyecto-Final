@@ -33,7 +33,6 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     ui->comboBox_feat->addItem("orb");
     ui->comboBox_feat->addItem("surf");
-    ui->comboBox_feat->addItem("sift");
 
     ui->lineEdit_thresh->setText("120");
 

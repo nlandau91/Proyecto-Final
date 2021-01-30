@@ -2,6 +2,7 @@
 #define DATABASE_H
 
 #include "common.h"
+#include "utils.h"
 
 #include <QSqlDatabase>
 #include <QSqlDriver>
