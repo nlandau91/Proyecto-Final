@@ -1,4 +1,5 @@
 #include "comparator.h"
+#include <QDebug>
 
 namespace fp
 {
@@ -60,11 +61,13 @@ std::vector<std::vector<cv::DMatch>> obtener_matches(const cv::Mat &descriptors,
     {
     case ORB:
     {
+        qDebug() << "orb";
         matches = matches_orb(descriptors,lista_descriptores,cv::NORM_HAMMING,0.75);
         break;
     }
     case SURF:
     {
+        qDebug() << "surf";
         matches = matches_orb(descriptors,lista_descriptores,cv::NORM_L2,0.75);
         break;
     }
@@ -76,7 +79,9 @@ int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &
 {
     int lowest_dist = 999;
     std::vector<std::vector<cv::DMatch>> all_matches;
+    qDebug() << "Comparator: obteniendo matches...";
     all_matches = obtener_matches(descriptors, lista_descriptores,matcher_method);
+    qDebug() << "Comparator: decidiendo mejor match...";
     for(std::vector<cv::DMatch> vm : all_matches)
     {
         if(vm.size() > 0)
@@ -96,6 +101,7 @@ int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &
 
         }
     }
+    qDebug() << "Comparator: listo.";
     return lowest_dist;
 }
 }
