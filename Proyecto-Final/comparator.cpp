@@ -49,38 +49,24 @@ std::vector<std::vector<cv::DMatch>> matches_orb(const cv::Mat &descriptors, con
     return good_matches;
 }
 
-//std::vector<std::vector<cv::DMatch>> matches_surf(const cv::Mat &descriptors, const std::vector<cv::Mat> &lista_descriptores, int norm_type)
-//{
-
-//}
-
-std::vector<std::vector<cv::DMatch>> obtener_matches(const cv::Mat &descriptors, const std::vector<cv::Mat> &lista_descriptores, int matcher_method)
+int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &lista_descriptores)
 {
-    std::vector<std::vector<cv::DMatch>> matches;
+    int lowest_dist = 999;
+    qDebug() << "Comparator: obteniendo matches...";
+    std::vector<std::vector<cv::DMatch>> all_matches;
     switch(matcher_method)
     {
     case ORB:
     {
-        qDebug() << "orb";
-        matches = matches_orb(descriptors,lista_descriptores,cv::NORM_HAMMING,0.75);
+        all_matches = matches_orb(descriptors,lista_descriptores,cv::NORM_HAMMING,0.75);
         break;
     }
     case SURF:
     {
-        qDebug() << "surf";
-        matches = matches_orb(descriptors,lista_descriptores,cv::NORM_L2,0.75);
+        all_matches = matches_orb(descriptors,lista_descriptores,cv::NORM_L2,0.75);
         break;
     }
     }
-    return matches;
-}
-
-int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &lista_descriptores)
-{
-    int lowest_dist = 999;
-    std::vector<std::vector<cv::DMatch>> all_matches;
-    qDebug() << "Comparator: obteniendo matches...";
-    all_matches = obtener_matches(descriptors, lista_descriptores,matcher_method);
     qDebug() << "Comparator: decidiendo mejor match...";
     for(std::vector<cv::DMatch> vm : all_matches)
     {
