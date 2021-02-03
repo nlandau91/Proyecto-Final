@@ -79,10 +79,19 @@ void MainWindow::on_btn_verificar_clicked()
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
-            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(pre.result));;
             //obtenemos los descriptores
             fp::Analysis analysis = analyzer.analize(pre);
-            //solo verificamos si la huella es buena
+            qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
+            //dibujamos sobre la imagen de salida
+            cv::Mat enhanced_marked;
+            cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
+            if(app_settings.draw_over_output)
+            {
+                enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+                enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
+            }
+            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
+            //solo admitimos huellas que sean suficientemente buenas
             bool verificado = false;
             if(analysis.descriptors.rows > 0)
             {
@@ -119,10 +128,19 @@ void MainWindow::on_btn_identificar_clicked()
             ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
-            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(pre.result));
             //obtenemos los descriptores
             fp::Analysis analysis = analyzer.analize(pre);
-            //solo verificamos si la huella es buena
+            qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
+            //dibujamos sobre la imagen de salida
+            cv::Mat enhanced_marked;
+            cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
+            if(app_settings.draw_over_output)
+            {
+                enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+                enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
+            }
+            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
+            //solo admitimos huellas que sean suficientemente buenas
             if(analysis.descriptors.rows > 0)
             {
                 //obtenemos una lista con los id de la base de datos
@@ -176,5 +194,51 @@ void MainWindow::on_actionOpciones_triggered()
     if(result == QDialog::Accepted)
     {
         load_settings();
+    }
+}
+
+void MainWindow::on_btn_demo_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Open Image"), "../res/",
+                                                    tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
+    if(!fileName.isEmpty())
+    {
+        //leemos la imagen en escala de gris
+        cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
+        if(!src.empty())
+        {
+            ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
+            //preprocesamos la imagen
+            fp::Preprocessed pre = preprocesser.preprocess(src);
+            //obtenemos los descriptores
+            fp::Analysis analysis = analyzer.analize(pre);
+            qDebug() << "Descriptores hallados: " << analysis.descriptors.rows;
+            //dibujamos sobre la imagen de salida
+            cv::Mat enhanced_marked;
+            cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
+            enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+            enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
+
+            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
+
+            QDir qdir = QDir::current();
+            qdir.mkdir("output");
+            cv::imwrite("output/normalized.jpg",pre.normalized);
+            cv::imwrite("output/roi.jpg",pre.roi);
+            cv::imwrite("output/orientation.jpg",fp::visualize_angles(pre.result,pre.orientation));;
+            cv::imwrite("output/filtered.jpg",pre.filtered);
+            cv::imwrite("output/thinned.jpg",pre.thinned);
+            cv::imwrite("output/preprocessed.jpg",pre.result);
+            cv::imwrite("output/output_marked.jpg",enhanced_marked);
+
+            //solo admitimos huellas que sean suficientemente buenas
+            if(analysis.descriptors.rows > 0)
+            {
+            }
+            else
+            {
+            }
+        }
     }
 }

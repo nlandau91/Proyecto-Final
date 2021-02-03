@@ -80,6 +80,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="btn_demo">
+          <property name="text">
+           <string>Demostracion</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer_5">
           <property name="orientation">
            <enum>Qt::Vertical</enum>

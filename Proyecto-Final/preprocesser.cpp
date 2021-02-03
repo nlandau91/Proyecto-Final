@@ -464,14 +464,6 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     pre.roi = mask;
     pre.result = result;
 
-    cv::imwrite("src.jpg",src);
-    cv::imwrite("norm_req.jpg",norm_req);
-    cv::imwrite("filtered.jpg",filtered);
-    cv::imwrite("thinned.jpg",thinned);
-    cv::imwrite("angles.jpg",visualize_angles(src,angles,blk_sze));
-    cv::imwrite("mask.jpg",mask);
-    cv::imwrite("result.jpg",result);
-
     qDebug() << "Preprocess:: listo.";
     return pre;
 

@@ -34,6 +34,8 @@ private slots:
 
     void on_actionOpciones_triggered();
 
+    void on_btn_demo_clicked();
+
 private:
     Ui::MainWindow *ui;
     fp::Database db;
