@@ -26,11 +26,8 @@ void MainWindow::on_btn_ingresar_clicked()
                                                           tr("Open Image"), "../res/",
                                                           tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
     setEnabled(false);
-    //std::string id = ui->lineEdit->text().toStdString();
-    //int n = 0;
     for(QString fileName : fileNames)
     {
-        //ui->lineEdit->setText(QString::number(n/8));
         //leemos la imagen en escala de gris
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
@@ -50,7 +47,7 @@ void MainWindow::on_btn_ingresar_clicked()
                 enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
             }
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
-            //solo ingresamos huellas que sean suficientemente buenas
+            //solo admitimos huellas que sean suficientemente buenas
             if(analysis.descriptors.rows > 4)
             {
                 //guardamos el descriptor e ingresamos los descriptores a la base de datos
@@ -64,7 +61,6 @@ void MainWindow::on_btn_ingresar_clicked()
             }
 
         }
-        //n++;
     }
     setEnabled(true);
 }
