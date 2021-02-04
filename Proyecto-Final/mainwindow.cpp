@@ -199,8 +199,8 @@ void MainWindow::on_actionOpciones_triggered()
 
 void MainWindow::on_btn_demo_clicked()
 {
-output_window = new OutputWindow();
-output_window->show();
+    output_window = new OutputWindow();
+    output_window->show();
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("Open Image"), "../res/",
                                                     tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
@@ -215,7 +215,23 @@ output_window->show();
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
             fp::Analysis analysis = analyzer.analize(pre);
-            qDebug() << "Descriptores hallados: " << analysis.descriptors.rows;
+            int descriptores = analysis.descriptors.rows;
+            int terminaciones = 0;
+            int bifurcaciones = 0;
+            int deltas = 0;
+            int cores = 0;
+            int whorls = 0;
+            for(cv::KeyPoint kp : analysis.l2_features)
+            {
+                if(kp.size == 1)
+                {
+                    terminaciones++;
+                }
+                if(kp.size == 3)
+                {
+                    bifurcaciones++;
+                }
+            }
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
             cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
