@@ -1,13 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <common.h>
+#include "common.h"
 #include "database.h"
 #include "appsettings.h"
 #include "preprocesser.h"
 #include "analyzer.h"
 #include "comparator.h"
 #include "utils.h"
+#include "outputwindow.h"
 
 #include <QMainWindow>
 #include <QFileDialog>
@@ -38,6 +39,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    OutputWindow *output_window;
     fp::Database db;
     AppSettings app_settings;
     fp::Preprocesser preprocesser;

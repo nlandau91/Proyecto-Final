@@ -23,6 +23,7 @@ SOURCES += \
     database.cpp \
     main.cpp \
     mainwindow.cpp \
+    outputwindow.cpp \
     preprocesser.cpp \
     utils.cpp
 
@@ -34,12 +35,14 @@ HEADERS += \
     configdialog.h \
     database.h \
     mainwindow.h \
+    outputwindow.h \
     preprocesser.h \
     utils.h
 
 FORMS += \
     configdialog.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    outputwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

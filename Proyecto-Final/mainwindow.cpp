@@ -199,6 +199,8 @@ void MainWindow::on_actionOpciones_triggered()
 
 void MainWindow::on_btn_demo_clicked()
 {
+output_window = new OutputWindow();
+output_window->show();
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("Open Image"), "../res/",
                                                     tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
