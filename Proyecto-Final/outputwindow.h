@@ -14,6 +14,7 @@ class OutputWindow : public QWidget
 public:
     explicit OutputWindow(QWidget *parent = nullptr);
     ~OutputWindow();
+    void setup(int cores, int deltas, QString clasificacion, int terminaciones, int bifurcaciones);
 
 private:
     Ui::OutputWindow *ui;

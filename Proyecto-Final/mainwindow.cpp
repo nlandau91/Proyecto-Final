@@ -199,8 +199,6 @@ void MainWindow::on_actionOpciones_triggered()
 
 void MainWindow::on_btn_demo_clicked()
 {
-    output_window = new OutputWindow();
-    output_window->show();
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("Open Image"), "../res/",
                                                     tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
@@ -232,6 +230,23 @@ void MainWindow::on_btn_demo_clicked()
                     bifurcaciones++;
                 }
             }
+            for(cv::KeyPoint kp : analysis.l1_features)
+            {
+                if(kp.size == fp::DELTA)
+                {
+                    deltas++;
+                }
+                if(kp.size == fp::LOOP)
+                {
+                    cores++;
+                }
+            }
+            deltas = deltas / 4;
+            cores = cores / 4;
+            output_window = new OutputWindow();
+            output_window->setup(cores,deltas,"tba",terminaciones,bifurcaciones);
+            output_window->show();
+
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
             cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
