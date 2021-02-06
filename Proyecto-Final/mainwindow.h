@@ -45,7 +45,6 @@ private:
     fp::Preprocesser preprocesser;
     fp::Analyzer analyzer;
     fp::Comparator comparator;
-    void mostrar_imagen(cv::Mat &imagen);
     void load_settings();
 
 };

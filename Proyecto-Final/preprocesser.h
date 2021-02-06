@@ -39,6 +39,11 @@ public:
           segment(true){}
 
 
+    /*!
+     * \brief preprocess realiza el preprocesamiento de la imagen para adecuarla al analisis
+     * \param src imagen que sera preprocesada
+     * \return estructura que contiene las imagenes del preprocesamiento
+     */
     Preprocessed preprocess(const cv::Mat &src);
 
     /*!
