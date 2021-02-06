@@ -22,6 +22,7 @@ cv::Mat apply_mask(const cv::Mat &src, const cv::Mat &mask);
 cv::Mat translate_mat(const cv::Mat &img, int offsetx, int offsety);
 bool write_descriptor( const std::string& file, const cv::Mat& descriptor );
 bool read_descriptor( const std::string& file, cv::Mat& descriptor );
+int get_fp_type( const std::vector<cv::KeyPoint> keypoints);
 }
 
 #endif // UTILS_H

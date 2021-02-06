@@ -212,40 +212,7 @@ void MainWindow::on_btn_demo_clicked()
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
-            fp::Analysis analysis = analyzer.analize(pre);
-            int descriptores = analysis.descriptors.rows;
-            int terminaciones = 0;
-            int bifurcaciones = 0;
-            int deltas = 0;
-            int cores = 0;
-            int whorls = 0;
-            for(cv::KeyPoint kp : analysis.l2_features)
-            {
-                if(kp.size == 1)
-                {
-                    terminaciones++;
-                }
-                if(kp.size == 3)
-                {
-                    bifurcaciones++;
-                }
-            }
-            for(cv::KeyPoint kp : analysis.l1_features)
-            {
-                if(kp.size == fp::DELTA)
-                {
-                    deltas++;
-                }
-                if(kp.size == fp::LOOP)
-                {
-                    cores++;
-                }
-            }
-            deltas = deltas / 4;
-            cores = cores / 4;
-            output_window = new OutputWindow();
-            output_window->setup(cores,deltas,"tba",terminaciones,bifurcaciones);
-            output_window->show();
+            fp::Analysis analysis = analyzer.analize(pre);           
 
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
@@ -253,8 +220,13 @@ void MainWindow::on_btn_demo_clicked()
             enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
             enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
 
+            output_window = new OutputWindow();
+            output_window->setup(analysis, enhanced_marked);
+            output_window->show();
+
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
 
+            //guardamos las imagenes del proceso
             QDir qdir = QDir::current();
             qdir.mkdir("output");
             cv::imwrite("output/normalized.jpg",pre.normalized);
@@ -265,13 +237,6 @@ void MainWindow::on_btn_demo_clicked()
             cv::imwrite("output/preprocessed.jpg",pre.result);
             cv::imwrite("output/output_marked.jpg",enhanced_marked);
 
-            //solo admitimos huellas que sean suficientemente buenas
-            if(analysis.descriptors.rows > 0)
-            {
-            }
-            else
-            {
-            }
         }
     }
 }

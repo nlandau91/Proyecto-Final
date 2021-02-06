@@ -261,4 +261,10 @@ bool read_descriptor( const std::string& file, cv::Mat& descriptor )
     return false;
 }
 
+int get_fp_type( const std::vector<cv::KeyPoint> keypoints)
+{
+
+}
+
+
 }
