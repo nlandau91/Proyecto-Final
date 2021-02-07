@@ -21,11 +21,12 @@ void AppSettings::load_settings()
     enhancement_method = string_to_enum(settings.value("enhancement_method").toString());
     thinning_method = string_to_enum(settings.value("thinning_method").toString());
     segment = settings.value("segment").toBool();
+    roi_threshold = settings.value("roi_threshold").toFloat();
 
     //analyzer
     keypoint_threshold = settings.value("keypoint_threshold").toInt();
-    keypoint_extractor = string_to_enum(settings.value("keypoint_extractor").toString());
-    feature_extractor = string_to_enum(settings.value("feature_extractor").toString());
+    minutiae_method = string_to_enum(settings.value("keypoint_extractor").toString());
+    descriptor_method = string_to_enum(settings.value("feature_extractor").toString());
     draw_over_output = settings.value("draw_features").toBool();
 
     //comparator
@@ -47,6 +48,7 @@ int string_to_enum(const QString arg1)
     if(arg1 == "surf") return fp::SURF;
     if(arg1 == "sift") return fp::SIFT;
     if(arg1 == "cn") return fp::CN;
+    if(arg1 == "poincare") return fp::POINCARE;
 
 
     return not_found;

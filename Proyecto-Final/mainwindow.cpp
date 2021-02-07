@@ -178,12 +178,26 @@ void MainWindow::on_btn_identificar_clicked()
 void MainWindow::load_settings()
 {
     app_settings.load_settings();
-    preprocesser = fp::Preprocesser(app_settings.enhancement_method,app_settings.thinning_method);
+    preprocesser = fp::Preprocesser();
+    preprocesser.enhancement_method = app_settings.enhancement_method;
+    preprocesser.thinning_method = app_settings.thinning_method;
     preprocesser.segment = app_settings.segment;
     preprocesser.blk_sze = app_settings.blk_size;
-    analyzer = fp::Analyzer(app_settings.keypoint_extractor,app_settings.keypoint_threshold,app_settings.feature_extractor,app_settings.matcher_method,app_settings.max_match_dist);
+    preprocesser.norm_req_mean = 100;
+    preprocesser.norm_req_var = 100;
+    preprocesser.roi_threshold_ratio = app_settings.roi_threshold;
+
+
+    analyzer = fp::Analyzer();
+    analyzer.l1_features_method = fp::POINCARE;
+    analyzer.l2_features_method = app_settings.minutiae_method;
+    analyzer.keypoint_threshold = app_settings.keypoint_threshold;
+    analyzer.descriptor_method = app_settings.descriptor_method;
+    analyzer.blk_sze = app_settings.blk_size;
+    analyzer.poincare_tol = 1;
+
     comparator = fp::Comparator();
-    comparator.matcher_method = app_settings.feature_extractor;
+    comparator.matcher_method = app_settings.descriptor_method;
 }
 
 void MainWindow::on_actionOpciones_triggered()
@@ -212,14 +226,16 @@ void MainWindow::on_btn_demo_clicked()
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
-            fp::Analysis analysis = analyzer.analize(pre);           
+            fp::Analysis analysis = analyzer.analize(pre);
 
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
             cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
-            enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
-            enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
-
+            if(app_settings.draw_over_output)
+            {
+                enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+                enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
+            }
             output_window = new OutputWindow();
             output_window->setup(analysis, enhanced_marked);
             output_window->show();

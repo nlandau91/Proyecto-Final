@@ -4,6 +4,11 @@
 namespace fp
 {
 
+Preprocesser::Preprocesser()
+{
+
+}
+
 cv::Mat morphological_thinning(const cv::Mat &src)
 {
 

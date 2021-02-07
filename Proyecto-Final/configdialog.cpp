@@ -62,6 +62,7 @@ void ConfigDialog::load_settings()
     ui->comboBox_enh->setCurrentText(settings.value("enhancement_method").toString());
     ui->comboBox_thi->setCurrentText(settings.value("thinning_method").toString());
     ui->checkBox_seg->setChecked(settings.value("segment").toBool());
+    ui->doubleSpinBox_roi->setValue(settings.value("roi_threshold").toDouble());
 
     //feature extraction
     ui->comboBox_kp->setCurrentText(settings.value("keypoint_extractor").toString());
@@ -83,6 +84,7 @@ void ConfigDialog::save_settings()
     settings.setValue("enhancement_method", ui->comboBox_enh->currentText());
     settings.setValue("thinning_method", ui->comboBox_thi->currentText());
     settings.setValue("segment",ui->checkBox_seg->isChecked());
+    settings.setValue("roi_threshold", ui->doubleSpinBox_roi->value());
 
     //feature extraction
     settings.setValue("keypoint_extractor", ui->comboBox_kp->currentText());

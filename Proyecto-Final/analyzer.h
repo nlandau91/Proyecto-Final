@@ -12,18 +12,18 @@ namespace fp
 class Analyzer
 {
 public:
+    int l2_features_method;
+    int keypoint_threshold;
+    int descriptor_method;
+    int max_match_dist;
+    int l1_features_method;
+    float poincare_tol;
+    int blk_sze;
 
     /*!
      * \brief Analyzer
      */
-    Analyzer() :
-        l2_features_method(HARRIS),keypoint_threshold(130),
-        descriptor_method(ORB),max_match_dist(80){}
-
-    Analyzer(int keypoint_method, int keypoint_threshold, int descriptor_method, int matcher_method, int max_match_dist)
-        : l2_features_method(keypoint_method), keypoint_threshold(keypoint_threshold),
-          descriptor_method(descriptor_method),matcher_method(matcher_method),
-          max_match_dist(max_match_dist){}
+    Analyzer();
 
     /*!
      * \brief analize analiza la huella dactilar preprocesada
@@ -33,14 +33,6 @@ public:
     Analysis analize(const Preprocessed &preprocessed);
 
 private:
-    int l2_features_method;
-    int keypoint_threshold;
-    int descriptor_method;
-    int matcher_method;
-    int max_match_dist;
-    int l1_features_method;
-    float poincare_tol;
-    int blk_sze;
 
     /*!
      * \brief find_l1_features

@@ -9,16 +9,24 @@ public:
     AppSettings();
     void load_settings();
 
+    //preprocess
     int enhancement_method;
     int thinning_method;
     bool segment;
-    int keypoint_extractor;
+    int blk_size;
+    float roi_threshold;
+
+    //analyzer
+    int minutiae_method;
     int keypoint_threshold;
-    int feature_extractor;
+    int descriptor_method;
+
+    //comparator
     int matcher_method;
     int max_match_dist;
+
     bool draw_over_output;
-    int blk_size;
+
 };
 
 #endif // APPSETTINGS_H

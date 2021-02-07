@@ -45,7 +45,7 @@
        <item>
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Block Size:</string>
+          <string>Block Size</string>
          </property>
         </widget>
        </item>
@@ -55,7 +55,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Enhance:</string>
+          <string>Enhance</string>
          </property>
         </widget>
        </item>
@@ -72,12 +72,29 @@
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Thinning:</string>
+          <string>Thinning</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QComboBox" name="comboBox_thi"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>ROI Threshold</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_roi">
+         <property name="maximum">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.010000000000000</double>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_seg">
@@ -126,7 +143,7 @@
        <item>
         <widget class="QLabel" name="label_9">
          <property name="text">
-          <string>Keypoint Extractor:</string>
+          <string>Minutiae detector</string>
          </property>
         </widget>
        </item>
@@ -136,7 +153,7 @@
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Keypoint Threshold:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>Keypoint Threshold</string>
          </property>
          <property name="textFormat">
           <enum>Qt::AutoText</enum>
@@ -159,7 +176,7 @@
        <item>
         <widget class="QLabel" name="label_10">
          <property name="text">
-          <string>Feature Extractor:</string>
+          <string>Feature Extractor</string>
          </property>
         </widget>
        </item>
@@ -207,7 +224,7 @@
        <item>
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Max. Match Dist:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>Max Match Dist</string>
          </property>
         </widget>
        </item>
