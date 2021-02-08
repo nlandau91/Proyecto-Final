@@ -79,7 +79,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const std::vector<cv:
     qDebug() << "Comparator: obteniendo matches...";
     for(cv::Mat td : train_descriptors_list)
     {
-        comparation = compare(query_descriptors, td, threshold);
+        comparation = comparation || compare(query_descriptors, td, 0.1);
     }
     return comparation;
 }
