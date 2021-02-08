@@ -17,7 +17,9 @@ public:
      * \return un valor numerico correspondiente a la distancia entre los descriptores.
      *  Mientras mas bajo, mas se asemejan los descriptores de consulta con los de comparacion
      */
-    int compare(const cv::Mat &descriptors, const std::vector<cv::Mat> &lista_descriptores);
+    double compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list);
+
+    double compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors);
 
     int matcher_method;
 };
