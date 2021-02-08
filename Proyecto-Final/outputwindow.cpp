@@ -44,8 +44,8 @@ void OutputWindow::setup(const fp::Analysis &analysis, const cv::Mat &output)
             cores++;
         }
     }
-    deltas = deltas / 4;
-    cores = cores / 4;
+    deltas = round(deltas / 4.0);
+    cores = round(cores / 4.0);
     if(deltas == 0 && cores == 0)
     {
         type = "Arch";

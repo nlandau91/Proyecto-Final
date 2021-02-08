@@ -63,7 +63,8 @@ int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &
     }
     case SURF:
     {
-        all_matches = matches_orb(descriptors,lista_descriptores,cv::NORM_L2,0.75);
+        //all_matches = matches_orb(descriptors,lista_descriptores,cv::NORM_L2,0.75);
+        all_matches = matches_orb(descriptors,lista_descriptores,cv::NORM_L2);
         break;
     }
     }
@@ -90,4 +91,5 @@ int Comparator::compare(const cv::Mat &descriptors,const  std::vector<cv::Mat> &
     qDebug() << "Comparator: listo.";
     return lowest_dist;
 }
+
 }
