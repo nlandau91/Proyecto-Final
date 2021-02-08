@@ -111,17 +111,22 @@ int crosses(const cv::Mat &bin, int col, int row)
 //src se supone que ya es esqueletizada y en rango 0-255
 std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src, const cv::Mat &mask)
 {
+    int blk_sze = 7;
     std::vector<cv::KeyPoint> keypoints;
     cv::Mat bin = src/255; //pasamos la imagen a binario
 
     //iteramos en toda la imagen menos un borde de 1 pixel por el kernel de 3x3
-    for(int col = 1; col < bin.cols - 1; col++)
+    //for(int col = 1; col < bin.cols - 1; col++)
+    for(int col = blk_sze/2; col < bin.cols - blk_sze/2; col++)
     {
-        for(int row = 1; row < bin.rows - 1; row++)
+        //for(int row = 1; row < bin.rows - 1; row++)
+        for(int row = blk_sze/2; row < bin.rows - blk_sze/2; row++)
         {
-            cv::Rect neighbours(col-1,row-1,3,3);
+            //cv::Rect neighbours(col-1,row-1,3,3);
+            cv::Rect neighbours(col-blk_sze/2,row-blk_sze/2,blk_sze,blk_sze);
             int valid_neighbours = cv::countNonZero(mask(neighbours));
-            if(valid_neighbours == 9)
+            //if(valid_neighbours == 9)
+            if(valid_neighbours == blk_sze*blk_sze)
             {
                 int cn = crosses(bin, col, row);
                 //1 representa terminacion, 3 representa bifurcacion

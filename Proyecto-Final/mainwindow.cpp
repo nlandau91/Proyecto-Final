@@ -100,7 +100,7 @@ void MainWindow::on_btn_verificar_clicked()
                 std::vector<cv::Mat> lista_descriptores;
                 lista_descriptores = db.obtener_lista_descriptores(id);
                 //verificamos
-                verificado = 80>=comparator.compare(analysis.descriptors, lista_descriptores);
+                verificado = comparator.compare(analysis.descriptors, lista_descriptores);
             }
             if(verificado)
             {
@@ -155,7 +155,7 @@ void MainWindow::on_btn_identificar_clicked()
                     std::vector<cv::Mat> lista_descriptores;
                     lista_descriptores = db.obtener_lista_descriptores(id);
                     //obtenemos el mejor resultado entre los match de los descriptores
-                    verificado = 80>=comparator.compare(analysis.descriptors, lista_descriptores);
+                    verificado = comparator.compare(analysis.descriptors, lista_descriptores);
                     if(verificado)
                     {
                         std::cout << "Match encontrado: " << id.toStdString() << std::endl;;

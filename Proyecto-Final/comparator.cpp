@@ -39,9 +39,9 @@ std::vector<cv::DMatch> find_matches(const cv::Mat &query_descriptors, const cv:
     return good_matches;
 }
 
-double Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors)
+bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, double threshold)
 {
-    double score = 999;
+    bool comparation = false;
     std::vector<cv::DMatch> matches;
     switch(matcher_method)
     {
@@ -52,37 +52,36 @@ double Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &trai
     }
     case SURF:
     {
-        //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
-        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
+        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
+        //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
         break;
     }
     }
     if(matches.size() > 0)
     {
-        score = 0;
-        for(cv::DMatch m : matches)
-        {
-            score += m.distance;
-        }
-        score/=matches.size();
+        //        score = 0;
+        //        for(cv::DMatch m : matches)
+        //        {
+        //            score += m.distance;
+        //        }
+        //        score/=matches.size();
+        double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
+        comparation = score > threshold;
         qDebug() << score;
+
     }
-    return score;
+    return comparation;
 }
 
-double Comparator::compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list)
+bool Comparator::compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, double threshold)
 {
+    bool comparation = false;
     qDebug() << "Comparator: obteniendo matches...";
-    double lowest_score = 999;
     for(cv::Mat td : train_descriptors_list)
     {
-        double current = compare(query_descriptors, td);
-        if(current < lowest_score)
-        {
-            lowest_score = current;
-        }
+        comparation = compare(query_descriptors, td, threshold);
     }
-    return lowest_score;
+    return comparation;
 }
 
 }
