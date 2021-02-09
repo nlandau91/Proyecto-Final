@@ -54,6 +54,7 @@ struct Analysis
     std::vector<cv::KeyPoint> l1_features;
     std::vector<cv::KeyPoint> l2_features;
     cv::Mat descriptors;
+    cv::Mat keypoints;
 };
 
 }

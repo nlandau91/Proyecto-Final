@@ -270,13 +270,13 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(const Preprocessed &pre)
     return l1_features;
 }
 
-//arma descriptores personalizados para las huellas dactilares
-//cada row es un descriptor
+//arma un mat a partir de una lista de keypoints
+//cada row es un kp
 //col 0 = pos x
 //col 1 = pos y
 //col 2 = tipo de minucia
 //col 4 = angulo
-cv::Mat custom_extractor( const std::vector<cv::KeyPoint> &keypoints)
+cv::Mat kp_to_mat( const std::vector<cv::KeyPoint> &keypoints)
 {
     cv::Mat descriptors(keypoints.size(),4,CV_64FC1);
     int index = 0;
@@ -316,15 +316,6 @@ cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPo
         extractor->compute(src,keypoints,descriptors);
         break;
     }
-    case CUSTOM:
-    {
-        descriptors = custom_extractor(keypoints);
-        break;
-    }
-    case SIFT:
-    {
-        break;
-    }
     default:
         break;
     }
@@ -348,6 +339,8 @@ fp::Analysis Analyzer::analize(const fp::Preprocessed &preprocessed)
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
     analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
+    qDebug() << "Analizer: armando mat de keypoints...";
+    analysis.keypoints = kp_to_mat(analysis.l2_features);
     qDebug() << "Analizer: listo.";
     return analysis;
 }

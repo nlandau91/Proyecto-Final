@@ -23,18 +23,24 @@ public:
     void init();
 
     /*!
-     * \brief ingresar_descriptor guarda el descriptor en disco y lo ingresa a la base de datos
+     * \brief ingresar_descriptores guarda el descriptor en disco y lo ingresa a la base de datos
      * \param descriptors descriptores
      * \param id identificador
      */
-    void ingresar_descriptor(const cv::Mat &descriptors, const QString &id);
+    void ingresar_descriptores(const cv::Mat &descriptors, const QString &id);
+
+    void ingresar_keypoints(const cv::Mat &keypoints, const QString &id);
+
+    void ingresar_fp(const Analysis &fp, const QString &id);
 
     /*!
-     * \brief obtener_lista_descriptores devuelve devuelve una lista con los discriptores de las muestras asociadas al id
+     * \briefrecuperar_descriptores devuelve devuelve una lista con los discriptores de las muestras asociadas al id
      * \param id identificador que se buscara para obtener los descriptores
      * \return lista con los descriptores asociadas a id
      */
-    std::vector<cv::Mat> obtener_lista_descriptores(const QString &id);
+    std::vector<cv::Mat> recuperar_descriptores(const QString &id);
+
+    std::vector<cv::Mat> recuperar_keypoints(const QString &id);
 
     /*!
      * \brief obtener_lista_id devuelve una lista con los id dentro de la base de datos

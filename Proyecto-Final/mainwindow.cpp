@@ -52,7 +52,8 @@ void MainWindow::on_btn_ingresar_clicked()
             {
                 //guardamos el descriptor e ingresamos los descriptores a la base de datos
                 QString id = ui->lineEdit->text();
-                db.ingresar_descriptor(analysis.descriptors,id);
+                //db.ingresar_descriptores(analysis.descriptors,id);
+                db.ingresar_fp(analysis,id);
                 std::cout << "Huella ingresada" << std::endl;
             }
             else
@@ -100,7 +101,7 @@ void MainWindow::on_btn_verificar_clicked()
                     //obtenemos la lista de descriptores de la base de datos
                     QString id = ui->lineEdit->text();
                     std::vector<cv::Mat> lista_descriptores;
-                    lista_descriptores = db.obtener_lista_descriptores(id);
+                    lista_descriptores = db.recuperar_descriptores(id);
                     //verificamos
                     verificado = comparator.compare(analysis.descriptors, lista_descriptores, app_settings.matcher_threshold);
                 }
@@ -156,7 +157,7 @@ void MainWindow::on_btn_identificar_clicked()
                     {
                         //obtenemos la lista de descriptores de la base de datos
                         std::vector<cv::Mat> lista_descriptores;
-                        lista_descriptores = db.obtener_lista_descriptores(id);
+                        lista_descriptores = db.recuperar_descriptores(id);
                         //obtenemos el mejor resultado entre los match de los descriptores
                         verificado = comparator.compare(analysis.descriptors, lista_descriptores, app_settings.matcher_threshold);
                         if(verificado)

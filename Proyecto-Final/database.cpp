@@ -18,7 +18,7 @@ void Database::init()
             qWarning() << "ERROR: " << db.lastError();
         }
         //creamos una tabla
-        QSqlQuery query("CREATE TABLE people (id INTEGER, descriptor_sample INTEGER, descriptor_path TEXT,PRIMARY KEY(id, descriptor_sample))");
+        QSqlQuery query("CREATE TABLE people (id INTEGER, sample INTEGER, descriptor_path TEXT, keypoint_path TEXT, PRIMARY KEY(id, sample))");
         if(!query.isActive())
         {
             //no se pudo crear la table, posiblemente porque ya existia
@@ -33,7 +33,7 @@ Database::Database()
 
 }
 
-void Database::ingresar_descriptor(const cv::Mat &descriptors, const QString &id)
+void Database::ingresar_descriptores(const cv::Mat &descriptors, const QString &id)
 {
     if(!descriptors.empty())
     {
@@ -61,7 +61,7 @@ void Database::ingresar_descriptor(const cv::Mat &descriptors, const QString &id
         descriptor_path = descriptor_path + "/" + QString::number(sample);
         serialize_mat(descriptor_path.toStdString(),descriptors);
         //ingresamos los descriptores a la base de datos
-        query.prepare("INSERT INTO people(id, descriptor_sample, descriptor_path) VALUES (:id, :sample, :path)");
+        query.prepare("INSERT INTO people(id, sample, descriptor_path) VALUES (:id, :sample, :path)");
         query.bindValue(":id",id);
         query.bindValue(":path", descriptor_path);
         query.bindValue(":sample",sample);
@@ -72,7 +72,92 @@ void Database::ingresar_descriptor(const cv::Mat &descriptors, const QString &id
 
     }
 }
-std::vector<cv::Mat> Database::obtener_lista_descriptores(const QString &id)
+
+void Database::ingresar_keypoints(const cv::Mat &keypoints, const QString &id)
+{
+    if(!keypoints.empty())
+    {
+        //armamos el path
+        QDir qdir = QDir::current();
+        QString keypoint_path = qdir.path()+"/../db/keypoints/"+id;
+        qdir.mkpath(keypoint_path);
+
+        //vemos que numero de muestra estamos por ingresar
+        QSqlQuery query;
+        query.prepare("SELECT COUNT(*) FROM people WHERE id=:id");
+        query.bindValue(":id",id);
+        if(!query.exec())
+        {
+            qWarning() << "ERROR: " << query.lastError().text();
+        }
+        int sample = 0;
+        if(query.first())
+        {
+            sample = query.value(0).toInt();
+        }
+        //guardamos el archivo en disco armando el nombre
+        //keypoint_path = keypoint_path + "/" + QString::number(sample)+".tif";
+        //cv::imwrite(descriptor_path.toStdString(), descriptors);
+        keypoint_path = keypoint_path + "/" + QString::number(sample);
+        serialize_mat(keypoint_path.toStdString(),keypoints);
+        //ingresamos los descriptores a la base de datos
+        query.prepare("INSERT INTO people(id, sample, descriptor_path) VALUES (:id, :sample, :path)");
+        query.bindValue(":id",id);
+        query.bindValue(":path", keypoint_path);
+        query.bindValue(":sample",sample);
+        if(!query.exec())
+        {
+            qWarning() << "ERROR: " << query.lastError().text();
+        }
+
+    }
+}
+
+void Database::ingresar_fp(const Analysis &fp, const QString &id)
+{
+    if(!fp.descriptors.empty() && !fp.keypoints.empty())
+    {
+        //armamos el path
+        QDir qdir = QDir::current();
+        QString descriptor_path = qdir.path()+"/../db/descriptors/"+id;
+        qdir.mkpath(descriptor_path);
+
+        QString keypoint_path = qdir.path()+"/../db/keypoints/"+id;
+        qdir.mkpath(keypoint_path);
+
+        //vemos que numero de muestra estamos por ingresar
+        QSqlQuery query;
+        query.prepare("SELECT COUNT(*) FROM people WHERE id=:id");
+        query.bindValue(":id",id);
+        if(!query.exec())
+        {
+            qWarning() << "ERROR: " << query.lastError().text();
+        }
+        int sample = 0;
+        if(query.first())
+        {
+            sample = query.value(0).toInt();
+        }
+        //guardamos el archivo en disco armando el nombre
+        descriptor_path = descriptor_path + "/" + QString::number(sample);
+        serialize_mat(descriptor_path.toStdString(),fp.descriptors);
+
+        keypoint_path = keypoint_path + "/" + QString::number(sample);
+        serialize_mat(keypoint_path.toStdString(),fp.keypoints);
+        //ingresamos los descriptores a la base de datos
+        query.prepare("INSERT INTO people(id, sample, descriptor_path, keypoint_path) VALUES (:id, :sample, :descriptor_path, :keypoint_path)");
+        query.bindValue(":id",id);
+        query.bindValue(":descriptor_path", descriptor_path);
+        query.bindValue(":keypoint_path", keypoint_path);
+        query.bindValue(":sample",sample);
+        if(!query.exec())
+        {
+            qWarning() << "ERROR: " << query.lastError().text();
+        }
+    }
+}
+
+std::vector<cv::Mat> Database::recuperar_descriptores(const QString &id)
 {
     std::vector<cv::Mat> lista_descriptores;
 
