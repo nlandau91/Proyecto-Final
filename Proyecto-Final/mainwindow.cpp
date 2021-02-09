@@ -48,7 +48,7 @@ void MainWindow::on_btn_ingresar_clicked()
             }
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
             //solo admitimos huellas que sean suficientemente buenas
-            if(analysis.descriptors.rows > 4)
+            if(analysis.descriptors.rows > 0)
             {
                 //guardamos el descriptor e ingresamos los descriptores a la base de datos
                 QString id = ui->lineEdit->text();
@@ -96,7 +96,7 @@ void MainWindow::on_btn_verificar_clicked()
                 ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
                 //solo admitimos huellas que sean suficientemente buenas
                 bool verificado = false;
-                if(analysis.descriptors.rows > 4)
+                if(analysis.descriptors.rows > 0)
                 {
                     //obtenemos la lista de descriptores de la base de datos
                     QString id = ui->lineEdit->text();
@@ -147,7 +147,7 @@ void MainWindow::on_btn_identificar_clicked()
                 }
                 ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
                 //solo admitimos huellas que sean suficientemente buenas
-                if(analysis.descriptors.rows > 4)
+                if(analysis.descriptors.rows > 0)
                 {
                     //obtenemos una lista con los id de la base de datos
                     std::vector<QString> lista_id;

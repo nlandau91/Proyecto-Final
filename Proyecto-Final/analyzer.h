@@ -54,7 +54,7 @@ private:
      * \param keypoints
      * \return
      */
-    cv::Mat calcular_descriptors(const cv::Mat &src, const cv::Mat &angles, std::vector<cv::KeyPoint> &keypoints);
+    cv::Mat calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPoint> &keypoints);
 };
 }
 #endif // ANALYZER_H
