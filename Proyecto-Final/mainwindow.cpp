@@ -67,48 +67,52 @@ void MainWindow::on_btn_ingresar_clicked()
 
 void MainWindow::on_btn_verificar_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Open Image"), "../res/",
-                                                    tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
-    if(!fileName.isEmpty())
+    QStringList fileNames = QFileDialog::getOpenFileNames(this,
+                                                          tr("Open Image"), "../res/",
+                                                          tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
+
+    for(QString fileName : fileNames)
     {
-        //leemos la imagen en escala de gris
-        cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
-        if(!src.empty())
+        if(!fileName.isEmpty())
         {
-            ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
-            //preprocesamos la imagen
-            fp::Preprocessed pre = preprocesser.preprocess(src);
-            //obtenemos los descriptores
-            fp::Analysis analysis = analyzer.analize(pre);
-            qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
-            //dibujamos sobre la imagen de salida
-            cv::Mat enhanced_marked;
-            cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
-            if(app_settings.draw_over_output)
+            //leemos la imagen en escala de gris
+            cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
+            if(!src.empty())
             {
-                enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
-                enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
-            }
-            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
-            //solo admitimos huellas que sean suficientemente buenas
-            bool verificado = false;
-            if(analysis.descriptors.rows > 0)
-            {
-                //obtenemos la lista de descriptores de la base de datos
-                QString id = ui->lineEdit->text();
-                std::vector<cv::Mat> lista_descriptores;
-                lista_descriptores = db.obtener_lista_descriptores(id);
-                //verificamos
-                verificado = comparator.compare(analysis.descriptors, lista_descriptores);
-            }
-            if(verificado)
-            {
-                std::cout << "Verificado!" << std::endl;
-            }
-            else
-            {
-                std::cout << "NO Verificado!" << std::endl;
+                ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
+                //preprocesamos la imagen
+                fp::Preprocessed pre = preprocesser.preprocess(src);
+                //obtenemos los descriptores
+                fp::Analysis analysis = analyzer.analize(pre);
+                qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
+                //dibujamos sobre la imagen de salida
+                cv::Mat enhanced_marked;
+                cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
+                if(app_settings.draw_over_output)
+                {
+                    enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+                    enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
+                }
+                ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
+                //solo admitimos huellas que sean suficientemente buenas
+                bool verificado = false;
+                if(analysis.descriptors.rows > 4)
+                {
+                    //obtenemos la lista de descriptores de la base de datos
+                    QString id = ui->lineEdit->text();
+                    std::vector<cv::Mat> lista_descriptores;
+                    lista_descriptores = db.obtener_lista_descriptores(id);
+                    //verificamos
+                    verificado = comparator.compare(analysis.descriptors, lista_descriptores, app_settings.matcher_threshold);
+                }
+                if(verificado)
+                {
+                    std::cout << "Verificado!" << std::endl;
+                }
+                else
+                {
+                    std::cout << "NO Verificado!" << std::endl;
+                }
             }
         }
     }
@@ -116,60 +120,57 @@ void MainWindow::on_btn_verificar_clicked()
 
 void MainWindow::on_btn_identificar_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Open Image"), "../res/",
-                                                    tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
-    if(!fileName.isEmpty())
+    QStringList fileNames = QFileDialog::getOpenFileNames(this,
+                                                          tr("Open Image"), "../res/",
+                                                          tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
+    for(QString fileName : fileNames)
     {
-        //leemos la imagen en escala de gris
-        cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
-        if(!src.empty())
+        if(!fileName.isEmpty())
         {
-            ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
-            //preprocesamos la imagen
-            fp::Preprocessed pre = preprocesser.preprocess(src);
-            //obtenemos los descriptores
-            fp::Analysis analysis = analyzer.analize(pre);
-            qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
-            //dibujamos sobre la imagen de salida
-            cv::Mat enhanced_marked;
-            cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
-            if(app_settings.draw_over_output)
+            //leemos la imagen en escala de gris
+            cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
+            if(!src.empty())
             {
-                enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
-                enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
-            }
-            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
-            //solo admitimos huellas que sean suficientemente buenas
-            if(analysis.descriptors.rows > 0)
-            {
-                //obtenemos una lista con los id de la base de datos
-                std::vector<QString> lista_id;
-                lista_id = db.obtener_lista_id();
-                //para cada id, realizamos la verificacion
-                bool verificado = false;
-                QString best_id;
-                for(QString id : lista_id)
+                ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
+                //preprocesamos la imagen
+                fp::Preprocessed pre = preprocesser.preprocess(src);
+                //obtenemos los descriptores
+                fp::Analysis analysis = analyzer.analize(pre);
+                qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
+                //dibujamos sobre la imagen de salida
+                cv::Mat enhanced_marked;
+                cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
+                if(app_settings.draw_over_output)
                 {
-                    //obtenemos la lista de descriptores de la base de datos
-                    std::vector<cv::Mat> lista_descriptores;
-                    lista_descriptores = db.obtener_lista_descriptores(id);
-                    //obtenemos el mejor resultado entre los match de los descriptores
-                    verificado = comparator.compare(analysis.descriptors, lista_descriptores);
-                    if(verificado)
+                    enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+                    enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
+                }
+                ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
+                //solo admitimos huellas que sean suficientemente buenas
+                if(analysis.descriptors.rows > 4)
+                {
+                    //obtenemos una lista con los id de la base de datos
+                    std::vector<QString> lista_id;
+                    lista_id = db.obtener_lista_id();
+                    //para cada id, realizamos la verificacion
+                    bool verificado = false;
+                    for(QString id : lista_id)
                     {
-                        std::cout << "Match encontrado: " << id.toStdString() << std::endl;;
+                        //obtenemos la lista de descriptores de la base de datos
+                        std::vector<cv::Mat> lista_descriptores;
+                        lista_descriptores = db.obtener_lista_descriptores(id);
+                        //obtenemos el mejor resultado entre los match de los descriptores
+                        verificado = comparator.compare(analysis.descriptors, lista_descriptores, app_settings.matcher_threshold);
+                        if(verificado)
+                        {
+                            std::cout << "Match encontrado: " << id.toStdString() << std::endl;;
+                        }
                     }
-
                 }
-                if(!verificado)
+                else
                 {
-                    std::cout << "No verificado" << std::endl;
+                    std::cout << "Ingrese la huella nuevamente" << std::endl;
                 }
-            }
-            else
-            {
-                std::cout << "Ingrese la huella nuevamente" << std::endl;
             }
         }
     }

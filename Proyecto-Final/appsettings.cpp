@@ -30,7 +30,7 @@ void AppSettings::load_settings()
     draw_over_output = settings.value("draw_features").toBool();
 
     //comparator
-    max_match_dist = settings.value("max_match_dist").toInt();
+    matcher_threshold = settings.value("match_thresh").toDouble();
 }
 
 int string_to_enum(const QString arg1)

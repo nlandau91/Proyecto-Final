@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -224,12 +224,12 @@
        <item>
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Max Match Dist</string>
+          <string>Threshold</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_dist">
+        <widget class="QLineEdit" name="lineEdit_match_thresh">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
            <horstretch>0</horstretch>

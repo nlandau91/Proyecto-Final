@@ -39,7 +39,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->checkBox_draw->setChecked(true);
 
     //feature matching
-    ui->lineEdit_dist->setText("80");
+    ui->lineEdit_match_thresh->setText("0.2");
 
 
     load_settings();
@@ -71,7 +71,7 @@ void ConfigDialog::load_settings()
     ui->checkBox_draw->setChecked(settings.value("draw_features").toBool());
 
     //feature matching
-    ui->lineEdit_dist->setText(settings.value("max_match_dist").toString());
+    ui->lineEdit_match_thresh->setText(settings.value("match_thresh").toString());
 }
 
 void ConfigDialog::save_settings()
@@ -93,7 +93,7 @@ void ConfigDialog::save_settings()
     settings.setValue("draw_features",ui->checkBox_draw->isChecked());
 
     //feature matching
-    settings.setValue("max_match_dist", ui->lineEdit_dist->text());
+    settings.setValue("match_thresh", ui->lineEdit_match_thresh->text());
 
 }
 

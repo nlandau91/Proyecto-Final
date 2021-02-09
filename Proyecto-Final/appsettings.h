@@ -23,7 +23,7 @@ public:
 
     //comparator
     int matcher_method;
-    int max_match_dist;
+    double matcher_threshold;
 
     bool draw_over_output;
 

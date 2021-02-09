@@ -59,16 +59,12 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
     }
     if(matches.size() > 0)
     {
-        //        score = 0;
-        //        for(cv::DMatch m : matches)
-        //        {
-        //            score += m.distance;
-        //        }
-        //        score/=matches.size();
         double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
         comparation = score > threshold;
-        qDebug() << score;
-
+        if(comparation)
+        {
+            qDebug() << score;
+        }
     }
     return comparation;
 }
@@ -76,10 +72,10 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
 bool Comparator::compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, double threshold)
 {
     bool comparation = false;
-    qDebug() << "Comparator: obteniendo matches...";
+    //qDebug() << "Comparator: obteniendo matches...";
     for(cv::Mat td : train_descriptors_list)
     {
-        comparation = comparation || compare(query_descriptors, td, 0.1);
+        comparation = comparation || compare(query_descriptors, td, threshold);
     }
     return comparation;
 }
