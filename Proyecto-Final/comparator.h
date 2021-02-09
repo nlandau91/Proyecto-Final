@@ -21,6 +21,8 @@ public:
 
     bool compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, double threshold = 0.1);
 
+    bool compare_edges(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors);
+
     int matcher_method;
 };
 }

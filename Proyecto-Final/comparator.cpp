@@ -52,8 +52,8 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
     }
     case SURF:
     {
-        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
-        //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
+        //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
+        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
         break;
     }
     }
@@ -65,6 +65,31 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         {
             qDebug() << score;
         }
+    }
+    return comparation;
+}
+
+bool Comparator::compare_edges(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors)
+{
+    bool comparation = false;
+    std::vector<cv::DMatch> matches;
+    switch(matcher_method)
+    {
+    case ORB:
+    {
+        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_HAMMING,0.75);
+        break;
+    }
+    case SURF:
+    {
+        //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
+        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
+        break;
+    }
+    }
+    if(matches.size() > 1)
+    {
+        //cv::Point root_1(query_descriptors[matches[0].queryIdx].x,2);
     }
     return comparation;
 }

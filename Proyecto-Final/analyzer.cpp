@@ -132,8 +132,10 @@ std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src, const cv::Mat &mask)
                 //1 representa terminacion, 3 representa bifurcacion
                 if(cn == 1 || cn == 3)
                 {
-                    //guardamos el valor de cn como tamanio, para poder discernir luego si era terminacion o bifurcacion
-                    cv::KeyPoint kp(col,row,cn);
+                    //armamos el keypoint
+                    int tipo = (cn==1 ? ENDING : BIFURCATION);
+                    cv::KeyPoint kp(col,row,1);
+                    kp.class_id = tipo;
                     keypoints.push_back(kp);
                 }
             }
@@ -169,6 +171,12 @@ std::vector<cv::KeyPoint> Analyzer::find_l2_features(const Preprocessed &pre)
     }
     default:
         break;
+    }
+    //guardamos el angulo en los keypoints
+    for(cv::KeyPoint kp : l2_features)
+    {
+       // double angulo = pre.orientation.at<double>(kp.pt.x/blk_sze/2,kp.pt.y*blk_sze/2);
+
     }
     return l2_features;
 }
@@ -233,7 +241,9 @@ std::vector<cv::KeyPoint> poincare(const cv::Mat orient, const cv::Mat mask, flo
                 float p_index = poincare_index_en(y,x,orient,tol);
                 if(p_index != -1)
                 {
-                    keypoints.push_back(cv::KeyPoint((x*blk_sze)+blk_sze/2,(y*blk_sze)+blk_sze/2,p_index));
+                    cv::KeyPoint kp((x*blk_sze)+blk_sze/2, (y*blk_sze)+blk_sze/2, 1);
+                    kp.class_id = p_index;
+                    keypoints.push_back(kp);
                 }
             }
         }
@@ -258,7 +268,21 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(const Preprocessed &pre)
     return l1_features;
 }
 
-cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPoint> &keypoints)
+//arma descriptores personalizados para las huellas dactilares
+//cada columna es un descriptor
+//col 0 = pos x
+//col 1 = pos y
+//col 2 = tipo de minucia
+//col 4 = angulo
+void custom_extractor(const cv::Mat &angles, const std::vector<cv::KeyPoint> &keypoints, cv::Mat &descriptors)
+{
+    for(cv::KeyPoint kp : keypoints)
+    {
+
+    }
+}
+
+cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, const cv::Mat &angles, std::vector<cv::KeyPoint> &keypoints)
 {
     cv::Ptr<cv::Feature2D> extractor;
     cv::Mat descriptors;
@@ -272,14 +296,19 @@ cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPo
     }
     case BRIEF:
     {
-        extractor =  cv::xfeatures2d::BriefDescriptorExtractor::create();
+        extractor = cv::xfeatures2d::BriefDescriptorExtractor::create();
         extractor->compute(src,keypoints,descriptors);
         break;
     }
     case SURF:
     {
-        extractor =  cv::xfeatures2d::SURF::create();
+        extractor = cv::xfeatures2d::SURF::create();
         extractor->compute(src,keypoints,descriptors);
+        break;
+    }
+    case CUSTOM:
+    {
+        custom_extractor(angles, keypoints, descriptors);
         break;
     }
     case SIFT:
@@ -308,7 +337,7 @@ fp::Analysis Analyzer::analize(const fp::Preprocessed &preprocessed)
     analysis.l2_features = find_l2_features(preprocessed);
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
-    analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
+    analysis.descriptors = calcular_descriptors(analysis.fingerprint, preprocessed.orientation, analysis.l2_features);
     qDebug() << "Analizer: listo.";
     return analysis;
 }

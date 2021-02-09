@@ -22,6 +22,7 @@ enum Params
     SHITOMASI,
     SURF,
     ORB,
+    CUSTOM,
     SIFT,
     BRIEF,
     BRUTEFORCE,

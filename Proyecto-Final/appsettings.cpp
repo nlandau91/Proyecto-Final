@@ -46,6 +46,7 @@ int string_to_enum(const QString arg1)
     if(arg1 == "shitomasi") return fp::SHITOMASI;
     if(arg1 == "orb") return fp::ORB;
     if(arg1 == "surf") return fp::SURF;
+    if(arg1 == "custom") return fp::CUSTOM;
     if(arg1 == "sift") return fp::SIFT;
     if(arg1 == "cn") return fp::CN;
     if(arg1 == "poincare") return fp::POINCARE;

@@ -24,22 +24,22 @@ void OutputWindow::setup(const fp::Analysis &analysis, const cv::Mat &output)
     QString type = "tba";
     for(cv::KeyPoint kp : analysis.l2_features)
     {
-        if(kp.size == 1)
+        if(kp.class_id ==fp::ENDING)
         {
             terminaciones++;
         }
-        if(kp.size == 3)
+        if(kp.class_id == fp::BIFURCATION)
         {
             bifurcaciones++;
         }
     }
     for(cv::KeyPoint kp : analysis.l1_features)
     {
-        if(kp.size == fp::DELTA)
+        if(kp.class_id == fp::DELTA)
         {
             deltas++;
         }
-        if(kp.size == fp::LOOP)
+        if(kp.class_id == fp::LOOP)
         {
             cores++;
         }

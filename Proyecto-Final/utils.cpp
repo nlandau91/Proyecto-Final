@@ -58,14 +58,14 @@ cv::Mat draw_minutiae( const cv::Mat &src, const std::vector<cv::KeyPoint> &mint
     for(cv::KeyPoint kp : mintiaes)
     {
         //ridge ending
-        if(kp.size == 1)
+        if(kp.class_id == ENDING)
         {
             cv::drawMarker(drawed,kp.pt,cv::Scalar(255,0,0,255),cv::MARKER_CROSS,5);
         }
         else
         {
             //ridge bifurcation
-            if(kp.size == 3)
+            if(kp.class_id == BIFURCATION)
             {
                 cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_CROSS,5);
             }
@@ -84,15 +84,15 @@ cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> 
     cv::Mat drawed = src.clone();
     for(cv::KeyPoint kp : singularities)
     {
-        if(kp.size == LOOP) // o core
+        if(kp.class_id == LOOP) // o core
         {
             cv::drawMarker(drawed,kp.pt,cv::Scalar(255,0,0,255),cv::MARKER_SQUARE,10);
         }
-        if(kp.size == WHORL)
+        if(kp.class_id == WHORL)
         {
             cv::drawMarker(drawed,kp.pt,cv::Scalar(0,255,0,255),cv::MARKER_SQUARE,10);
         }
-        if(kp.size == DELTA)
+        if(kp.class_id == DELTA)
         {
             cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_DIAMOND,10);
         }
