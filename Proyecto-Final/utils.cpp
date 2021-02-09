@@ -55,7 +55,7 @@ QPixmap cvMatToQPixmap( const cv::Mat &inMat )
 cv::Mat draw_minutiae( const cv::Mat &src, const std::vector<cv::KeyPoint> &mintiaes)
 {
     cv::Mat drawed = src.clone();
-    for(cv::KeyPoint kp : mintiaes)
+    for(const cv::KeyPoint &kp : mintiaes)
     {
         //ridge ending
         if(kp.class_id == ENDING)
@@ -82,7 +82,7 @@ cv::Mat draw_minutiae( const cv::Mat &src, const std::vector<cv::KeyPoint> &mint
 cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> &singularities)
 {
     cv::Mat drawed = src.clone();
-    for(cv::KeyPoint kp : singularities)
+    for(const cv::KeyPoint &kp : singularities)
     {
         if(kp.class_id == LOOP) // o core
         {
@@ -147,10 +147,10 @@ std::vector<float> unique(const cv::Mat& input, bool sort)
     }
 
     std::vector<float> out;
-    for (int y = 0; y < input.rows; ++y)
+    for(int y = 0; y < input.rows; ++y)
     {
         const float* row_ptr = input.ptr<float>(y);
-        for (int x = 0; x < input.cols; ++x)
+        for(int x = 0; x < input.cols; ++x)
         {
             float value = row_ptr[x];
 
@@ -210,27 +210,26 @@ cv::Mat translate_mat(const cv::Mat &img, int offsetx, int offsety)
     return translated;
 }
 
-bool write_descriptor( const std::string& file, const cv::Mat& descriptor )
+bool serialize_mat(const std::string& file, const cv::Mat& mat, const std::string &name)
 {
     cv::FileStorage fs( file, cv::FileStorage::WRITE );
     if( fs.isOpened() )
     {
-        fs << "imageDescriptor" << descriptor;
+        fs << name << mat;
         return true;
     }
     return false;
 }
 
-bool read_descriptor( const std::string& file, cv::Mat& descriptor )
+bool serialize_mat(const std::string& file, cv::Mat& mat, const std::string &name)
 {
     cv::FileStorage fs( file, cv::FileStorage::READ );
     if( fs.isOpened() )
     {
-        fs["imageDescriptor"] >> descriptor;
+        fs[name] >> mat;
         return true;
     }
     return false;
 }
-
 
 }

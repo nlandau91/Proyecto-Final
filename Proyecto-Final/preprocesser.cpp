@@ -46,10 +46,12 @@ cv::Mat Preprocesser::normalize(const cv::Mat &src, float req_mean, float req_va
 
 
 //This is equivalent to Matlab's 'meshgrid' function
-void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY) {
+void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY)
+{
     std::vector<int> t;
 
-    for (int i = -kernelSize; i < kernelSize; i++) {
+    for(int i = -kernelSize; i < kernelSize; i++)
+    {
         t.push_back(i);
     }
 
@@ -122,12 +124,12 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
         cv::filter2D(sines, sines, -1, kernel);
     }
     //finalmente armamos el mapa de angulos
-    for (int i = 0; i < sines.rows; i++)
+    for(int i = 0; i < sines.rows; i++)
     {
         const float *sines_i = sines.ptr<float>(i);
         const float *cosines_i = cosines.ptr<float>(i);
         auto *result_i = result.ptr<float>(i);
-        for (int j = 0; j < sines.cols; j++)
+        for(int j = 0; j < sines.cols; j++)
         {
             result_i[j] = (M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2;
         }

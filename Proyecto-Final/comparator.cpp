@@ -27,7 +27,7 @@ std::vector<cv::DMatch> find_matches(const cv::Mat &query_descriptors, const cv:
     std::vector<cv::DMatch> good_matches;
     std::vector<std::vector<cv::DMatch>> matches;
     matcher.knnMatch(query_descriptors, train_descriptors,matches,2);
-    for(std::vector<cv::DMatch> match_pair : matches)
+    for(std::vector<cv::DMatch> &match_pair : matches)
     {
         //test de ratio de lowe
         if(match_pair[0].distance < lowe_ratio*match_pair[1].distance)
@@ -98,7 +98,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const std::vector<cv:
 {
     bool comparation = false;
     //qDebug() << "Comparator: obteniendo matches...";
-    for(cv::Mat td : train_descriptors_list)
+    for(const cv::Mat &td : train_descriptors_list)
     {
         comparation = comparation || compare(query_descriptors, td, threshold);
     }

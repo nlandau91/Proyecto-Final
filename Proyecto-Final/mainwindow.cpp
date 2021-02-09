@@ -26,7 +26,7 @@ void MainWindow::on_btn_ingresar_clicked()
                                                           tr("Open Image"), "../res/",
                                                           tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
     setEnabled(false);
-    for(QString fileName : fileNames)
+    for(const QString &fileName : fileNames)
     {
         //leemos la imagen en escala de gris
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
@@ -71,7 +71,7 @@ void MainWindow::on_btn_verificar_clicked()
                                                           tr("Open Image"), "../res/",
                                                           tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
 
-    for(QString fileName : fileNames)
+    for(const QString &fileName : fileNames)
     {
         if(!fileName.isEmpty())
         {
@@ -84,7 +84,6 @@ void MainWindow::on_btn_verificar_clicked()
                 fp::Preprocessed pre = preprocesser.preprocess(src);
                 //obtenemos los descriptores
                 fp::Analysis analysis = analyzer.analize(pre);
-                qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
                 //dibujamos sobre la imagen de salida
                 cv::Mat enhanced_marked;
                 cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
@@ -123,7 +122,7 @@ void MainWindow::on_btn_identificar_clicked()
     QStringList fileNames = QFileDialog::getOpenFileNames(this,
                                                           tr("Open Image"), "../res/",
                                                           tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
-    for(QString fileName : fileNames)
+    for(const QString &fileName : fileNames)
     {
         if(!fileName.isEmpty())
         {
@@ -136,7 +135,6 @@ void MainWindow::on_btn_identificar_clicked()
                 fp::Preprocessed pre = preprocesser.preprocess(src);
                 //obtenemos los descriptores
                 fp::Analysis analysis = analyzer.analize(pre);
-                qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
                 //dibujamos sobre la imagen de salida
                 cv::Mat enhanced_marked;
                 cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
@@ -154,7 +152,7 @@ void MainWindow::on_btn_identificar_clicked()
                     lista_id = db.obtener_lista_id();
                     //para cada id, realizamos la verificacion
                     bool verificado = false;
-                    for(QString id : lista_id)
+                    for(const QString &id : lista_id)
                     {
                         //obtenemos la lista de descriptores de la base de datos
                         std::vector<cv::Mat> lista_descriptores;

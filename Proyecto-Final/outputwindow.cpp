@@ -22,7 +22,7 @@ void OutputWindow::setup(const fp::Analysis &analysis, const cv::Mat &output)
     int cores = 0;
     int whorls = 0;
     QString type = "tba";
-    for(cv::KeyPoint kp : analysis.l2_features)
+    for(const cv::KeyPoint &kp : analysis.l2_features)
     {
         if(kp.class_id ==fp::ENDING)
         {
@@ -33,7 +33,7 @@ void OutputWindow::setup(const fp::Analysis &analysis, const cv::Mat &output)
             bifurcaciones++;
         }
     }
-    for(cv::KeyPoint kp : analysis.l1_features)
+    for(const cv::KeyPoint &kp : analysis.l1_features)
     {
         if(kp.class_id == fp::DELTA)
         {

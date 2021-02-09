@@ -173,14 +173,12 @@ std::vector<cv::KeyPoint> Analyzer::find_l2_features(const Preprocessed &pre)
         break;
     }
     //guardamos el angulo en los keypoints
-    for(cv::KeyPoint kp : l2_features)
+    for(cv::KeyPoint &kp : l2_features)
     {
         int x = trunc((double)kp.pt.x / blk_sze);
         int y = trunc((double)kp.pt.y / blk_sze);
         double ang = pre.orientation.at<double>(x,y);
         kp.angle = ang;
-        // double angulo = pre.orientation.at<double>(kp.pt.x/blk_sze/2,kp.pt.y*blk_sze/2);
-
     }
     return l2_features;
 }
@@ -273,23 +271,24 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(const Preprocessed &pre)
 }
 
 //arma descriptores personalizados para las huellas dactilares
-//cada columna es un descriptor
-//row 0 = pos x
-//row 1 = pos y
-//row 2 = tipo de minucia
-//row 4 = angulo
+//cada row es un descriptor
+//col 0 = pos x
+//col 1 = pos y
+//col 2 = tipo de minucia
+//col 4 = angulo
 cv::Mat custom_extractor( const std::vector<cv::KeyPoint> &keypoints)
 {
-    cv::Mat descriptors(4,keypoints.size(),CV_64FC1);
+    cv::Mat descriptors(keypoints.size(),4,CV_64FC1);
     int index = 0;
-    for(cv::KeyPoint kp : keypoints)
+    for(const cv::KeyPoint &kp : keypoints)
     {
-        descriptors.at<double>(0,index) = kp.pt.x;
-        descriptors.at<double>(1,index) = kp.pt.y;
-        descriptors.at<double>(2,index) = kp.class_id;
-        descriptors.at<double>(3,index) = kp.angle;
+        descriptors.at<double>(index,0) = kp.pt.x;
+        descriptors.at<double>(index,1) = kp.pt.y;
+        descriptors.at<double>(index,2) = kp.class_id;
+        descriptors.at<double>(index,3) = kp.angle;
         index++;
     }
+    //std::cout << descriptors << std::endl;
     return descriptors;
 }
 

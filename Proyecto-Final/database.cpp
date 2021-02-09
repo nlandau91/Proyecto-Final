@@ -59,7 +59,7 @@ void Database::ingresar_descriptor(const cv::Mat &descriptors, const QString &id
         //descriptor_path = descriptor_path + "/" + QString::number(sample)+".tif";
         //cv::imwrite(descriptor_path.toStdString(), descriptors);
         descriptor_path = descriptor_path + "/" + QString::number(sample);
-        write_descriptor(descriptor_path.toStdString(),descriptors);
+        serialize_mat(descriptor_path.toStdString(),descriptors);
         //ingresamos los descriptores a la base de datos
         query.prepare("INSERT INTO people(id, descriptor_sample, descriptor_path) VALUES (:id, :sample, :path)");
         query.bindValue(":id",id);
@@ -88,7 +88,7 @@ std::vector<cv::Mat> Database::obtener_lista_descriptores(const QString &id)
         QString path = query.value(0).toString();
         //cv::Mat descriptores = cv::imread(path.toStdString(),cv::IMREAD_ANYCOLOR | cv::IMREAD_ANYDEPTH);
         cv::Mat descriptores;
-        read_descriptor(path.toStdString(),descriptores);
+        serialize_mat(path.toStdString(),descriptores);
         lista_descriptores.push_back(descriptores);
     }
 

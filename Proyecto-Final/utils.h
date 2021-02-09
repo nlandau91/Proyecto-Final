@@ -20,7 +20,7 @@ QImage cvMatToQImage(const cv::Mat &inMat);
  * \param inMat imagen de tipo cv::Mat a convertir
  * \return imagen en formato QPixmap
  */
-QPixmap cvMatToQPixmap( const cv::Mat &inMat );
+QPixmap cvMatToQPixmap(const cv::Mat &inMat );
 
 /*!
  * \brief draw_singularities dibuja sobre la imagen las singularidades pasadas por parametro
@@ -28,7 +28,7 @@ QPixmap cvMatToQPixmap( const cv::Mat &inMat );
  * \param singularities vector de singularidades que se dibujaran
  * \return la imagen dibujada
  */
-cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> &singularities);
+cv::Mat draw_singularities(const cv::Mat &src, const std::vector<cv::KeyPoint> &singularities);
 
 /*!
  * \brief draw_minutiae dibuja sobre la imagen las minucias pasadas por parametro
@@ -36,21 +36,21 @@ cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> 
  * \param mintiaes vector de minucias que se dibujaran
  * \return la imagen dibujada
  */
-cv::Mat draw_minutiae( const cv::Mat &src, const std::vector<cv::KeyPoint> &mintiaes);
+cv::Mat draw_minutiae(const cv::Mat &src, const std::vector<cv::KeyPoint> &mintiaes);
 
 /*!
  * \brief mat_cos calcula el coseno de cada pixel de la imagen
  * \param src imagen de unico canal
  * \return la imagen con el coseno de sus componentes
  */
-cv::Mat mat_cos( const cv::Mat &src);
+cv::Mat mat_cos(const cv::Mat &src);
 
 /*!
  * \brief mat_sin calcula el seno de cada pixel de la imagen
  * \param src imagen de unico canal
  * \return la imagen con el seno de sus componentes
  */
-cv::Mat mat_sin( const cv::Mat &src);
+cv::Mat mat_sin(const cv::Mat &src);
 
 /*!
  * \brief mat_atan2 calcula el arcotangente de cada par de pixel de la imagen
@@ -58,7 +58,7 @@ cv::Mat mat_sin( const cv::Mat &src);
  * \param src2 imagen cuyas componentes son el segundo parametro del arcotangente
  * \return devuelve la imagen con sus compoentes igual al arcotangente de las imagenes pasadas
  */
-cv::Mat mat_atan2( const cv::Mat &src1, const cv::Mat &src2);
+cv::Mat mat_atan2(const cv::Mat &src1, const cv::Mat &src2);
 
 /*!
  * \brief unique arma un vector con cada valor de la imagen una unica vez
@@ -74,7 +74,7 @@ std::vector<float> unique(const cv::Mat &input, bool sort = false);
  * \param angles mapa de orientaciones
  * \return imagen donde se visualizan los angulos
  */
-cv::Mat visualize_angles( const cv::Mat &im, const cv::Mat &angles);
+cv::Mat visualize_angles(const cv::Mat &im, const cv::Mat &angles);
 
 /*!
  * \brief apply_mask aplica una mascara a una imagen
@@ -99,7 +99,7 @@ cv::Mat translate_mat(const cv::Mat &img, int offsetx, int offsety);
  * \param descriptor descriptor a guardar
  * \return true si se realizo con exito
  */
-bool write_descriptor( const std::string& file, const cv::Mat& descriptor );
+bool serialize_mat(const std::string& file, const cv::Mat& mat, const std::string &name = "serialized_mat");
 
 /*!
  * \brief read_descriptor lee un descriptor del disco
@@ -107,7 +107,7 @@ bool write_descriptor( const std::string& file, const cv::Mat& descriptor );
  * \param descriptor mat donde se copiara el descriptor leido
  * \return true si se realizo con exito
  */
-bool read_descriptor( const std::string& file, cv::Mat& descriptor );
+bool serialize_mat(const std::string& file, cv::Mat& mat, const std::string &name = "serialized_mat");
 
 }
 
