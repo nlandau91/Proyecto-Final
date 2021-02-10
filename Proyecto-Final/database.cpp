@@ -171,16 +171,38 @@ std::vector<cv::Mat> Database::recuperar_descriptores(const QString &id)
     while(query.next())
     {
         QString path = query.value(0).toString();
-        //cv::Mat descriptores = cv::imread(path.toStdString(),cv::IMREAD_ANYCOLOR | cv::IMREAD_ANYDEPTH);
         cv::Mat descriptores;
-        serialize_mat(path.toStdString(),descriptores);
+        read_serialized_mat(path.toStdString(),descriptores);
         lista_descriptores.push_back(descriptores);
     }
-
 
     //devolvemos los descriptores
     return lista_descriptores;
 }
+
+std::vector<cv::Mat> Database::recuperar_keypoints(const QString &id)
+{
+    std::vector<cv::Mat> list_keypoints;
+
+    QSqlQuery query;
+    query.prepare("SELECT keypoint_path FROM people WHERE id=:id");
+    query.bindValue(":id",id);
+    if(!query.exec())
+    {
+        qWarning() << "ERROR: " << query.lastError().text();
+    }
+    while(query.next())
+    {
+        QString path = query.value(0).toString();
+        cv::Mat keypoints;
+        read_serialized_mat(path.toStdString(),keypoints);
+        list_keypoints.push_back(keypoints);
+    }
+
+    //devolvemos los descriptores
+    return list_keypoints;
+}
+
 std::vector<QString> Database::obtener_lista_id()
 {
     std::vector<QString> lista_id;

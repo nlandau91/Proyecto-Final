@@ -102,12 +102,12 @@ cv::Mat translate_mat(const cv::Mat &img, int offsetx, int offsety);
 bool serialize_mat(const std::string& file, const cv::Mat& mat, const std::string &name = "serialized_mat");
 
 /*!
- * \brief read_descriptor lee un descriptor del disco
+ * \brief read_serialized_mat lee un descriptor del disco
  * \param file nombre del archivo a leer
  * \param descriptor mat donde se copiara el descriptor leido
  * \return true si se realizo con exito
  */
-bool serialize_mat(const std::string& file, cv::Mat& mat, const std::string &name = "serialized_mat");
+bool read_serialized_mat(const std::string& file, cv::Mat& mat, const std::string &name = "serialized_mat");
 
 }
 

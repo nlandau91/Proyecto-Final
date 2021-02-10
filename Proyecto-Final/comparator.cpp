@@ -72,6 +72,38 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
 bool Comparator::compare_edges(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors)
 {
     bool comparation = false;
+    Q_UNUSED(query_descriptors);
+    Q_UNUSED(train_descriptors);
+    return comparation;
+}
+
+bool Comparator::compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, double threshold)
+{
+    bool comparation = false;
+    //qDebug() << "Comparator: obteniendo matches...";
+    for(const cv::Mat &td : train_descriptors_list)
+    {
+        comparation = comparation || compare(query_descriptors, td, threshold);
+    }
+    return comparation;
+}
+
+bool Comparator::compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, const cv::Mat &query_keypoints, const std::vector<cv::Mat> &train_keypoints_list, double threshold)
+{
+    bool comparation = false;
+    //qDebug() << "Comparator: obteniendo matches...";
+    int i = 0;
+    for(const cv::Mat &td : train_descriptors_list)
+    {
+        comparation = comparation || compare(query_descriptors, td, query_keypoints, train_keypoints_list[i], threshold);
+        i++;
+    }
+    return comparation;
+}
+
+bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold)
+{
+    bool comparation = false;
     std::vector<cv::DMatch> matches;
     switch(matcher_method)
     {
@@ -89,18 +121,24 @@ bool Comparator::compare_edges(const cv::Mat &query_descriptors, const cv::Mat &
     }
     if(matches.size() > 1)
     {
-        //cv::Point root_1(query_descriptors[matches[0].queryIdx].x,2);
-    }
-    return comparation;
-}
+        //armamos las raices
+        int q_root_x = query_keypoints.at<double>(matches[0].queryIdx,0);
+        int q_root_y = query_keypoints.at<double>(matches[0].queryIdx,1);
+        cv::Point q_root(q_root_x,q_root_y);
+        int t_root_x = train_keypoints.at<double>(matches[0].trainIdx,0);
+        int t_root_y = train_keypoints.at<double>(matches[0].trainIdx,1);
+        cv::Point t_root(t_root_x,t_root_y);
 
-bool Comparator::compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, double threshold)
-{
-    bool comparation = false;
-    //qDebug() << "Comparator: obteniendo matches...";
-    for(const cv::Mat &td : train_descriptors_list)
+    }
+
+    if(matches.size() > 0)
     {
-        comparation = comparation || compare(query_descriptors, td, threshold);
+        double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
+        comparation = score > threshold;
+        if(comparation)
+        {
+            qDebug() << score;
+        }
     }
     return comparation;
 }

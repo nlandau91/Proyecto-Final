@@ -144,6 +144,35 @@ std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src, const cv::Mat &mask)
     return keypoints;
 }
 
+//arma un mat a partir de una lista de keypoints
+//cada row es un kp
+//col 0 = pos x
+//col 1 = pos y
+//col 2 = tipo de minucia
+//col 4 = angulo
+cv::Mat custom_keypoints(const Analysis &analysis, const Preprocessed &pre)
+{
+    int blk_sze = trunc((double)pre.result.rows / pre.orientation.rows);
+    cv::Mat descriptors(analysis.l2_features.size(),4,CV_64FC1);
+    int index = 0;
+    for(const cv::KeyPoint &kp : analysis.l2_features)
+    {
+        int x = trunc((double)kp.pt.x / blk_sze);
+        int y = trunc((double)kp.pt.y / blk_sze);
+        int tipo = kp.class_id;
+        double ang = pre.orientation.at<double>(x,y);
+
+        descriptors.at<double>(index,0) = x;
+        descriptors.at<double>(index,1) = y;
+        descriptors.at<double>(index,2) = tipo;
+        descriptors.at<double>(index,3) = ang;
+
+        index++;
+    }
+
+    return descriptors;
+}
+
 std::vector<cv::KeyPoint> Analyzer::find_l2_features(const Preprocessed &pre)
 {
     std::vector<cv::KeyPoint> l2_features;
@@ -171,14 +200,6 @@ std::vector<cv::KeyPoint> Analyzer::find_l2_features(const Preprocessed &pre)
     }
     default:
         break;
-    }
-    //guardamos el angulo en los keypoints
-    for(cv::KeyPoint &kp : l2_features)
-    {
-        int x = trunc((double)kp.pt.x / blk_sze);
-        int y = trunc((double)kp.pt.y / blk_sze);
-        double ang = pre.orientation.at<double>(x,y);
-        kp.angle = ang;
     }
     return l2_features;
 }
@@ -270,28 +291,6 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(const Preprocessed &pre)
     return l1_features;
 }
 
-//arma un mat a partir de una lista de keypoints
-//cada row es un kp
-//col 0 = pos x
-//col 1 = pos y
-//col 2 = tipo de minucia
-//col 4 = angulo
-cv::Mat kp_to_mat( const std::vector<cv::KeyPoint> &keypoints)
-{
-    cv::Mat descriptors(keypoints.size(),4,CV_64FC1);
-    int index = 0;
-    for(const cv::KeyPoint &kp : keypoints)
-    {
-        descriptors.at<double>(index,0) = kp.pt.x;
-        descriptors.at<double>(index,1) = kp.pt.y;
-        descriptors.at<double>(index,2) = kp.class_id;
-        descriptors.at<double>(index,3) = kp.angle;
-        index++;
-    }
-    //std::cout << descriptors << std::endl;
-    return descriptors;
-}
-
 cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPoint> &keypoints)
 {
     cv::Ptr<cv::Feature2D> extractor;
@@ -336,11 +335,10 @@ fp::Analysis Analyzer::analize(const fp::Preprocessed &preprocessed)
     //buscamos los puntos minuciosos (minutae)
     qDebug() << "Analizer: buscando minutiae...";
     analysis.l2_features = find_l2_features(preprocessed);
+    analysis.keypoints = custom_keypoints(analysis,preprocessed);
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
     analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
-    qDebug() << "Analizer: armando mat de keypoints...";
-    analysis.keypoints = kp_to_mat(analysis.l2_features);
     qDebug() << "Analizer: listo.";
     return analysis;
 }

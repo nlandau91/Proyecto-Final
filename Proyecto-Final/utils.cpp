@@ -221,7 +221,7 @@ bool serialize_mat(const std::string& file, const cv::Mat& mat, const std::strin
     return false;
 }
 
-bool serialize_mat(const std::string& file, cv::Mat& mat, const std::string &name)
+bool read_serialized_mat(const std::string& file, cv::Mat& mat, const std::string &name)
 {
     cv::FileStorage fs( file, cv::FileStorage::READ );
     if( fs.isOpened() )

@@ -102,8 +102,10 @@ void MainWindow::on_btn_verificar_clicked()
                     QString id = ui->lineEdit->text();
                     std::vector<cv::Mat> lista_descriptores;
                     lista_descriptores = db.recuperar_descriptores(id);
+                    std::vector<cv::Mat> lista_keypoints;
+                    lista_keypoints = db.recuperar_keypoints(id);
                     //verificamos
-                    verificado = comparator.compare(analysis.descriptors, lista_descriptores, app_settings.matcher_threshold);
+                    verificado = comparator.compare(analysis.descriptors, lista_descriptores, analysis.keypoints, lista_keypoints, app_settings.matcher_threshold);
                 }
                 if(verificado)
                 {
