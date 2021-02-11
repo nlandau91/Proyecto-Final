@@ -21,6 +21,7 @@ SOURCES += \
     comparator.cpp \
     configdialog.cpp \
     database.cpp \
+    edge.cpp \
     main.cpp \
     mainwindow.cpp \
     outputwindow.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     comparator.h \
     configdialog.h \
     database.h \
+    edge.h \
     mainwindow.h \
     outputwindow.h \
     preprocesser.h \

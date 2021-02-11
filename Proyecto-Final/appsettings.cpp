@@ -31,6 +31,7 @@ void AppSettings::load_settings()
 
     //comparator
     matcher_threshold = settings.value("match_thresh").toDouble();
+    edge_matching = settings.value("edge_matching").toBool();
 }
 
 int string_to_enum(const QString arg1)

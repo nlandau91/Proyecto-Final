@@ -72,6 +72,7 @@ void ConfigDialog::load_settings()
 
     //feature matching
     ui->lineEdit_match_thresh->setText(settings.value("match_thresh").toString());
+    ui->checkBox_edgeMatching->setChecked(settings.value("edge_matching").toBool());
 }
 
 void ConfigDialog::save_settings()
@@ -94,6 +95,7 @@ void ConfigDialog::save_settings()
 
     //feature matching
     settings.setValue("match_thresh", ui->lineEdit_match_thresh->text());
+    settings.setValue("edge_matching",ui->checkBox_edgeMatching->isChecked());
 
 }
 

@@ -105,7 +105,7 @@ void MainWindow::on_btn_verificar_clicked()
                     std::vector<cv::Mat> lista_keypoints;
                     lista_keypoints = db.recuperar_keypoints(id);
                     //verificamos
-                    verificado = comparator.compare(analysis.descriptors, lista_descriptores, analysis.keypoints, lista_keypoints, app_settings.matcher_threshold);
+                    verificado = comparator.compare(analysis.descriptors, lista_descriptores, analysis.keypoints, lista_keypoints);
                 }
                 if(verificado)
                 {
@@ -160,8 +160,10 @@ void MainWindow::on_btn_identificar_clicked()
                         //obtenemos la lista de descriptores de la base de datos
                         std::vector<cv::Mat> lista_descriptores;
                         lista_descriptores = db.recuperar_descriptores(id);
-                        //obtenemos el mejor resultado entre los match de los descriptores
-                        verificado = comparator.compare(analysis.descriptors, lista_descriptores, app_settings.matcher_threshold);
+                        std::vector<cv::Mat> lista_keypoints;
+                        lista_keypoints = db.recuperar_keypoints(id);
+                        //verificamos
+                        verificado = comparator.compare(analysis.descriptors, lista_descriptores, analysis.keypoints, lista_keypoints);
                         if(verificado)
                         {
                             std::cout << "Match encontrado: " << id.toStdString() << std::endl;;
@@ -200,6 +202,8 @@ void MainWindow::load_settings()
 
     comparator = fp::Comparator();
     comparator.matcher_method = app_settings.descriptor_method;
+    comparator.match_threshold = app_settings.matcher_threshold;
+    comparator.edge_matching = app_settings.edge_matching;
 }
 
 void MainWindow::on_actionOpciones_triggered()

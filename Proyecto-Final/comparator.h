@@ -2,6 +2,7 @@
 #define COMPARATOR_H
 
 #include "common.h"
+#include "edge.h"
 
 namespace fp{
 
@@ -31,13 +32,17 @@ public:
      * \param threshold minimo score de similitud necesario para considerar una comparacion positiva.
      * \return true si se consideran suficientemente iguales, falso en caso contrario
      */
-    bool compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, const cv::Mat &query_keypoints, const std::vector<cv::Mat> &train_keypoints_list, double threshold);
+    bool compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, const cv::Mat &query_keypoints, const std::vector<cv::Mat> &train_keypoints_list);
 
     bool compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold = 0.1);
 
     bool compare_edges(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors);
 
     int matcher_method;
+
+    double match_threshold;
+
+    bool edge_matching;
 };
 }
 #endif // COMPARATOR_H

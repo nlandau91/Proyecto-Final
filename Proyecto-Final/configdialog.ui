@@ -242,6 +242,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="checkBox_edgeMatching">
+         <property name="text">
+          <string>Edge Matching</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>

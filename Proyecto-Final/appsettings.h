@@ -24,6 +24,7 @@ public:
     //comparator
     int matcher_method;
     double matcher_threshold;
+    bool edge_matching;
 
     bool draw_over_output;
 

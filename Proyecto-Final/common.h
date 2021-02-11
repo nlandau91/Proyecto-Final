@@ -8,6 +8,7 @@
 #include <opencv2/xfeatures2d.hpp>
 #include <opencv2/ximgproc.hpp>
 #include <iostream>
+#include <cmath>
 
 namespace fp
 {
