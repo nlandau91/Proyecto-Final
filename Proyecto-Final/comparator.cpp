@@ -39,26 +39,6 @@ std::vector<cv::DMatch> find_matches(const cv::Mat &query_descriptors, const cv:
     return good_matches;
 }
 
-
-/*!
- * \brief create_edge_list crea una lista de arcos a partir de una lista de keypoints
- * \param root_index indice dentro de la lista de keypoints que indica la raiz de los arcos
- * \param keypoints lista de keypoints
- * \return lista de arcos donde el primer nodo es la raiz
- */
-std::vector<Edge> create_edge_list(int root_index, cv::Mat keypoints)
-{
-    std::vector<Edge> edges;
-    if(root_index < keypoints.rows)
-    {
-        //calculamos los puntos raiz
-        int root_x = keypoints.at<double>(root_index,0);
-        int root_y = keypoints.at<double>(root_index,1);
-    }
-
-    return edges;
-}
-
 bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold)
 {
     bool comparation = false;
@@ -79,21 +59,60 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
     }
     if(matches.size() > 1)
     {
-        for(const cv::DMatch &m : matches)
-        {
-            qDebug() << m.distance;
-        }
-        if(edge_matching)
-        {
-            std::vector<Edge> query_edges = create_edge_list(matches[0].queryIdx,query_keypoints);
-            std::vector<Edge> train_edges = create_edge_list(matches[0].trainIdx,train_keypoints);
+        qDebug() << "Comparator: " << matches.size() << " matches encontrados.";
+        double ratio = 0.8; //maxima diferencia entre edges
 
-        }
-        else
+        //buscamos el match con la minima distancia
+        int root_query_index = 0;
+        int root_train_index = 0;
+        double best_dist = 999;
+        for(cv::DMatch m : matches)
         {
-            double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
-            comparation = score > threshold;
+            if(m.distance < best_dist)
+            {
+                best_dist = m.distance;
+                root_query_index = m.queryIdx;
+                root_train_index = m.trainIdx;
+            }
         }
+
+        //calculamos los puntos raiz
+        int root_query_x = query_keypoints.at<double>(root_query_index,0);
+        int root_query_y = query_keypoints.at<double>(root_query_index,1);
+        double root_query_angle = query_keypoints.at<double>(root_query_index,4);
+        int root_train_x = train_keypoints.at<double>(root_train_index,0);
+        int root_train_y = train_keypoints.at<double>(root_train_index,1);
+        double root_train_angle = train_keypoints.at<double>(root_train_index,4);
+        for(size_t i = 0; i < matches.size(); i++)
+        {
+            cv::DMatch m = matches[i];
+            if(!(m.queryIdx == root_query_index || m.trainIdx == root_train_index))
+            {
+                //armamos los arcos
+                int neighbor_query_x = query_keypoints.at<double>(m.queryIdx,0);
+                int neighbor_query_y = query_keypoints.at<double>(m.queryIdx,1);
+                double neighbor_query_angle = query_keypoints.at<double>(m.queryIdx,4);
+                Edge query_edge(root_query_x, root_query_y, root_query_angle, neighbor_query_x, neighbor_query_y, neighbor_query_angle);
+                int neighbor_train_x = train_keypoints.at<double>(m.trainIdx,0);
+                int neightbor_train_y = train_keypoints.at<double>(m.trainIdx,1);
+                double neighbor_train_angle = train_keypoints.at<double>(m.trainIdx,4);
+                Edge train_edge(root_train_x, root_train_y, root_train_angle, neighbor_train_x, neightbor_train_y, neighbor_train_angle);
+                //comparamos los arcos
+                bool similares = false;
+                similares = train_edge.dist*ratio < query_edge.dist && query_edge.dist*ratio < train_edge.dist;
+                //                    && train_edge.alpha*ratio < query_edge.alpha && query_edge.alpha*ratio < train_edge.alpha
+                //                    && train_edge.beta*ratio < query_edge.beta && query_edge.beta*ratio < train_edge.beta;
+                qDebug() << train_edge.dist;
+                qDebug() << query_edge.dist;
+                qDebug() << "---";
+                //qDebug() << similares;
+            }
+        }
+
+
+        double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
+        comparation = score > threshold;
+
 
     }
 
