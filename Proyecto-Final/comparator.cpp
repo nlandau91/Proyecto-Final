@@ -39,6 +39,13 @@ std::vector<cv::DMatch> find_matches(const cv::Mat &query_descriptors, const cv:
     return good_matches;
 }
 
+std::vector<Edge> get_edges()
+{
+    std::vector<Edge> edges;
+
+    return edges;
+}
+
 bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold)
 {
     bool comparation = false;
@@ -61,6 +68,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
     {
         qDebug() << "Comparator: " << matches.size() << " matches encontrados.";
         double ratio = 0.8; //maxima diferencia entre edges
+        double min_dist = 10.0; // minima distancia que debe tener un arco
 
         //buscamos el match con la minima distancia
         int root_query_index = 0;
@@ -97,15 +105,17 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
                 int neightbor_train_y = train_keypoints.at<double>(m.trainIdx,1);
                 double neighbor_train_angle = train_keypoints.at<double>(m.trainIdx,4);
                 Edge train_edge(root_train_x, root_train_y, root_train_angle, neighbor_train_x, neightbor_train_y, neighbor_train_angle);
-                //comparamos los arcos
-                bool similares = false;
-                similares = train_edge.dist*ratio < query_edge.dist && query_edge.dist*ratio < train_edge.dist;
-                //                    && train_edge.alpha*ratio < query_edge.alpha && query_edge.alpha*ratio < train_edge.alpha
-                //                    && train_edge.beta*ratio < query_edge.beta && query_edge.beta*ratio < train_edge.beta;
-                qDebug() << train_edge.dist;
-                qDebug() << query_edge.dist;
-                qDebug() << "---";
-                //qDebug() << similares;
+                if(query_edge.dist > min_dist && train_edge.dist > min_dist)
+                {
+                    //comparamos los arcos
+                    bool similares = false;
+                    similares = train_edge.dist*ratio < query_edge.dist && query_edge.dist*ratio < train_edge.dist;
+                    //                    && train_edge.alpha*ratio < query_edge.alpha && query_edge.alpha*ratio < train_edge.alpha
+                    //                    && train_edge.beta*ratio < query_edge.beta && query_edge.beta*ratio < train_edge.beta;
+                    qDebug() << train_edge.dist;
+                    qDebug() << query_edge.dist;
+                    qDebug() << "---";
+                }
             }
         }
 
