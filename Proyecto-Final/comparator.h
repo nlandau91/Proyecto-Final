@@ -32,6 +32,10 @@ public:
     double match_threshold;
 
     bool edge_matching;
+
+    double edge_dist;
+
+    double edge_angle;
 };
 }
 #endif // COMPARATOR_H

@@ -204,6 +204,8 @@ void MainWindow::load_settings()
     comparator.matcher_method = app_settings.descriptor_method;
     comparator.match_threshold = app_settings.matcher_threshold;
     comparator.edge_matching = app_settings.edge_matching;
+    comparator.edge_angle = app_settings.edge_angle;
+    comparator.edge_dist = app_settings.edge_dist;
 }
 
 void MainWindow::on_actionOpciones_triggered()

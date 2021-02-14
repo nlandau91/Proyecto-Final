@@ -15,7 +15,7 @@ Edge::Edge(int x1, int y1, double ang1, int x2, int y2, double ang2)
     this->angle = atan2(det, dot) * 180 / M_PI;// atan2(y, x) or atan2(sin, cos)
 }
 
-bool Edge::compare(const Edge &e, double dist_dif, double angle_dif)
+bool Edge::compare(const Edge &e, double dist_dif, double angle_dif) const
 {
     bool similares = false;
 //    similares = std::abs(dist - e.dist) < dist_dif &&

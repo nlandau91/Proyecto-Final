@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>320</height>
+    <height>342</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -247,6 +247,26 @@
           <string>Edge Matching</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>Edge Dist Diff</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_edgeDist"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_13">
+         <property name="text">
+          <string>Edge Angle Diff</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_edgeAngle"/>
        </item>
        <item>
         <spacer name="verticalSpacer_3">

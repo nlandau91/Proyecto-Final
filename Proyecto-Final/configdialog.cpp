@@ -40,6 +40,9 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     //feature matching
     ui->lineEdit_match_thresh->setText("0.2");
+    ui->checkBox_edgeMatching->setEnabled(true);
+    ui->doubleSpinBox_edgeAngle->setValue(5.0);
+    ui->doubleSpinBox_edgeDist->setValue(10.0);
 
 
     load_settings();
@@ -73,6 +76,8 @@ void ConfigDialog::load_settings()
     //feature matching
     ui->lineEdit_match_thresh->setText(settings.value("match_thresh").toString());
     ui->checkBox_edgeMatching->setChecked(settings.value("edge_matching").toBool());
+    ui->doubleSpinBox_edgeAngle->setValue(settings.value("edge_angle").toDouble());
+    ui->doubleSpinBox_edgeDist->setValue(settings.value("edge_dist").toDouble());
 }
 
 void ConfigDialog::save_settings()
@@ -96,6 +101,8 @@ void ConfigDialog::save_settings()
     //feature matching
     settings.setValue("match_thresh", ui->lineEdit_match_thresh->text());
     settings.setValue("edge_matching",ui->checkBox_edgeMatching->isChecked());
+    settings.setValue("edge_angle", ui->doubleSpinBox_edgeAngle->value());
+    settings.setValue("edge_dist", ui->doubleSpinBox_edgeDist->value());
 
 }
 

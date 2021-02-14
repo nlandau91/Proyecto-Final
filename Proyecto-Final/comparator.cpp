@@ -90,17 +90,15 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         std::vector<Edge> train_edges = get_edges(train_keypoints, min_dist);
 
         //comparamos los arcos
-        double dist_dif = 0.1;
-        double angle_dif = 50.0;
-        for(Edge e1 : query_edges)
+        for(const Edge &e1 : query_edges)
         {
 //            qDebug() << "dist: " << e1.dist;
 //            qDebug() << "angle: " << e1.angle;
 //            qDebug() << "alpha: " << e1.alpha;
 //            qDebug() << "beta: " << e1.beta;
-            for(Edge e2 : train_edges)
+            for(const Edge &e2 : train_edges)
             {
-                comparation = e1.compare(e2, dist_dif, angle_dif);
+                comparation = e1.compare(e2, edge_dist, edge_angle);
 
                 if(comparation)qDebug() << comparation;
 
