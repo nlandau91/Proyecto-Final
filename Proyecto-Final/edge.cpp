@@ -9,8 +9,10 @@ Edge::Edge(int x1, int y1, float ang1, int x2, int y2, float ang2)
     this->y2 = y2;
     this->dist = std::sqrt(std::pow((x1 - x2), 2) + pow(y1 - y2, 2));
     this->angle = atan2(y1 - y2, x1 - x2) * 180.0 / M_PI;
-    this->alpha = ang1 - angle; // ver como hacer mejor
-    this->beta = ang2 - angle; //ver como hacer mejor
+    //this->alpha = ang1 - angle; // ver como hacer mejor
+    //this->beta = ang2 - angle; //ver como hacer mejor
+    this->alpha = ang1;
+    this->beta = ang2;
 }
 
 bool Edge::compare(const Edge &e, double dist_dif, double angle_dif) const

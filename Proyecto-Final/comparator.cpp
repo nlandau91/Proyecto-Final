@@ -48,12 +48,14 @@ std::vector<Edge> get_edges(const cv::Mat &keypoints, double min_dist = 5.0)
         int root_x = keypoints.at<float>(i,0);
         int root_y = keypoints.at<float>(i,1);
         float root_angle = keypoints.at<float>(i,4);
+        qDebug() << "r: " << i << ", " << root_angle;
         for(int j = i + 1; j < keypoints.rows; j++)
         {
             //armamos los arcos
             int neighbor_x = keypoints.at<float>(j,0);
             int neighbor_y = keypoints.at<float>(j,1);
             float neighbor_angle = keypoints.at<float>(j,4);
+            qDebug() << "n: " << j << ", " << neighbor_angle;
             Edge edge(root_x, root_y, root_angle, neighbor_x, neighbor_y, neighbor_angle);
             if(edge.dist > min_dist)
             {
@@ -92,15 +94,15 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         //comparamos los arcos
         for(const Edge &e1 : query_edges)
         {
-            qDebug() << "dist: " << e1.dist;
-            qDebug() << "angle: " << e1.angle;
-            qDebug() << "alpha: " << e1.alpha;
-            qDebug() << "beta: " << e1.beta;
+            //            qDebug() << "dist: " << e1.dist;
+            //            qDebug() << "angle: " << e1.angle;
+            //            qDebug() << "alpha: " << e1.alpha;
+            //            qDebug() << "beta: " << e1.beta;
             for(const Edge &e2 : train_edges)
             {
                 comparation = e1.compare(e2, edge_dist, edge_angle);
 
-                if(comparation)qDebug() << comparation;
+                //if(comparation)qDebug() << comparation;
 
             }
         }

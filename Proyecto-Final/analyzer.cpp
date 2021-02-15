@@ -160,7 +160,7 @@ cv::Mat custom_keypoints(const Analysis &analysis, const Preprocessed &pre)
         int x = kp.pt.x;
         int y = kp.pt.y;
         int tipo = kp.class_id;
-        float ang = pre.orientation.at<float>(trunc((double)kp.pt.x / blk_sze),trunc((double)kp.pt.y / blk_sze));
+        float ang = pre.orientation.at<float>(trunc((double)kp.pt.y / blk_sze),trunc((double)kp.pt.x / blk_sze));
 
         descriptors.at<float>(index,0) = x;
         descriptors.at<float>(index,1) = y;
