@@ -149,24 +149,23 @@ std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src, const cv::Mat &mask)
 //col 0 = pos x
 //col 1 = pos y
 //col 2 = tipo de minucia
-//col 4 = angulo
+//col 4 = angulo entre 0 y pi
 cv::Mat custom_keypoints(const Analysis &analysis, const Preprocessed &pre)
 {
     int blk_sze = trunc((double)pre.result.rows / pre.orientation.rows);
-    cv::Mat descriptors(analysis.l2_features.size(),4,CV_64FC1);
+    cv::Mat descriptors(analysis.l2_features.size(),4,CV_32FC1);
     int index = 0;
     for(const cv::KeyPoint &kp : analysis.l2_features)
     {
         int x = kp.pt.x;
         int y = kp.pt.y;
         int tipo = kp.class_id;
-        double ang = pre.orientation.at<double>(trunc((double)kp.pt.x / blk_sze),trunc((double)kp.pt.y / blk_sze));
+        float ang = pre.orientation.at<float>(trunc((double)kp.pt.x / blk_sze),trunc((double)kp.pt.y / blk_sze));
 
-        descriptors.at<double>(index,0) = x;
-        descriptors.at<double>(index,1) = y;
-        descriptors.at<double>(index,2) = tipo;
-        descriptors.at<double>(index,3) = ang;
-
+        descriptors.at<float>(index,0) = x;
+        descriptors.at<float>(index,1) = y;
+        descriptors.at<float>(index,2) = tipo;
+        descriptors.at<float>(index,3) = ang;
         index++;
     }
 
