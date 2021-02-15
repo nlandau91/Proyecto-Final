@@ -37,11 +37,13 @@ cv::Mat Preprocesser::normalize(const cv::Mat &src, float req_mean, float req_va
 {
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev,mask);
-    cv::Mat normalized_im = cv::Mat::zeros(src.size(),CV_32FC1);
+   // cv::Mat normalized_im = cv::Mat::zeros(src.size(),CV_32FC1);
+    cv::Mat_<float> normalized_im(src.size(), CV_32FC1);
     normalized_im = src - mean[0];
     normalized_im = normalized_im / stddev[0];
     normalized_im = req_mean + normalized_im * std::sqrt(req_var);
-    return normalized_im;
+    return std::move(normalized_im);
+    //return std::move(normalized_im);
 }
 
 
@@ -56,7 +58,7 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY)
     }
 
     cv::Mat gv = cv::Mat(t);
-    int total = gv.total();
+    int total = static_cast<int>(gv.total());
     gv = gv.reshape(1, 1);
 
     cv::repeat(gv, total, 1, meshX);
@@ -86,9 +88,9 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
     //Gy_ *= 125;
     cv::Sobel(im,Gy_,-1,0,1);
 
-    cv::Mat result = cv::Mat::zeros(trunc(y/W),trunc(x/W),CV_32FC1);
-    cv::Mat sines = result.clone();
-    cv::Mat cosines = result.clone();
+    cv::Mat result = cv::Mat::zeros(static_cast<int>(trunc(y/W)),static_cast<int>(trunc(x/W)),CV_32FC1);
+    cv::Mat sines = cv::Mat::zeros(result.size(),CV_64FC1);
+    cv::Mat cosines = cv::Mat::zeros(result.size(),CV_64FC1);
     for(int j = 0; j < y - W; j+=W)
     {
         for(int i = 0; i < x - W; i+=W)
@@ -100,17 +102,17 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
             {
                 for(int k = i; k < std::min(i + W, x - 1); k++)
                 {
-                    int Gx = std::round(Gx_.at<float>(l,k));
-                    int Gy = std::round(Gy_.at<float>(l,k));
+                    int Gx = static_cast<int>(std::round(Gx_.at<float>(l,k)));
+                    int Gy = static_cast<int>(std::round(Gy_.at<float>(l,k)));
                     int j1 = 2 * Gx * Gy;
                     nominator += j1;
                     int j2 = Gx * Gx - Gy * Gy;
                     denominator += j2;
                 }
             }
-            cv::Point p(trunc(i/W),trunc(j/W));
-            cosines.at<float>(p) = denominator;
-            sines.at<float>(p) = nominator;
+            cv::Point p(static_cast<int>(trunc(i/W)),static_cast<int>(trunc(j/W)));
+            cosines.at<double>(p) = denominator;
+            sines.at<double>(p) = nominator;
         }
     }
 
@@ -118,7 +120,7 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
     if(smooth)
     {
         int ksize = 3;
-        float sigma = 1.0;
+        double sigma = 1.0;
         cv::Mat kernel = cv::getGaussianKernel(ksize,sigma);
         cv::filter2D(cosines, cosines, -1, kernel);
         cv::filter2D(sines, sines, -1, kernel);
@@ -126,12 +128,12 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
     //finalmente armamos el mapa de angulos
     for(int i = 0; i < sines.rows; i++)
     {
-        const float *sines_i = sines.ptr<float>(i);
-        const float *cosines_i = cosines.ptr<float>(i);
+        const double *sines_i = sines.ptr<double>(i);
+        const double *cosines_i = cosines.ptr<double>(i);
         auto *result_i = result.ptr<float>(i);
         for(int j = 0; j < sines.cols; j++)
         {
-            result_i[j] = (M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2;
+            result_i[j] = static_cast<float>((M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2.0);
         }
     }
     return result;
@@ -174,13 +176,13 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     std::vector<int> validc;
     std::vector<float> ind;
     std::vector<float> unfreq;
-    for(size_t i = 0; i < valid_points.total();i++)
+    for(int i = 0; i < valid_points.rows;i++)
     {
         int row = valid_points.at<cv::Point>(i).y;
         int col = valid_points.at<cv::Point>(i).x;
         validr.push_back(row);
         validc.push_back(col);
-        float new_freq = round(100*freq.at<float>(row,col))/100;
+        float new_freq = static_cast<float>(round(100.0*freq.at<float>(row,col))/100.0);
         freq.at<float>(row,col) = new_freq;
         ind.push_back(new_freq);
         if(std::find(unfreq.begin(),unfreq.end(),new_freq) == unfreq.end())
