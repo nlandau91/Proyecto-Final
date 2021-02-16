@@ -1,7 +1,4 @@
-Limpiar clase Preprocesser
-Terminar de agregar parametros a preprocesser, ver cuales funcionan mejor y hacerlos default
-Extraccion de features lvl 1 en clase analyzer
-Ver errores de uso de * en analyzer y comparator
-Ver si es necesario refactorizar funciones hacia la clase utils
-Documentacion
-Informe
+Comparator:
+  Encontrar parametro ideal para el metodo basico de matching
+  Agregar metodo basado en minucias en el que se "registra" una huella (rotar y trasladar para que coincida) y se comparan
+  Intentar arreglar metodo basado en edges? Quiza utilizando el metodo para "registrar"
