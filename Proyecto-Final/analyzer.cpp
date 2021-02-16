@@ -45,9 +45,9 @@ std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src)
     cv::Mat kp_positions;
     cv::goodFeaturesToTrack(src,kp_positions,25,0.01,10);
     std::vector<cv::KeyPoint> keypoints;
-    for(int x = 0; x < kp_positions.rows; x++)
+    for(int y = 0; y < kp_positions.rows; y++)
     {
-        cv::Point2f pt = kp_positions.at<cv::Point2f>(x,0);
+        cv::Point2f pt = kp_positions.at<cv::Point2f>(y,0);
         cv::KeyPoint keypoint = cv::KeyPoint(pt,5);
         keypoints.push_back(keypoint);
     }
