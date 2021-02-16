@@ -48,7 +48,6 @@ std::vector<Edge> get_edges(const cv::Mat &keypoints, double min_dist = 5.0)
         int root_x = keypoints.at<float>(i,0);
         int root_y = keypoints.at<float>(i,1);
         float root_angle = keypoints.at<float>(i,3);
-        qDebug() << root_angle;
         for(int j = i + 1; j < keypoints.rows; j++)
         {
             //armamos los arcos
@@ -56,7 +55,7 @@ std::vector<Edge> get_edges(const cv::Mat &keypoints, double min_dist = 5.0)
             int neighbor_y = keypoints.at<float>(j,1);
             float neighbor_angle = keypoints.at<float>(j,3);
             Edge edge(root_x, root_y, root_angle, neighbor_x, neighbor_y, neighbor_angle);
-            if(edge.dist > min_dist)
+            if(min_dist < edge.dist && edge.dist < min_dist*5)
             {
                 edges.push_back(edge);
             }
@@ -86,14 +85,14 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
     if(matches.size() > 1)
     {
         //armamos los arcos
-        double min_dist = 10.0; // minima distancia que debe tener un arco
+        double min_dist = 15.0; // minima distancia que debe tener un arco
         std::vector<Edge> query_edges = get_edges(query_keypoints, min_dist);
         std::vector<Edge> train_edges = get_edges(train_keypoints, min_dist);
 
         //comparamos los arcos
         for(const Edge &e1 : query_edges)
         {
-//            qDebug() << "dist: " << e1.dist;
+          qDebug() << "dist: " << e1.dist;
 //            qDebug() << "angle: " << e1.angle;
 //            qDebug() << "alpha: " << e1.alpha;
 //            qDebug() << "beta: " << e1.beta;
@@ -101,18 +100,13 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
             {
                 comparation = e1.compare(e2, edge_dist, edge_angle);
 
-                //if(comparation)qDebug() << comparation;
+                if(comparation)qDebug() << "Comparation: " << comparation;
 
             }
         }
 
-
-
-
-
         double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
         comparation = score > threshold;
-
 
     }
 
