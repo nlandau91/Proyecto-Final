@@ -111,7 +111,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         std::vector<cv::DMatch> good_matches = matches;
         std::sort(good_matches.begin(), good_matches.end(),
                   [](cv::DMatch const & a, cv::DMatch const & b) -> bool { return a.distance < b.distance; } );
-        const float GOOD_MATCH_PERCENT = 0.5f;
+        const float GOOD_MATCH_PERCENT = 1.0f;
         const int numGoodMatches = good_matches.size() * GOOD_MATCH_PERCENT;
         good_matches.erase(good_matches.begin()+numGoodMatches, good_matches.end());
 
@@ -119,6 +119,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         std::vector<cv::Point2f> t_points;
         for(const cv::DMatch &m : good_matches)
         {
+            qDebug() << m.distance;
             cv::Point2f p1(
                         query_keypoints.at<float>(m.queryIdx,0),
                         query_keypoints.at<float>(m.queryIdx,1));
@@ -131,7 +132,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         //registramos la huella dactilar, para que tenga la misma traslacion y rotacion
         if(q_points.size() > 3)
         {
-            cv::Mat H = cv::findHomography(q_points,t_points,cv::RANSAC,5);
+            cv::Mat H = cv::findHomography(q_points,t_points,cv::RANSAC,10.f);
 
             if(!H.empty())
             {
@@ -146,8 +147,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
                 //            cv::Mat R = u * vt;
 
                 //            float angle = std::atan2(R.at<float>(1,0),R.at<float>(0,0)) * 180.0 / M_PI;
-                float angle2 = - std::atan2(H.at<float>(0,1),H.at<float>(0,0)) * 180.0 / M_PI;
-                qDebug() << "angle2: " << angle2;
+                //float angle2 = - std::atan2(H.at<float>(0,1),H.at<float>(0,0)) * 180.0 / M_PI;
             }
         }
 
