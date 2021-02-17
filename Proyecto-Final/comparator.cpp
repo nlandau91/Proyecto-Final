@@ -131,11 +131,11 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         //registramos la huella dactilar, para que tenga la misma traslacion y rotacion
         if(q_points.size() > 3)
         {
-            cv::Mat H = cv::findHomography(q_points,t_points,cv::RANSAC);
+            cv::Mat H = cv::findHomography(q_points,t_points,cv::RANSAC,5);
 
             if(!H.empty())
             {
-                cv::Mat in = cv::imread("/home/nico/Proyecto-Final/res/FVC2002/DB1_B/101_2.tif",cv::IMREAD_GRAYSCALE);
+                cv::Mat in = cv::imread("../res/FVC2002/DB1_B/101_2.tif",cv::IMREAD_GRAYSCALE);
                 cv::Mat out;
                 cv::warpPerspective(in,out,H,in.size());
                 cv::imwrite("OUT.TIF",out);
