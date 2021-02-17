@@ -1,0 +1,9 @@
+ Block size: 16 u 8
+ Enhance: Gabor
+ Thinning zhangsuen o guohall
+ ROI Threshold: 0.30
+ Segment: si
+ Minutiae detector: cn
+ Keypoints threshold: con 'cn' no importa
+ feature detector: orb o surf
+ Threshold: con 'orb' 0.49 no da falsos positivos. Con 'surf', 0.26 aprox
