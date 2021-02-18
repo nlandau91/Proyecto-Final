@@ -1,5 +1,5 @@
 Comparator:
   Encontrar parametro ideal para el metodo basico de matching
-  Agregar metodo basado en minucias en el que se "registra" una huella (rotar y trasladar para que coincida) y se comparan
-  Intentar arreglar metodo basado en edges? Quiza utilizando el metodo para "registrar"
-  Calcular angulos de keypoints correctamente
+  Agregar metodo basado en minucias en el que se "registra" una huella (rotar y trasladar para que coincida) y se comparan pag 188
+  Intentar arreglar metodo basado en edges? pag 211
+  Calcular angulos de keypoints correctamente, dentro de metodo cn
