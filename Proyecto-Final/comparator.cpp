@@ -119,7 +119,6 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         std::vector<cv::Point2f> t_points;
         for(const cv::DMatch &m : good_matches)
         {
-            qDebug() << m.distance;
             cv::Point2f p1(
                         query_keypoints.at<float>(m.queryIdx,0),
                         query_keypoints.at<float>(m.queryIdx,1));
