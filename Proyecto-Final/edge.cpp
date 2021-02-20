@@ -20,3 +20,13 @@ double Edge::angle(const Edge &e)const
 {
     return std::atan2(x*e.y-y*e.x,x*e.x+y*e.y) * 180 / M_PI;
 }
+
+bool Edge::compare(const Edge &e, double rat)const
+{
+    return length * rat < e.length && e.length * rat < length;
+}
+
+double Edge::ratio(const Edge &e)const
+{
+
+}

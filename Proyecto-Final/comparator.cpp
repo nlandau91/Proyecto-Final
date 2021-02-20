@@ -69,24 +69,28 @@ std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 
     for(int i = 0; i < keypoints.rows - 2; i++)
     {
         //calculamos la raiz
-        int root_x = keypoints.at<float>(i,0);
-        int root_y = keypoints.at<float>(i,1);
+        int x0 = keypoints.at<float>(i,0);
+        int y0 = keypoints.at<float>(i,1);
         for(int j = i + 1; j < keypoints.rows - 1; j++)
         {
             //armamos el primer arco
-            int neighbor_x = keypoints.at<float>(j,0);
-            int neighbor_y = keypoints.at<float>(j,1);
-            Edge edge(root_x, root_y, neighbor_x, neighbor_y);
-            if(min_dist < edge.length && edge.length < min_dist*10)
+            int x1 = keypoints.at<float>(j,0);
+            int y1 = keypoints.at<float>(j,1);
+            Edge edge1(x0, y0, x1, y1);
+            if(min_dist < edge1.length && edge1.length < min_dist*10)
             {
                 for(int k = j + 1; k < keypoints.rows; k++)
                 {
-                    //armamos el segundo arco
-                    int neighbor2_x = keypoints.at<float>(k,0);
-                    int neighbor2_y = keypoints.at<float>(k,1);
-                    Edge edge2(root_x, root_y, neighbor2_x, neighbor2_y);
-                    if(min_dist < edge2.length && edge2.length < min_dist*10)
-                    triangles.push_back(Triangle(edge,edge2));
+                    //armamos el segundo y tercer arco
+                    int x2 = keypoints.at<float>(k,0);
+                    int y2 = keypoints.at<float>(k,1);
+                    Edge edge2(x0, y0, x2, y2);
+                    Edge edge3(x1, y1, x2, y2);
+                    if(min_dist < edge2.length && edge2.length < min_dist*10
+                            && min_dist < edge3.length && edge3.length < min_dist*10)
+                    {
+                        triangles.push_back(Triangle(edge1,edge2,edge3));
+                    }
                 }
             }
         }

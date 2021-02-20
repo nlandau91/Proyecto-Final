@@ -11,6 +11,10 @@ public:
 
     double angle(const Edge &e)const;
 
+    bool compare(const Edge& e, double ratio)const;
+
+    double ratio(const Edge& e)const;
+
     int x, y;
     double length;
 
