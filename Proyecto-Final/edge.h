@@ -6,12 +6,13 @@
 class Edge
 {
 public:
-    Edge(int x1, int y1, float ang1, int x2, int y2, float ang2);
+    Edge();
+    Edge(int x1, int y1, int x2, int y2);
 
-    bool compare(const Edge &e, double dist_dif = 10, double angle_dif = 10) const;
+    double angle(const Edge &e)const;
 
-    int x1, y1, x2, y2;
-    float dist, angle, alpha, beta;
+    int x, y;
+    double length;
 
 };
 

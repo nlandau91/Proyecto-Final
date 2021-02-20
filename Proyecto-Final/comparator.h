@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "edge.h"
+#include "triangle.h"
 
 namespace fp{
 

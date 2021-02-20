@@ -1,5 +1,6 @@
 #include "comparator.h"
 #include <QDebug>
+#include <iostream>
 
 namespace fp
 {
@@ -47,15 +48,13 @@ std::vector<Edge> get_edges(const cv::Mat &keypoints, double min_dist = 5.0)
         //calculamos la raiz
         int root_x = keypoints.at<float>(i,0);
         int root_y = keypoints.at<float>(i,1);
-        float root_angle = keypoints.at<float>(i,3);
         for(int j = i + 1; j < keypoints.rows; j++)
         {
             //armamos los arcos
             int neighbor_x = keypoints.at<float>(j,0);
             int neighbor_y = keypoints.at<float>(j,1);
-            float neighbor_angle = keypoints.at<float>(j,3);
-            Edge edge(root_x, root_y, root_angle, neighbor_x, neighbor_y, neighbor_angle);
-            if(min_dist < edge.dist && edge.dist < min_dist*5)
+            Edge edge(root_x, root_y, neighbor_x, neighbor_y);
+            if(min_dist < edge.length && edge.length < min_dist*5)
             {
                 edges.push_back(edge);
             }
@@ -63,6 +62,37 @@ std::vector<Edge> get_edges(const cv::Mat &keypoints, double min_dist = 5.0)
     }
     return edges;
 }
+
+std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 5.0)
+{
+    std::vector<Triangle> triangles;
+    for(int i = 0; i < keypoints.rows - 2; i++)
+    {
+        //calculamos la raiz
+        int root_x = keypoints.at<float>(i,0);
+        int root_y = keypoints.at<float>(i,1);
+        for(int j = i + 1; j < keypoints.rows - 1; j++)
+        {
+            //armamos el primer arco
+            int neighbor_x = keypoints.at<float>(j,0);
+            int neighbor_y = keypoints.at<float>(j,1);
+            Edge edge(root_x, root_y, neighbor_x, neighbor_y);
+            if(min_dist < edge.length && edge.length < min_dist*5)
+            {
+                for(int k = j + 1; k < keypoints.rows; k++)
+                {
+                    int neighbor2_x = keypoints.at<float>(k,0);
+                    int neighbor2_y = keypoints.at<float>(k,1);
+                    Edge edge2(root_x, root_y, neighbor2_x, neighbor2_y);
+                    if(min_dist < edge2.length && edge2.length < min_dist*5)
+                    triangles.push_back(Triangle(edge,edge2));
+                }
+            }
+        }
+    }
+    return triangles;
+}
+
 
 bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold)
 {
@@ -92,64 +122,25 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         {
             //armamos los arcos
             double min_dist = 15.0; // minima distancia que debe tener un arco
-            std::vector<Edge> query_edges = get_edges(query_keypoints, min_dist);
-            std::vector<Edge> train_edges = get_edges(train_keypoints, min_dist);
+            std::vector<Triangle> query_triangles = get_triangles(query_keypoints, min_dist);
+            std::vector<Triangle> train_triangles = get_triangles(train_keypoints, min_dist);
 
             //comparamos los arcos
-            for(const Edge &e1 : query_edges)
+            for(const Triangle &t1 : query_triangles)
             {
-                qDebug() << "dist: " << e1.dist;
-                for(const Edge &e2 : train_edges)
+                for(const Triangle &t2 : train_triangles)
                 {
-                    comparation = e1.compare(e2, edge_dist, edge_angle);
-                    if(comparation)qDebug() << "Comparation: " << comparation;
+                    bool comparation = t1.compare(t2,edge_angle,edge_dist);
+                    if(comparation)
+                    {
+                        qDebug() << "Triangle comparation: " << comparation;
+                    }
+                    else
+                    {
+                    }
                 }
             }
         }
-
-        //filtramos los matches
-        std::vector<cv::DMatch> good_matches = matches;
-        std::sort(good_matches.begin(), good_matches.end(),
-                  [](cv::DMatch const & a, cv::DMatch const & b) -> bool { return a.distance < b.distance; } );
-        const float GOOD_MATCH_PERCENT = 1.0f;
-        const int numGoodMatches = good_matches.size() * GOOD_MATCH_PERCENT;
-        good_matches.erase(good_matches.begin()+numGoodMatches, good_matches.end());
-
-        std::vector<cv::Point2f> q_points;
-        std::vector<cv::Point2f> t_points;
-        for(const cv::DMatch &m : good_matches)
-        {
-            cv::Point2f p1(
-                        query_keypoints.at<float>(m.queryIdx,0),
-                        query_keypoints.at<float>(m.queryIdx,1));
-            cv::Point2f p2(
-                        train_keypoints.at<float>(m.trainIdx,0),
-                        train_keypoints.at<float>(m.trainIdx,1));
-            q_points.push_back(p1);
-            t_points.push_back(p2);
-        }
-        //registramos la huella dactilar, para que tenga la misma traslacion y rotacion
-        if(q_points.size() > 3)
-        {
-            cv::Mat H = cv::findHomography(q_points,t_points,cv::RANSAC,10.f);
-
-            if(!H.empty())
-            {
-                cv::Mat in = cv::imread("../res/FVC2002/DB1_B/101_2.tif",cv::IMREAD_GRAYSCALE);
-                cv::Mat out;
-                cv::warpPerspective(in,out,H,in.size());
-                cv::imwrite("OUT.TIF",out);
-                //            //obtenemos angulo de rotacion de la homografia
-                //            //descomposicion SVD de la submatriz 2x2 superior izquierda
-                //            cv::Mat w,u,vt;
-                //            cv::SVD::compute(H(cv::Rect(0,0,2,2)),w,u,vt);
-                //            cv::Mat R = u * vt;
-
-                //            float angle = std::atan2(R.at<float>(1,0),R.at<float>(0,0)) * 180.0 / M_PI;
-                //float angle2 = - std::atan2(H.at<float>(0,1),H.at<float>(0,0)) * 180.0 / M_PI;
-            }
-        }
-
 
         //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
         double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
