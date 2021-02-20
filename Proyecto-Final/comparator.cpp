@@ -77,14 +77,15 @@ std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 
             int neighbor_x = keypoints.at<float>(j,0);
             int neighbor_y = keypoints.at<float>(j,1);
             Edge edge(root_x, root_y, neighbor_x, neighbor_y);
-            if(min_dist < edge.length && edge.length < min_dist*5)
+            if(min_dist < edge.length && edge.length < min_dist*10)
             {
                 for(int k = j + 1; k < keypoints.rows; k++)
                 {
+                    //armamos el segundo arco
                     int neighbor2_x = keypoints.at<float>(k,0);
                     int neighbor2_y = keypoints.at<float>(k,1);
                     Edge edge2(root_x, root_y, neighbor2_x, neighbor2_y);
-                    if(min_dist < edge2.length && edge2.length < min_dist*5)
+                    if(min_dist < edge2.length && edge2.length < min_dist*10)
                     triangles.push_back(Triangle(edge,edge2));
                 }
             }
@@ -121,7 +122,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         if(edge_matching)
         {
             //armamos los arcos
-            double min_dist = 15.0; // minima distancia que debe tener un arco
+            double min_dist = 10.0; // minima distancia que debe tener un arco
             std::vector<Triangle> query_triangles = get_triangles(query_keypoints, min_dist);
             std::vector<Triangle> train_triangles = get_triangles(train_keypoints, min_dist);
 
@@ -143,8 +144,9 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         }
 
         //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
-        double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
-        qDebug() << "score: " << score;
+        //double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
+        double score = (double)matches.size()/((query_descriptors.rows+train_descriptors.rows)/2.0);
+        qDebug() << "score avg: " << score;
         comparation = score > threshold;
 
     }

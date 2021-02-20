@@ -53,13 +53,13 @@ float _getComponentX(float alpha)
 bool Triangle::compare(const Triangle &triangle, double ang_dif, double edg_rat)const
 {
     //comparamos angulos
-    double max_ang_similarity_dif = getSimilarity(0,ang_dif);
-    bool comp_ang = getSimilarity(angle, triangle.angle) <= max_ang_similarity_dif;
+    double min_simil = getSimilarity(0,ang_dif);
+    bool comp_ang = getSimilarity(angle, triangle.angle) >= min_simil;
     bool comp11 = e01.length * edg_rat < triangle.e01.length && triangle.e01.length * edg_rat < e01.length;
     bool comp22 = e02.length * edg_rat < triangle.e02.length && triangle.e02.length * edg_rat < e02.length;
-    qDebug() << "comp_ang: " << comp_ang;
-    qDebug() << "comp11: " << comp11;
-    qDebug() << "comp22: " << comp22;
+//    qDebug() << "comp_ang: " << comp_ang;
+//    qDebug() << "comp11: " << comp11;
+//    qDebug() << "comp22: " << comp22;
     return comp_ang & comp11 && comp22;
 
 }
