@@ -28,5 +28,6 @@ bool Edge::compare(const Edge &e, double rat)const
 
 double Edge::ratio(const Edge &e)const
 {
-
+    double rat = length < e.length ? length/e.length : e.length/length;
+    return rat;
 }
