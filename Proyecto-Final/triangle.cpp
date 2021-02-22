@@ -19,38 +19,38 @@ Triangle::Triangle(const Edge &e01, const Edge &e02, const Edge &e12)
 }
 
 float _getComponentX(float alpha)
-   {
-     return cos(alpha * M_PI / 180);
-   }
+{
+    return cos(alpha * M_PI / 180);
+}
 
-   float _getComponentY(float alpha)
-   {
-     return sin(alpha * M_PI / 180);
-   }
+float _getComponentY(float alpha)
+{
+    return sin(alpha * M_PI / 180);
+}
 
-   float _getAngleRatioX(float alpha, float beta)
-   {
-     return _getComponentX(alpha) * _getComponentX(beta);
-   }
+float _getAngleRatioX(float alpha, float beta)
+{
+    return _getComponentX(alpha) * _getComponentX(beta);
+}
 
-   float _getAngleRatioY(float alpha, float beta)
-   {
-     return _getComponentY(alpha) * _getComponentY(beta);
-   }
+float _getAngleRatioY(float alpha, float beta)
+{
+    return _getComponentY(alpha) * _getComponentY(beta);
+}
 
-   float getSimilarity(float alpha, float beta)
-   {
-     float ratioX = _getAngleRatioX(alpha, beta);
-     float ratioY = _getAngleRatioY(alpha, beta);
-     float ratio = ratioX + ratioY; // Ratio is between 1 and -1
-     return (ratio + 1) / 2; // Return a value between 0 and 1
-   }
+float getSimilarity(float alpha, float beta)
+{
+    float ratioX = _getAngleRatioX(alpha, beta);
+    float ratioY = _getAngleRatioY(alpha, beta);
+    float ratio = ratioX + ratioY; // Ratio is between 1 and -1
+    return (ratio + 1) / 2; // Return a value between 0 and 1
+}
 
-   float getWeightedValue(float alpha, float beta, float value)
-   {
-     float similarity = getSimilarity(alpha, beta);
-     return similarity * value;
-   }
+float getWeightedValue(float alpha, float beta, float value)
+{
+    float similarity = getSimilarity(alpha, beta);
+    return similarity * value;
+}
 
 bool Triangle::compare(const Triangle &triangle, double ang_dif, double edg_rat)const
 {
@@ -60,29 +60,12 @@ bool Triangle::compare(const Triangle &triangle, double ang_dif, double edg_rat)
     bool comp1 = false;
     bool comp2 = false;
     bool comp3 = false;
-    comp1 = e01.compare(triangle.e01,edg_rat);
-    if(comp1) //gaste 01
+    if(comp_ang)
     {
-        comp2 = e02.compare(triangle.e02,edg_rat);
-        if(comp2) //gaste 01 y 02
+        comp1 = e01.compare(triangle.e01,edg_rat);
+        if(comp1) //gaste 01
         {
-            comp3 = e12.compare(triangle.e12,edg_rat);
-        }
-        else
-        {
-            comp2 = e02.compare(triangle.e12,edg_rat);
-            if(comp2) //gaste 01 y 12
-            {
-                comp3 = e12.compare(triangle.e02,edg_rat);
-            }
-        }
-    }
-    else
-    {
-        comp1 = e01.compare(triangle.e02,edg_rat);
-        if(comp1) //gaste 02
-        {
-            comp2 = e02.compare(triangle.e01,edg_rat);
+            comp2 = e02.compare(triangle.e02,edg_rat);
             if(comp2) //gaste 01 y 02
             {
                 comp3 = e12.compare(triangle.e12,edg_rat);
@@ -90,33 +73,52 @@ bool Triangle::compare(const Triangle &triangle, double ang_dif, double edg_rat)
             else
             {
                 comp2 = e02.compare(triangle.e12,edg_rat);
-                if(comp2) // gaste 02 y 12
+                if(comp2) //gaste 01 y 12
                 {
-                    comp3 = e12.compare(triangle.e01,edg_rat);
+                    comp3 = e12.compare(triangle.e02,edg_rat);
                 }
             }
         }
         else
         {
-            comp1 = e01.compare(triangle.e12,edg_rat);
-            if(comp1) //gaste 12
+            comp1 = e01.compare(triangle.e02,edg_rat);
+            if(comp1) //gaste 02
             {
                 comp2 = e02.compare(triangle.e01,edg_rat);
-                if(comp2) //gaste 01 y 12
+                if(comp2) //gaste 01 y 02
                 {
-                    comp3 = e12.compare(triangle.e02,edg_rat);
+                    comp3 = e12.compare(triangle.e12,edg_rat);
                 }
                 else
                 {
-                    comp2 = e02.compare(triangle.e02,edg_rat);
-                    if(comp2) //gaste 02 y 12
+                    comp2 = e02.compare(triangle.e12,edg_rat);
+                    if(comp2) // gaste 02 y 12
                     {
                         comp3 = e12.compare(triangle.e01,edg_rat);
+                    }
+                }
+            }
+            else
+            {
+                comp1 = e01.compare(triangle.e12,edg_rat);
+                if(comp1) //gaste 12
+                {
+                    comp2 = e02.compare(triangle.e01,edg_rat);
+                    if(comp2) //gaste 01 y 12
+                    {
+                        comp3 = e12.compare(triangle.e02,edg_rat);
+                    }
+                    else
+                    {
+                        comp2 = e02.compare(triangle.e02,edg_rat);
+                        if(comp2) //gaste 02 y 12
+                        {
+                            comp3 = e12.compare(triangle.e01,edg_rat);
+                        }
                     }
                 }
             }
         }
     }
     return comp_ang && comp1 && comp2 && comp3;
-
 }

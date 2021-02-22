@@ -244,14 +244,14 @@
        <item>
         <widget class="QCheckBox" name="checkBox_edgeMatching">
          <property name="text">
-          <string>Edge Matching</string>
+          <string>Triangle Matching</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_12">
          <property name="text">
-          <string>Edge Dist Diff</string>
+          <string>Edge ratio</string>
          </property>
         </widget>
        </item>

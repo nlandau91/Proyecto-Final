@@ -23,6 +23,7 @@ double Edge::angle(const Edge &e)const
 
 bool Edge::compare(const Edge &e, double rat)const
 {
+    assert(rat >= 0 && rat <= 1);
     return length * rat < e.length && e.length * rat < length;
 }
 
