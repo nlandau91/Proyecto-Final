@@ -23,7 +23,7 @@ double Edge::angle(const Edge &e)const
 
 bool Edge::compare(const Edge &e, double rat)const
 {
-    return length * rat < e.length && e.length * rat < length;
+    return length * rat <= e.length && e.length * rat <= length;
 }
 
 double Edge::ratio(const Edge &e)const

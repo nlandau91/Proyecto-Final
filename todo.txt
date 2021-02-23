@@ -4,3 +4,5 @@ Comparator:
   Intentar arreglar metodo basado en edges? pag 211 libro maltoni, pag 110 Thesis.dvi
   Calcular angulos de keypoints correctamente, dentro de metodo cn
   Agregar paso de consolidacion a comparator (maltoni 202)
+  armar mapa de frecuencias
+
