@@ -335,7 +335,7 @@ cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &angles
     Q_UNUSED(angles);
     Q_UNUSED(blk_sze;)
     //todo, por el momento devuelve un valor fijo
-    float freq = 0.11;
+    float freq = 0.13;
     cv::Mat freq_map = freq * cv::Mat::ones(im.size(),im.type());
     cv::bitwise_and(freq_map,freq_map,freq_map,mask);
     return freq_map;
