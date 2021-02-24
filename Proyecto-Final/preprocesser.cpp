@@ -37,7 +37,6 @@ cv::Mat Preprocesser::normalize(const cv::Mat &src, float req_mean, float req_va
 {
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev,mask);
-   // cv::Mat normalized_im = cv::Mat::zeros(src.size(),CV_32FC1);
     cv::Mat_<float> normalized_im(src.size(), CV_32FC1);
     normalized_im = src - mean[0];
     normalized_im = normalized_im / stddev[0];
@@ -322,14 +321,96 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     return newim;
 }
 
+double frequest(const cv::Mat &im, double orientim, int kernel_size = 5, int minWaveLength = 5, int maxWaveLength = 15)
+{
+    int rows = im.rows;
+    double block_orient = orientim;
+
+    //rotamos la imagen para que las crestas sean verticales
+    cv::Mat rotim;
+    cv::Mat rot_mat = cv::getRotationMatrix2D(cv::Point2f(0,0),block_orient/M_PI*180+90,0);
+    cv::warpAffine(im,rotim,rot_mat,im.size());
+
+    //recortamos para que la imagen rotada no contenga regiones invalidas
+    int cropsze = std::trunc(rows/std::sqrt(2));
+    int offset = std::trunc((rows-cropsze)/2);
+    rotim = rotim(cv::Rect(offset,offset,cropsze,cropsze));
+
+    //sumamos bajando por las columnas para obtener una projeccion de los valores de las crestas
+    cv::Mat ridge_sum;
+    cv::Scalar m = cv::mean(ridge_sum);
+    cv::reduce(rotim,ridge_sum,0,cv::REDUCE_SUM,CV_32F);
+    cv::Mat dilation;
+    cv::sepFilter2D(ridge_sum,dilation,CV_32F,cv::Mat::ones(kernel_size,1,CV_8U),cv::Mat::ones(1,1,CV_8U));
+    cv::Mat ridge_noise = cv::abs(dilation - ridge_sum);
+    int peak_thresh = 2;
+    std::vector<int> maxind;
+    for(int c = 0; c < ridge_sum.cols; c++)
+    {
+        if(ridge_noise.at<float>(0,c) < peak_thresh && ridge_sum.at<float>(0,c) > m[0])
+        {
+            maxind.push_back(c);
+        }
+    }
+    int no_of_peaks = maxind.size();
+
+    //determinamos la frecuencia espacial de las crestas dividiendo
+    //la distancia entre el primer y ultimo pico por no_of_peaks-1
+    //si no se encuentran picos, o si la longitud de onda esta fuera de los
+    //limites, la frecuencia se establece en 0
+    double freq_block = 0;
+    if(no_of_peaks >= 2)
+    {
+        double waveLength = (double)(maxind.back() - maxind.front())/(double)(no_of_peaks - 1);
+        if(waveLength >= minWaveLength && waveLength <= maxWaveLength)
+        {
+            freq_block = 1.0/waveLength;
+        }
+    }
+    return freq_block;
+
+}
+
 /*!
- * \brief ridge_freq calcula el mapa de frecuencia de la imagen
- * \param im imagen a la que se le calculara el mapa de frecuencias
- * \param mask mascara a utilizar
- * \param angles mapa de orientacion
- * \param blk_sze tamaño de bloque
- * \return mapa de frecuencias
+ * \brief ridge_freq funcion que estima la frecuencia de crestas en una huella dactilar
+ * \param im
+ * \param mask
+ * \param orientim
+ * \param block_size
+ * \param kernel_size
+ * \param minWaveLength
+ * \param maxWaveLength
+ * \return
  */
+cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat mask, const cv::Mat &orientim, int block_size, int kernel_size = 5, int minWaveLength = 5, int maxWaveLength = 15)
+{
+    int rows = im.rows;
+    int cols = im.cols;
+    cv::Mat freq = cv::Mat::zeros(rows,cols,CV_32FC1);
+    for(int r = 0; r < rows-block_size; r+=block_size)
+    {
+        for(int c = 0; c < cols-block_size; c+=block_size)
+        {
+            cv::Rect window = cv::Rect(c,r,block_size,block_size);
+            cv::Mat image_block = im(window);
+            float angle_block = orientim.at<float>(r/block_size,c/block_size);
+            float frequency = frequest(image_block,angle_block,kernel_size,minWaveLength,maxWaveLength);
+            im(window) = frequency;
+
+        }
+    }
+    cv::bitwise_and(freq,freq,freq,mask);
+    return freq;
+}
+
+/*!
+   * \brief ridge_freq calcula el mapa de frecuencia de la imagen
+   * \param im imagen a la que se le calculara el mapa de frecuencias
+   * \param mask mascara a utilizar
+   * \param angles mapa de orientacion
+   * \param blk_sze tamaño de bloque
+   * \return mapa de frecuencias
+   */
 cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &angles,int blk_sze)
 {
     Q_UNUSED(angles);
@@ -340,6 +421,8 @@ cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &angles
     cv::bitwise_and(freq_map,freq_map,freq_map,mask);
     return freq_map;
 }
+
+
 
 cv::Mat Preprocesser::thin(const cv::Mat &src, int thinning_method)
 {
