@@ -485,7 +485,7 @@ cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &angles
     Q_UNUSED(angles);
     Q_UNUSED(blk_sze;)
     //todo, por el momento devuelve un valor fijo
-    float freq = 0.13;
+    float freq = 0.11;
     cv::Mat freq_map = freq * cv::Mat::ones(im.size(),im.type());
     cv::bitwise_and(freq_map,freq_map,freq_map,mask);
     return freq_map;
@@ -587,7 +587,7 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
     cv::Mat angles = calculate_angles(norm_req,blk_sze,true);
-    cv::Mat angles2 = ridgeorient(norm_req,3,3);
+    //cv::Mat angles2 = ridgeorient(norm_req,3,3);
     if(enhancement_method == GABOR)
     {
         //todo, mapa de frecuencia
@@ -595,8 +595,7 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
         cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
         //filtro
         qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
-        filtered = filter_ridge(norm_m0d1,angles2,freq,mask,0.5,0.5);
-        //cv::Mat filtered2 = filter_ridge(norm_m0d1,angles2,freq,mask,0.5,0.5);
+        filtered = filter_ridge(norm_m0d1,angles,freq,mask,0.5,0.5);
     }
     else
     {
