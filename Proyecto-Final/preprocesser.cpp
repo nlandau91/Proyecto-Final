@@ -65,6 +65,68 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY)
     cv::repeat(traspose, 1, total, meshY);
 }
 
+cv::Mat ridgeorient(const cv::Mat &im, double blocksigma = 3, double orientsmoothsigma = 3)
+{
+
+    cv::Mat Gx_;
+    cv::Sobel(im,Gx_,-1,1,0);
+    cv::Mat Gy_;
+    cv::Sobel(im,Gy_,-1,0,1);
+
+    cv::Mat Gxx_ = Gx_.mul(Gx_);
+    cv::Mat Gxy_ = Gx_.mul(Gy_);
+    cv::Mat Gyy_ = Gy_.mul(Gy_);
+
+    //suavizamos la covarianza
+    int ksize = std::trunc(6 * blocksigma);
+    if(ksize % 2 == 0)
+    {
+        ksize += 1;
+    }
+    cv::Mat kernel1 = cv::getGaussianKernel(ksize,blocksigma, CV_32FC1);
+    cv::Mat kernel2 = cv::getGaussianKernel(ksize,blocksigma, CV_32FC1);
+    cv::Mat kernel = kernel1 * kernel2.t();
+    cv::filter2D(Gxx_, Gxx_, -1, kernel, cv::Point(-1, -1), 0,
+                 cv::BORDER_DEFAULT);
+    cv::filter2D(Gxy_, Gxy_, -1, kernel, cv::Point(-1, -1), 0,
+                 cv::BORDER_DEFAULT);
+    cv::filter2D(Gyy_, Gyy_, -1, kernel, cv::Point(-1, -1), 0,
+                 cv::BORDER_DEFAULT);
+
+    cv::Mat result = cv::Mat::zeros(im.size(),CV_32FC1);
+    cv::Mat sines = cv::Mat::zeros(result.size(),CV_64FC1);
+    cv::Mat cosines = cv::Mat::zeros(result.size(),CV_64FC1);
+
+    sines += 2 * Gxy_;
+    cosines += Gxx_ - Gyy_;
+
+    //filtro pasabajo al campo direccional
+
+    ksize = std::trunc(6 * orientsmoothsigma);
+    if(ksize % 2 == 0)
+    {
+        ksize += 1;
+    }
+    kernel1 = cv::getGaussianKernel(ksize,orientsmoothsigma, CV_32FC1);
+    kernel2 = cv::getGaussianKernel(ksize,orientsmoothsigma, CV_32FC1);
+    kernel = kernel1 * kernel2.t();
+    cv::filter2D(cosines, cosines, -1, kernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
+    cv::filter2D(sines, sines, -1, kernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
+
+    //finalmente armamos el mapa de angulos
+    for(int i = 0; i < sines.rows; i++)
+    {
+        const double *sines_i = sines.ptr<double>(i);
+        const double *cosines_i = cosines.ptr<double>(i);
+        auto *result_i = result.ptr<float>(i);
+        for(int j = 0; j < sines.cols; j++)
+        {
+            result_i[j] = static_cast<float>((M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2.0);
+        }
+    }
+    return result;
+}
+
 /*!
  * \brief calculate_angles calcula el mapa de orientacion de la imagen
  * \param im imagen a la que se le calculara el mapa de orientacion
@@ -297,6 +359,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
 
         cv::Rect roi(c-s,r-s,2*s,2*s);
         cv::Mat subim(im(roi));
+        //cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
         cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
         cv::Mat mulResult;
         cv::multiply(subim,subFilter,mulResult);
@@ -353,7 +416,13 @@ double frequest(const cv::Mat &im, double orientim, int kernel_size = 5, int min
         }
     }
     int no_of_peaks = maxind.size();
-
+    qDebug() << "frequest:: " << "rows :" << rows;
+    qDebug() << "frequest:: " << "block_orient :" << block_orient;
+    qDebug() << "frequest:: " << "cropsze :" << cropsze;
+    qDebug() << "frequest:: " << "offset :" << offset;
+    qDebug() << "frequest:: " << "m[0] :" << m[0];
+    qDebug() << "frequest:: " << "maxind :" << maxind;
+    qDebug() << "frequest:: " << "no_of_peaks :" << no_of_peaks;
     //determinamos la frecuencia espacial de las crestas dividiendo
     //la distancia entre el primer y ultimo pico por no_of_peaks-1
     //si no se encuentran picos, o si la longitud de onda esta fuera de los
@@ -395,7 +464,7 @@ cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat mask, const cv::Mat &orient
             cv::Mat image_block = im(window);
             float angle_block = orientim.at<float>(r/block_size,c/block_size);
             float frequency = frequest(image_block,angle_block,kernel_size,minWaveLength,maxWaveLength);
-            im(window) = frequency;
+            freq(window) = frequency;
 
         }
     }
@@ -518,6 +587,7 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
     cv::Mat angles = calculate_angles(norm_req,blk_sze,true);
+    cv::Mat angles2 = ridgeorient(norm_req,3,3);
     if(enhancement_method == GABOR)
     {
         //todo, mapa de frecuencia
@@ -525,7 +595,8 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
         cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
         //filtro
         qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
-        filtered = filter_ridge(norm_m0d1,angles,freq,mask,0.5,0.5);
+        filtered = filter_ridge(norm_m0d1,angles2,freq,mask,0.5,0.5);
+        //cv::Mat filtered2 = filter_ridge(norm_m0d1,angles2,freq,mask,0.5,0.5);
     }
     else
     {
