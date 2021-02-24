@@ -465,7 +465,6 @@ cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat mask, const cv::Mat &orient
             float angle_block = orientim.at<float>(r/block_size,c/block_size);
             float frequency = frequest(image_block,angle_block,kernel_size,minWaveLength,maxWaveLength);
             freq(window) = frequency;
-
         }
     }
     cv::bitwise_and(freq,freq,freq,mask);
@@ -483,7 +482,7 @@ cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat mask, const cv::Mat &orient
 cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &angles,int blk_sze)
 {
     Q_UNUSED(angles);
-    Q_UNUSED(blk_sze;)
+    Q_UNUSED(blk_sze);
     //todo, por el momento devuelve un valor fijo
     float freq = 0.11;
     cv::Mat freq_map = freq * cv::Mat::ones(im.size(),im.type());
