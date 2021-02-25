@@ -571,7 +571,7 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 
     //obtencion del roi
     qDebug() << "Preprocesser: calculando roi...";
-    cv::Mat mask = get_roi(norm_req,blk_sze,roi_threshold_ratio);
+    cv::Mat mask = get_roi(norm_req,blk_sze_mask,roi_threshold_ratio);
 
     //normalizacion a media 0 y desviacion unitaria
     qDebug() << "Preprocesser: normalizando a media 0 y desviacion unitaria...";
@@ -585,13 +585,13 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     cv::Mat filtered;
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
-    cv::Mat angles = calculate_angles(norm_req,blk_sze,true);
-    //cv::Mat angles2 = ridgeorient(norm_req,3,3);
+    //cv::Mat angles = calculate_angles(norm_req,blk_sze_angles,true);
+    cv::Mat angles = ridgeorient(norm_req,3,3);
     if(enhancement_method == GABOR)
     {
         //todo, mapa de frecuencia
         qDebug() << "Preprocesser: calculando mapa de frecuencias...";
-        cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
+        cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze_freq);
         //filtro
         qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
         filtered = filter_ridge(norm_m0d1,angles,freq,mask,0.5,0.5);
