@@ -65,17 +65,8 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY)
     cv::repeat(traspose, 1, total, meshY);
 }
 
-/*!
- * \brief calculate_angles calcula el mapa de orientacion de la imagen
- * \param im imagen a la que se le calculara el mapa de orientacion
- * \param W tamaño de bloque a utilizar
- * \param smooth decide si se realiza un suavizado a los angulos
- * \return mapa con los angulos de la imagen. Tamaño de im/W
- */
-cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orientsmoothsigma = 3)
+cv::Mat ridgeorient(const cv::Mat &im, double blocksigma = 3, double orientsmoothsigma = 3)
 {
-    int x = im.cols;
-    int y = im.rows;
 
     cv::Mat Gx_;
     cv::Sobel(im,Gx_,-1,1,0);
@@ -84,7 +75,6 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orien
 
     cv::Mat Gxx_ = Gx_.mul(Gx_);
     cv::Mat Gxy_ = Gx_.mul(Gy_);
-    Gxy_ *= 2;
     cv::Mat Gyy_ = Gy_.mul(Gy_);
 
     //suavizamos la covarianza
@@ -103,42 +93,15 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orien
     cv::filter2D(Gyy_, Gyy_, -1, kernel, cv::Point(-1, -1), 0,
                  cv::BORDER_DEFAULT);
 
-    cv::Mat result = cv::Mat::zeros(static_cast<int>(trunc(y/W)),static_cast<int>(trunc(x/W)),CV_32FC1);
+    cv::Mat result = cv::Mat::zeros(im.size(),CV_32FC1);
     cv::Mat sines = cv::Mat::zeros(result.size(),CV_64FC1);
     cv::Mat cosines = cv::Mat::zeros(result.size(),CV_64FC1);
-    for(int j = 0; j < y - W; j+=W)
-    {
-        auto *sines_j = sines.ptr<double>(j/W);
-        auto *cosines_j = cosines.ptr<double>(j/W);
-        for(int i = 0; i < x - W; i+=W)
-        {
-            int denominator = 0;
-            int nominator = 0;
 
-            for(int l = j; l < std::min(j + W, y - 1); l++)
-            {
-                const float *Gxx_l = Gxx_.ptr<float>(l);
-                const float *Gyy_l = Gyy_.ptr<float>(l);
-                const float *Gxy_l = Gxy_.ptr<float>(l);
-                for(int k = i; k < std::min(i + W, x - 1); k++)
-                {
-                    int Gxx = std::round(Gxx_l[k]);
-                    int Gyy = std::round(Gyy_l[k]);
-                    int Gxy = std::round(Gxy_l[k]);
-
-                    int j1 = Gxy;;
-                    nominator += j1;
-                    int j2 = Gxx - Gyy;
-                    denominator += j2;
-                }
-            }
-            cv::Point p(i/W,j/W);
-            cosines_j[i/W] = denominator;
-            sines_j[i/W] = nominator;
-        }
-    }
+    sines += 2 * Gxy_;
+    cosines += Gxx_ - Gyy_;
 
     //filtro pasabajo al campo direccional
+
     ksize = std::trunc(6 * orientsmoothsigma);
     if(ksize % 2 == 0)
     {
@@ -150,6 +113,79 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orien
     cv::filter2D(cosines, cosines, -1, kernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
     cv::filter2D(sines, sines, -1, kernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
 
+    //finalmente armamos el mapa de angulos
+    for(int i = 0; i < sines.rows; i++)
+    {
+        const double *sines_i = sines.ptr<double>(i);
+        const double *cosines_i = cosines.ptr<double>(i);
+        auto *result_i = result.ptr<float>(i);
+        for(int j = 0; j < sines.cols; j++)
+        {
+            result_i[j] = static_cast<float>((M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2.0);
+        }
+    }
+    return result;
+}
+
+/*!
+ * \brief calculate_angles calcula el mapa de orientacion de la imagen
+ * \param im imagen a la que se le calculara el mapa de orientacion
+ * \param W tamaño de bloque a utilizar
+ * \param smooth decide si se realiza un suavizado a los angulos
+ * \return mapa con los angulos de la imagen. Tamaño de im/W
+ */
+cv::Mat calculate_angles(const cv::Mat &im, int W, bool smooth = true)
+{
+    int x = im.cols;
+    int y = im.rows;
+
+
+    cv::Mat Gx_;
+    //cv::Sobel(im/125,Gx_,-1,1,0);
+    cv::Sobel(im,Gx_,-1,1,0);
+    //Gx_ *=125;
+    cv::Mat Gy_;
+    //cv::Sobel(im/125,Gy_,-1,0,1);
+    //Gy_ *= 125;
+    cv::Sobel(im,Gy_,-1,0,1);
+
+    cv::Mat result = cv::Mat::zeros(static_cast<int>(trunc(y/W)),static_cast<int>(trunc(x/W)),CV_32FC1);
+    cv::Mat sines = cv::Mat::zeros(result.size(),CV_64FC1);
+    cv::Mat cosines = cv::Mat::zeros(result.size(),CV_64FC1);
+    for(int j = 0; j < y - W; j+=W)
+    {
+        for(int i = 0; i < x - W; i+=W)
+        {
+            int denominator = 0;
+            int nominator = 0;
+
+            for(int l = j; l < std::min(j + W, y - 1); l++)
+            {
+                for(int k = i; k < std::min(i + W, x - 1); k++)
+                {
+                    int Gx = static_cast<int>(std::round(Gx_.at<float>(l,k)));
+                    int Gy = static_cast<int>(std::round(Gy_.at<float>(l,k)));
+                    int j1 = 2 * Gx * Gy;
+                    nominator += j1;
+                    int j2 = Gx * Gx - Gy * Gy;
+                    denominator += j2;
+                }
+            }
+            cv::Point p(static_cast<int>(trunc(i/W)),static_cast<int>(trunc(j/W)));
+            cosines.at<double>(p) = denominator;
+            sines.at<double>(p) = nominator;
+        }
+    }
+
+    //filtro pasabajo al campo direccional
+    if(smooth)
+    {
+        int ksize = 3;
+        double sigma = 1.0;
+        cv::Mat kernel = cv::getGaussianKernel(ksize,sigma);
+        cv::filter2D(cosines, cosines, -1, kernel);
+        cv::filter2D(sines, sines, -1, kernel);
+    }
     //finalmente armamos el mapa de angulos
     for(int i = 0; i < sines.rows; i++)
     {
@@ -549,7 +585,8 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     cv::Mat filtered;
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
-    cv::Mat angles = calculate_angles(norm_req,blk_sze_angles,3,3);
+    cv::Mat angles = calculate_angles(norm_req,1,true);
+    //cv::Mat angles = ridgeorient(norm_req,3,3);
     if(enhancement_method == GABOR)
     {
         //todo, mapa de frecuencia

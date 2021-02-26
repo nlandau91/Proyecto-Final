@@ -249,16 +249,16 @@ std::vector<cv::KeyPoint> poincare(const cv::Mat orient, const cv::Mat mask, flo
 {
 
     int blk_sze = trunc((float)mask.cols / (float)orient.cols);
+    int W = 16/blk_sze;
     std::vector<cv::KeyPoint> keypoints;
 
-    for(int y = 1; y < orient.rows -1; y++)
+    for(int y = W; y < orient.rows - 1 - W; y++)
     {
-        for(int x = 1 ; x < orient.cols - 1; x++)
+        for(int x = W ; x < orient.cols - 1 - W; x++)
         {
-            //solo nos fijamos dentro del roi
-            cv::Mat roi = mask(cv::Rect((x-1)*blk_sze,(y-1)*blk_sze,3*blk_sze,3*blk_sze));
+            cv::Mat roi = mask(cv::Rect((x - W)*blk_sze, (y - W)*blk_sze, 2 * W * blk_sze, 2 * W * blk_sze));
             int valid_blocks = cv::countNonZero(roi);
-            if(valid_blocks == 9*blk_sze*blk_sze)
+            if(valid_blocks == 4*W*W*blk_sze*blk_sze)
             {
                 float p_index = poincare_index_en(y,x,orient,tol);
                 if(p_index != -1)
