@@ -28,6 +28,11 @@ public:
     double edge_dist;
     double edge_angle;
 
+    //blk sizes
+    int blk_freq;
+    int blk_segm;
+    int blk_orient;
+
     bool draw_over_output;
 
 };

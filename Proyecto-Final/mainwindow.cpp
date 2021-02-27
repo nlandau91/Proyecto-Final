@@ -187,9 +187,9 @@ void MainWindow::load_settings()
     preprocesser.thinning_method = app_settings.thinning_method;
     preprocesser.segment = app_settings.segment;
     //preprocesser.blk_sze = app_settings.blk_size;
-    preprocesser.blk_sze_angles = app_settings.blk_size;
-    preprocesser.blk_sze_freq = app_settings.blk_size;
-    preprocesser.blk_sze_mask = app_settings.blk_size;
+    preprocesser.blk_orient = app_settings.blk_orient;
+    preprocesser.blk_freq = app_settings.blk_freq;
+    preprocesser.blk_mask = app_settings.blk_segm;
     preprocesser.norm_req_mean = 100;
     preprocesser.norm_req_var = 100;
     preprocesser.roi_threshold_ratio = app_settings.roi_threshold;

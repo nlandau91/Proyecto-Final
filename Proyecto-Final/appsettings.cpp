@@ -34,6 +34,11 @@ void AppSettings::load_settings()
     edge_matching = settings.value("edge_matching").toBool();
     edge_angle = settings.value("edge_angle").toDouble();
     edge_dist = settings.value("edge_dist").toDouble();
+
+    //blk sizes
+    blk_freq = settings.value("blk_freq").toInt();
+    blk_segm = settings.value("blk_segm").toInt();
+    blk_orient = settings.value("blk_orient").toInt();
 }
 
 int string_to_enum(const QString arg1)
@@ -53,7 +58,6 @@ int string_to_enum(const QString arg1)
     if(arg1 == "sift") return fp::SIFT;
     if(arg1 == "cn") return fp::CN;
     if(arg1 == "poincare") return fp::POINCARE;
-
 
     return not_found;
 }

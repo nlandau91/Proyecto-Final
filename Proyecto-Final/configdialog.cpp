@@ -42,7 +42,11 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->lineEdit_match_thresh->setText("0.2");
     ui->checkBox_edgeMatching->setEnabled(true);
     ui->doubleSpinBox_edgeAngle->setValue(5.0);
-    ui->doubleSpinBox_edgeDist->setValue(10.0);
+    ui->doubleSpinBox_edgeDist->setValue(0.80);
+
+    ui->spinBox_freq->setValue(8);
+    ui->spinBox_orien->setValue(8);
+    ui->spinBox_segm->setValue(8);
 
 
     load_settings();
@@ -78,6 +82,12 @@ void ConfigDialog::load_settings()
     ui->checkBox_edgeMatching->setChecked(settings.value("edge_matching").toBool());
     ui->doubleSpinBox_edgeAngle->setValue(settings.value("edge_angle").toDouble());
     ui->doubleSpinBox_edgeDist->setValue(settings.value("edge_dist").toDouble());
+
+    //block sizes
+    ui->spinBox_freq->setValue(settings.value("blk_freq").toInt());
+    ui->spinBox_orien->setValue(settings.value("blk_orient").toInt());
+    ui->spinBox_segm->setValue(settings.value("blk_segm").toInt());
+
 }
 
 void ConfigDialog::save_settings()
@@ -103,6 +113,11 @@ void ConfigDialog::save_settings()
     settings.setValue("edge_matching",ui->checkBox_edgeMatching->isChecked());
     settings.setValue("edge_angle", ui->doubleSpinBox_edgeAngle->value());
     settings.setValue("edge_dist", ui->doubleSpinBox_edgeDist->value());
+
+    //blk sizes
+    settings.setValue("blk_freq",ui->spinBox_freq->value());
+    settings.setValue("blk_orient",ui->spinBox_orien->value());
+    settings.setValue("blk_segm",ui->spinBox_segm->value());
 
 }
 

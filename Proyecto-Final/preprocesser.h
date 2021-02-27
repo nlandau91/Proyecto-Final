@@ -18,9 +18,9 @@ public:
     int thinning_method;
     float norm_req_mean;
     float norm_req_var;
-    int blk_sze_freq;
-    int blk_sze_angles;
-    int blk_sze_mask;
+    int blk_freq;
+    int blk_orient;
+    int blk_mask;
     //int blk_sze;
     float roi_threshold_ratio;
     bool segment;
