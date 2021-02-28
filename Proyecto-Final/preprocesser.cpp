@@ -42,7 +42,6 @@ cv::Mat Preprocesser::normalize(const cv::Mat &src, float req_mean, float req_va
     normalized_im = normalized_im / stddev[0];
     normalized_im = req_mean + normalized_im * std::sqrt(req_var);
     return std::move(normalized_im);
-    //return std::move(normalized_im);
 }
 
 
@@ -348,24 +347,23 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     return newim;
 }
 
-double frequest(const cv::Mat &im, const cv::Mat &orientim, int kernel_size = 5, int minWaveLength = 5, int maxWaveLength = 15)
+double frequest(const cv::Mat &im, float block_orient, int kernel_size = 5, int minWaveLength = 5, int maxWaveLength = 15)
 {
     int rows = im.rows;
 
     //calculamos la orientacion media dentro del bloque
     //promediamos los senos y cosenos de los angulos dobles y luego reconstruimos el angulo
 
-    cv::Scalar mean = cv::mean(mat_cos(2 * orientim));
-    double cosorient = mean[0];
-    mean = cv::mean(mat_sin(2 * orientim));
-    double sinorient = mean[0];
-    double block_orient = std::atan2(sinorient,cosorient) / 2.0;
+//    cv::Scalar mean = cv::mean(mat_cos(2 * orientim));
+//    double cosorient = mean[0];
+//    mean = cv::mean(mat_sin(2 * orientim));
+//    double sinorient = mean[0];
+//    double block_orient = std::atan2(sinorient,cosorient) / 2.0;
 
     //rotamos la imagen para que las crestas sean verticales
-    cv::Mat rotim;
-    cv::Mat rot_mat = cv::getRotationMatrix2D(cv::Point2f(0,0),block_orient/M_PI*180+90,1.0);
-    cv::warpAffine(im,rotim,rot_mat,im.size(),cv::INTER_NEAREST);
-    std::cout << rot_mat << std::endl;
+    cv::Mat rotim = cv::Mat::zeros(im.size(),im.type());
+    cv::Mat rot_mat = cv::getRotationMatrix2D(cv::Point2f(im.cols/2,im.rows/2),(double)block_orient/M_PI*180+90,1.0);
+    cv::warpAffine(im,rotim,rot_mat,rotim.size(),cv::INTER_NEAREST);
     //recortamos para que la imagen rotada no contenga regiones invalidas
     int cropsze = std::trunc(rows/std::sqrt(2));
     int offset = std::trunc((rows-cropsze)/2);
@@ -383,16 +381,13 @@ double frequest(const cv::Mat &im, const cv::Mat &orientim, int kernel_size = 5,
     for(int c = 0; c < ridge_sum.cols; c++)
     {
         double noise = std::abs(dilation.at<float>(0,c) - ridge_sum.at<float>(0,c));
-        //        qDebug() << dilation.at<float>(0,c);
-        //        qDebug() << ridge_sum.at<float>(0,c);
-        //        qDebug() << noise;
+
         if(noise < peak_thresh && ridge_sum.at<float>(0,c) > m[0])
         {
             maxind.push_back(c);
         }
     }
     int no_of_peaks = maxind.size();
-    //qDebug() << "frequest:: " << "no_of_peaks :" << no_of_peaks;
     //determinamos la frecuencia espacial de las crestas dividiendo
     //la distancia entre el primer y ultimo pico por no_of_peaks-1
     //si no se encuentran picos, o si la longitud de onda esta fuera de los
@@ -409,12 +404,6 @@ double frequest(const cv::Mat &im, const cv::Mat &orientim, int kernel_size = 5,
     //qDebug() << "frequest:: " << "freq_block :" << freq_block;
     return freq_block;
 
-}
-
-int coord_translate(const cv::Mat &img1,const cv::Mat &img2, int x)
-{
-    int blk_sze = img1.rows/img2.rows;
-    return x/blk_sze;
 }
 
 /*!
@@ -435,18 +424,18 @@ cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &orien
     int orient_blk_sze = rows/orientim.rows;
     //cv::Mat angles;
     //cv::resize(orientim,angles,im.size());
-    cv::Mat freq = cv::Mat::zeros(orientim.rows,orientim.cols,CV_32FC1);
+    cv::Mat freq = cv::Mat::zeros(rows,cols,CV_32FC1);
     for(int r = 0; r < rows-blk_sze - 1; r+=blk_sze)
     {
         for(int c = 0; c < cols-blk_sze - 1; c+=blk_sze)
         {
             if(mask.at<uchar>(r,c) > 0){
-                cv::Rect im_window = cv::Rect(c,r,blk_sze,blk_sze);
-                cv::Rect or_window = cv::Rect(c/orient_blk_sze,r/orient_blk_sze,blk_sze/orient_blk_sze,blk_sze/orient_blk_sze);
-                cv::Mat blkim = im(im_window);
-                cv::Mat blkor = orientim(or_window);
-                float frequency = frequest(blkim,blkor,wind_sze,minWaveLength,maxWaveLength);
-                freq(or_window).setTo(frequency);
+                cv::Rect window = cv::Rect(c,r,blk_sze,blk_sze);
+
+                cv::Mat blkim = im(window);
+                float block_orient = orientim.at<float>(r/orient_blk_sze,c/orient_blk_sze);
+                float frequency = frequest(blkim,block_orient,wind_sze,minWaveLength,maxWaveLength);
+                freq(window).setTo(frequency);
                 if(frequency > 0)
                     qDebug() << frequency;
             }
