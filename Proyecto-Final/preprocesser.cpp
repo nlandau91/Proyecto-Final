@@ -348,7 +348,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     return newim;
 }
 
-double frequest(const cv::Mat &im, cv::Mat &orientim, int kernel_size = 5, int minWaveLength = 5, int maxWaveLength = 15)
+double frequest(const cv::Mat &im, const cv::Mat &orientim, int kernel_size = 5, int minWaveLength = 5, int maxWaveLength = 15)
 {
     int rows = im.rows;
 
@@ -363,13 +363,14 @@ double frequest(const cv::Mat &im, cv::Mat &orientim, int kernel_size = 5, int m
 
     //rotamos la imagen para que las crestas sean verticales
     cv::Mat rotim;
-    cv::Mat rot_mat = cv::getRotationMatrix2D(cv::Point2f(0,0),block_orient/M_PI*180+90,0);
-    cv::warpAffine(im,rotim,rot_mat,im.size());
-
+    cv::Mat rot_mat = cv::getRotationMatrix2D(cv::Point2f(0,0),block_orient/M_PI*180+90,1.0);
+    cv::warpAffine(im,rotim,rot_mat,im.size(),cv::INTER_NEAREST);
+    std::cout << rot_mat << std::endl;
     //recortamos para que la imagen rotada no contenga regiones invalidas
     int cropsze = std::trunc(rows/std::sqrt(2));
     int offset = std::trunc((rows-cropsze)/2);
     rotim = rotim(cv::Rect(offset,offset,cropsze,cropsze));
+
     //sumamos bajando por las columnas para obtener una projeccion de los valores de las crestas
     cv::Mat ridge_sum;
     cv::reduce(rotim,ridge_sum,0,cv::REDUCE_SUM,CV_32F);
@@ -378,12 +379,13 @@ double frequest(const cv::Mat &im, cv::Mat &orientim, int kernel_size = 5, int m
     cv::dilate(ridge_sum,dilation,cv::getStructuringElement(cv::MORPH_RECT,cv::Size(1,kernel_size)));
     int peak_thresh = 100;
     std::vector<int> maxind;
+
     for(int c = 0; c < ridge_sum.cols; c++)
     {
         double noise = std::abs(dilation.at<float>(0,c) - ridge_sum.at<float>(0,c));
-        qDebug() << dilation.at<float>(0,c);
-        qDebug() << ridge_sum.at<float>(0,c);
-        qDebug() << noise;
+        //        qDebug() << dilation.at<float>(0,c);
+        //        qDebug() << ridge_sum.at<float>(0,c);
+        //        qDebug() << noise;
         if(noise < peak_thresh && ridge_sum.at<float>(0,c) > m[0])
         {
             maxind.push_back(c);
@@ -409,6 +411,12 @@ double frequest(const cv::Mat &im, cv::Mat &orientim, int kernel_size = 5, int m
 
 }
 
+int coord_translate(const cv::Mat &img1,const cv::Mat &img2, int x)
+{
+    int blk_sze = img1.rows/img2.rows;
+    return x/blk_sze;
+}
+
 /*!
  * \brief ridge_freq funcion que estima la frecuencia de crestas en una huella dactilar
  * \param im
@@ -424,23 +432,28 @@ cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &orien
 {
     int rows = im.rows;
     int cols = im.cols;
-    cv::Mat angles;
-    cv::resize(orientim,angles,im.size());
-    cv::Mat freq = cv::Mat::zeros(rows,cols,CV_32FC1);
+    int orient_blk_sze = rows/orientim.rows;
+    //cv::Mat angles;
+    //cv::resize(orientim,angles,im.size());
+    cv::Mat freq = cv::Mat::zeros(orientim.rows,orientim.cols,CV_32FC1);
     for(int r = 0; r < rows-blk_sze - 1; r+=blk_sze)
     {
         for(int c = 0; c < cols-blk_sze - 1; c+=blk_sze)
         {
-            cv::Rect window = cv::Rect(c,r,blk_sze,blk_sze);
-            cv::Mat blkim = im(window);
-            cv::Mat blkor = angles(window);
-            float frequency = frequest(blkim,blkor);
-            if(frequency > 0)
-                qDebug() << frequency;
-            //freq(window) = frequency;
+            if(mask.at<uchar>(r,c) > 0){
+                cv::Rect im_window = cv::Rect(c,r,blk_sze,blk_sze);
+                cv::Rect or_window = cv::Rect(c/orient_blk_sze,r/orient_blk_sze,blk_sze/orient_blk_sze,blk_sze/orient_blk_sze);
+                cv::Mat blkim = im(im_window);
+                cv::Mat blkor = orientim(or_window);
+                float frequency = frequest(blkim,blkor,wind_sze,minWaveLength,maxWaveLength);
+                freq(or_window).setTo(frequency);
+                if(frequency > 0)
+                    qDebug() << frequency;
+            }
+
         }
     }
-    cv::bitwise_and(freq,freq,freq,mask);
+    //cv::bitwise_and(freq,freq,freq,mask);
     return freq;
 }
 
