@@ -37,13 +37,14 @@ cv::Mat Preprocesser::normalize(const cv::Mat &src, float req_mean, float req_va
 {
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev,mask);
-    cv::Mat_<float> normalized_im(src.size(), CV_32FC1);
+
+    cv::Mat_<float> normalized_im = cv::Mat::zeros(src.size(), CV_32FC1);
+
     normalized_im = src - mean[0];
     normalized_im = normalized_im / stddev[0];
     normalized_im = req_mean + normalized_im * std::sqrt(req_var);
     return std::move(normalized_im);
 }
-
 
 //This is equivalent to Matlab's 'meshgrid' function
 void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY)
@@ -350,20 +351,20 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
 double frequest(const cv::Mat &im, float block_orient, int kernel_size = 5, int minWaveLength = 5, int maxWaveLength = 15)
 {
     int rows = im.rows;
-
+    std::cout << im <<std::endl;
     //calculamos la orientacion media dentro del bloque
     //promediamos los senos y cosenos de los angulos dobles y luego reconstruimos el angulo
 
-//    cv::Scalar mean = cv::mean(mat_cos(2 * orientim));
-//    double cosorient = mean[0];
-//    mean = cv::mean(mat_sin(2 * orientim));
-//    double sinorient = mean[0];
-//    double block_orient = std::atan2(sinorient,cosorient) / 2.0;
+    //    cv::Scalar mean = cv::mean(mat_cos(2 * orientim));
+    //    double cosorient = mean[0];
+    //    mean = cv::mean(mat_sin(2 * orientim));
+    //    double sinorient = mean[0];
+    //    double block_orient = std::atan2(sinorient,cosorient) / 2.0;
 
     //rotamos la imagen para que las crestas sean verticales
     cv::Mat rotim = cv::Mat::zeros(im.size(),im.type());
     cv::Mat rot_mat = cv::getRotationMatrix2D(cv::Point2f(im.cols/2,im.rows/2),(double)block_orient/M_PI*180+90,1.0);
-    cv::warpAffine(im,rotim,rot_mat,rotim.size(),cv::INTER_NEAREST);
+    cv::warpAffine(im,rotim,rot_mat,rotim.size());
     //recortamos para que la imagen rotada no contenga regiones invalidas
     int cropsze = std::trunc(rows/std::sqrt(2));
     int offset = std::trunc((rows-cropsze)/2);
@@ -374,14 +375,12 @@ double frequest(const cv::Mat &im, float block_orient, int kernel_size = 5, int 
     cv::reduce(rotim,ridge_sum,0,cv::REDUCE_SUM,CV_32F);
     cv::Scalar m = cv::mean(ridge_sum);
     cv::Mat dilation;
-    cv::dilate(ridge_sum,dilation,cv::getStructuringElement(cv::MORPH_RECT,cv::Size(1,kernel_size)));
+    cv::dilate(ridge_sum,dilation,cv::getStructuringElement(cv::MORPH_RECT,cv::Size(kernel_size,1)));
     int peak_thresh = 100;
     std::vector<int> maxind;
-
     for(int c = 0; c < ridge_sum.cols; c++)
     {
         double noise = std::abs(dilation.at<float>(0,c) - ridge_sum.at<float>(0,c));
-
         if(noise < peak_thresh && ridge_sum.at<float>(0,c) > m[0])
         {
             maxind.push_back(c);
