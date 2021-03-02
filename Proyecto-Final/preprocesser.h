@@ -21,7 +21,7 @@ public:
     int blk_freq;
     int blk_orient;
     int blk_mask;
-    //int blk_sze;
+    int blk_sze;
     float roi_threshold_ratio;
     bool segment;
 

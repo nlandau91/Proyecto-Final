@@ -351,7 +351,6 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
 double frequest(const cv::Mat &im, float block_orient, int kernel_size = 5, int minWaveLength = 5, int maxWaveLength = 15)
 {
     int rows = im.rows;
-    std::cout << im <<std::endl;
     //calculamos la orientacion media dentro del bloque
     //promediamos los senos y cosenos de los angulos dobles y luego reconstruimos el angulo
 
@@ -373,7 +372,9 @@ double frequest(const cv::Mat &im, float block_orient, int kernel_size = 5, int 
     //sumamos bajando por las columnas para obtener una projeccion de los valores de las crestas
     cv::Mat ridge_sum;
     cv::reduce(rotim,ridge_sum,0,cv::REDUCE_SUM,CV_32F);
+   // std::cout << ridge_sum << std::endl;
     cv::Scalar m = cv::mean(ridge_sum);
+    qDebug() << m[0];
     cv::Mat dilation;
     cv::dilate(ridge_sum,dilation,cv::getStructuringElement(cv::MORPH_RECT,cv::Size(kernel_size,1)));
     int peak_thresh = 100;
@@ -420,25 +421,21 @@ cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &orien
 {
     int rows = im.rows;
     int cols = im.cols;
-    int orient_blk_sze = rows/orientim.rows;
-    //cv::Mat angles;
-    //cv::resize(orientim,angles,im.size());
     cv::Mat freq = cv::Mat::zeros(rows,cols,CV_32FC1);
-    for(int r = 0; r < rows-blk_sze - 1; r+=blk_sze)
+    for(int r = 0; r < rows-blk_sze; r+=blk_sze)
     {
-        for(int c = 0; c < cols-blk_sze - 1; c+=blk_sze)
+        for(int c = 0; c < cols-blk_sze; c+=blk_sze)
         {
-            if(mask.at<uchar>(r,c) > 0){
-                cv::Rect window = cv::Rect(c,r,blk_sze,blk_sze);
-
-                cv::Mat blkim = im(window);
-                float block_orient = orientim.at<float>(r/orient_blk_sze,c/orient_blk_sze);
+            float block_orient = orientim.at<float>(r/blk_sze,c/blk_sze);
+            if(block_orient > 0)
+            {
+                cv::Rect im_w = cv::Rect(c,r,blk_sze,blk_sze);
+                cv::Mat blkim = im(im_w);
                 float frequency = frequest(blkim,block_orient,wind_sze,minWaveLength,maxWaveLength);
-                freq(window).setTo(frequency);
+                freq(im_w).setTo(frequency);
                 if(frequency > 0)
                     qDebug() << frequency;
             }
-
         }
     }
     //cv::bitwise_and(freq,freq,freq,mask);
@@ -531,6 +528,15 @@ cv::Mat Preprocesser::get_roi(const cv::Mat &src,int blk_sze, float threshold_ra
 
 }
 
+cv::Mat normalise(const cv::Mat &im)
+{
+    cv::Scalar mean,stddev;
+    cv::meanStdDev(im,mean,stddev);
+    cv::Mat normalized = im.clone();
+    normalized = (im - mean[0]) / stddev[0];
+    return normalized;
+}
+
 fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 {
     //pipeline de preprocesamiento
@@ -543,29 +549,32 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     qDebug() << "Preprocesser: normalizando para mejorar contraste 1...";
     cv::Mat norm_req = normalize(src_32f,norm_req_mean,norm_req_var);
 
+
     //obtencion del roi
     qDebug() << "Preprocesser: calculando roi...";
-    cv::Mat mask = get_roi(norm_req,blk_mask,roi_threshold_ratio);
-
-    //normalizacion a media 0 y desviacion unitaria
-    qDebug() << "Preprocesser: normalizando a media 0 y desviacion unitaria...";
-    cv::Mat norm_m0d1 = normalize(src_32f,0.0,1.0,mask);
-
+    cv::Mat mask = get_roi(norm_req,blk_sze,roi_threshold_ratio);
     //segmentacion
     qDebug() << "Preprocesser: segmentando...";
     cv::Mat segmented = cv::Mat::zeros(norm_req.size(),norm_req.type());
     cv::bitwise_and(norm_req,norm_req,segmented,mask);
 
+    //normalizacion a media 0 y desviacion unitaria
+    qDebug() << "Preprocesser: normalizando a media 0 y desviacion unitaria...";
+    cv::Mat norm_m0d1 = normalize(norm_req,0,1);
+    cv::Mat mask_inv;
+    cv::bitwise_not(mask,mask_inv);
+    norm_m0d1 = normalize(norm_m0d1,0,1,mask_inv);
+
     cv::Mat filtered;
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
-    cv::Mat angles = calculate_angles(norm_req,blk_orient,3,3);
+    cv::Mat angles = calculate_angles(norm_req,blk_sze,3,3);
     if(enhancement_method == GABOR)
     {
         //todo, mapa de frecuencia
         qDebug() << "Preprocesser: calculando mapa de frecuencias...";
-        cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_freq);
-        cv::Mat freq2 = ridge_freq2(norm_m0d1,mask,angles,blk_freq,5,5,15);
+        cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
+        cv::Mat freq2 = ridge_freq2(norm_m0d1,mask,angles,blk_sze,5,5,15);
         //filtro
         qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
         filtered = filter_ridge(norm_m0d1,angles,freq,mask,0.5,0.5);

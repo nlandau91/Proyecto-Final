@@ -186,7 +186,7 @@ void MainWindow::load_settings()
     preprocesser.enhancement_method = app_settings.enhancement_method;
     preprocesser.thinning_method = app_settings.thinning_method;
     preprocesser.segment = app_settings.segment;
-    //preprocesser.blk_sze = app_settings.blk_size;
+    preprocesser.blk_sze = app_settings.blk_size;
     preprocesser.blk_orient = app_settings.blk_orient;
     preprocesser.blk_freq = app_settings.blk_freq;
     preprocesser.blk_mask = app_settings.blk_segm;
