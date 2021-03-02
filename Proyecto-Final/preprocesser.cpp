@@ -348,14 +348,32 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     return newim;
 }
 
-cv::Mat get_oriented_window(const cv::Mat &im, const cv::Rect *window, int x, int y, float angle, int w, int h)
+//obtiene una ventana orienteda de una imagen
+//dimensiones ancho w, alto h, centrada en x,y
+cv::Mat get_oriented_window(const cv::Mat &im, int x, int y, float angle, int w, int h)
 {
     cv::Mat oriented_window(h,w,im.type());
     cv::Mat rot = cv::getRotationMatrix2D(cv::Point2f(x,y),angle/M_PI*180 + 90,1.0);
     cv::Mat rotated;
     cv::warpAffine(im,rotated,rot,im.size());
-    oriented_window = rotated(cv::Rect(x,y,w,h));
+    oriented_window = rotated(cv::Rect(x - w/2,y - h/2,w,h));
     return oriented_window;
+}
+
+//calcula la frecuenca de crestas en un bloque
+float get_block_freq(const cv::Mat &im, float ang)
+{
+    float freq = 0;
+    float sig[32] = {0};
+    for(int c = 0; c < im.cols; c++)
+    {
+        for(int r = 0; r < im.rows; r++)
+        {
+            sig[c] += im.at<float>(r,c);
+        }
+        sig[c] /=  (float)im.rows;
+    }
+    return freq;
 }
 
 /*!
@@ -366,18 +384,21 @@ cv::Mat get_oriented_window(const cv::Mat &im, const cv::Rect *window, int x, in
  * \return mapa de frecuencia
  */
 
-cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat &angles,int blk_sze)
+cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat &angles,int blk_sze, int min_wavelength = 5, int max_wavelength = 25)
 {
     int w = blk_sze;
     int l = blk_sze * 2;
     cv::Mat freq = cv::Mat::zeros(angles.size(),CV_32FC1);
     for(int j = blk_sze; j < im.rows - blk_sze; j+=blk_sze)
     {
-        qDebug() << "j: " << j;
         for(int i = blk_sze; i < im.cols - blk_sze; i+=blk_sze)
         {
-            qDebug() << "i: " << i;
-            cv::Mat oriented_window = get_oriented_window(im,i,j,angles.at<float>(j/blk_sze,i/blk_sze),l,w);
+            float block_orientation = angles.at<float>(j/blk_sze,i/blk_sze);
+            if(block_orientation > 0)
+            {
+                cv::Mat oriented_window = get_oriented_window(im,i,j,block_orientation,l,w);
+                float freq = get_block_freq(oriented_window,block_orientation);
+            }
         }
     }
     return freq;
