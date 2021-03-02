@@ -348,97 +348,38 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     return newim;
 }
 
-double frequest(const cv::Mat &im, float block_orient, int kernel_size = 5, int minWaveLength = 5, int maxWaveLength = 15)
+cv::Mat get_oriented_window(const cv::Mat &im, const cv::Rect *window, int x, int y, float angle, int w, int h)
 {
-    int rows = im.rows;
-    //calculamos la orientacion media dentro del bloque
-    //promediamos los senos y cosenos de los angulos dobles y luego reconstruimos el angulo
-
-    //    cv::Scalar mean = cv::mean(mat_cos(2 * orientim));
-    //    double cosorient = mean[0];
-    //    mean = cv::mean(mat_sin(2 * orientim));
-    //    double sinorient = mean[0];
-    //    double block_orient = std::atan2(sinorient,cosorient) / 2.0;
-
-    //rotamos la imagen para que las crestas sean verticales
-    cv::Mat rotim = cv::Mat::zeros(im.size(),im.type());
-    cv::Mat rot_mat = cv::getRotationMatrix2D(cv::Point2f(im.cols/2,im.rows/2),(double)block_orient/M_PI*180+90,1.0);
-    cv::warpAffine(im,rotim,rot_mat,rotim.size());
-    //recortamos para que la imagen rotada no contenga regiones invalidas
-    int cropsze = std::trunc(rows/std::sqrt(2));
-    int offset = std::trunc((rows-cropsze)/2);
-    rotim = rotim(cv::Rect(offset,offset,cropsze,cropsze));
-
-    //sumamos bajando por las columnas para obtener una projeccion de los valores de las crestas
-    cv::Mat ridge_sum;
-    cv::reduce(rotim,ridge_sum,0,cv::REDUCE_SUM,CV_32F);
-   // std::cout << ridge_sum << std::endl;
-    cv::Scalar m = cv::mean(ridge_sum);
-    qDebug() << m[0];
-    cv::Mat dilation;
-    cv::dilate(ridge_sum,dilation,cv::getStructuringElement(cv::MORPH_RECT,cv::Size(kernel_size,1)));
-    int peak_thresh = 100;
-    std::vector<int> maxind;
-    for(int c = 0; c < ridge_sum.cols; c++)
-    {
-        double noise = std::abs(dilation.at<float>(0,c) - ridge_sum.at<float>(0,c));
-        if(noise < peak_thresh && ridge_sum.at<float>(0,c) > m[0])
-        {
-            maxind.push_back(c);
-        }
-    }
-    int no_of_peaks = maxind.size();
-    //determinamos la frecuencia espacial de las crestas dividiendo
-    //la distancia entre el primer y ultimo pico por no_of_peaks-1
-    //si no se encuentran picos, o si la longitud de onda esta fuera de los
-    //limites, la frecuencia se establece en 0
-    double freq_block = 0;
-    if(no_of_peaks >= 2)
-    {
-        double waveLength = (double)(maxind.back() - maxind.front())/(double)(no_of_peaks - 1);
-        if(waveLength >= minWaveLength && waveLength <= maxWaveLength)
-        {
-            freq_block = 1.0/waveLength;
-        }
-    }
-    //qDebug() << "frequest:: " << "freq_block :" << freq_block;
-    return freq_block;
-
+    cv::Mat oriented_window(h,w,im.type());
+    cv::Mat rot = cv::getRotationMatrix2D(cv::Point2f(x,y),angle/M_PI*180 + 90,1.0);
+    cv::Mat rotated;
+    cv::warpAffine(im,rotated,rot,im.size());
+    oriented_window = rotated(cv::Rect(x,y,w,h));
+    return oriented_window;
 }
 
 /*!
- * \brief ridge_freq funcion que estima la frecuencia de crestas en una huella dactilar
- * \param im
- * \param mask
- * \param orientim
- * \param block_size
- * \param kernel_size
- * \param minWaveLength
- * \param maxWaveLength
- * \return
+ * \brief ridge_freq2 implementacion del algoritmo de hong98
+ * \param im imagen normalizada
+ * \param angles mapa de orientacion
+ * \param blk_sze tamanio de bloque, igual que el de la orientacion
+ * \return mapa de frecuencia
  */
-cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &orientim, int blk_sze, int wind_sze = 5, int minWaveLength = 5, int maxWaveLength = 15)
+
+cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat &angles,int blk_sze)
 {
-    int rows = im.rows;
-    int cols = im.cols;
-    cv::Mat freq = cv::Mat::zeros(rows,cols,CV_32FC1);
-    for(int r = 0; r < rows-blk_sze; r+=blk_sze)
+    int w = blk_sze;
+    int l = blk_sze * 2;
+    cv::Mat freq = cv::Mat::zeros(angles.size(),CV_32FC1);
+    for(int j = blk_sze; j < im.rows - blk_sze; j+=blk_sze)
     {
-        for(int c = 0; c < cols-blk_sze; c+=blk_sze)
+        qDebug() << "j: " << j;
+        for(int i = blk_sze; i < im.cols - blk_sze; i+=blk_sze)
         {
-            float block_orient = orientim.at<float>(r/blk_sze,c/blk_sze);
-            if(block_orient > 0)
-            {
-                cv::Rect im_w = cv::Rect(c,r,blk_sze,blk_sze);
-                cv::Mat blkim = im(im_w);
-                float frequency = frequest(blkim,block_orient,wind_sze,minWaveLength,maxWaveLength);
-                freq(im_w).setTo(frequency);
-                if(frequency > 0)
-                    qDebug() << frequency;
-            }
+            qDebug() << "i: " << i;
+            cv::Mat oriented_window = get_oriented_window(im,i,j,angles.at<float>(j/blk_sze,i/blk_sze),l,w);
         }
     }
-    //cv::bitwise_and(freq,freq,freq,mask);
     return freq;
 }
 
@@ -574,7 +515,7 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
         //todo, mapa de frecuencia
         qDebug() << "Preprocesser: calculando mapa de frecuencias...";
         cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
-        cv::Mat freq2 = ridge_freq2(norm_m0d1,mask,angles,blk_sze,5,5,15);
+        ridge_freq2(norm_m0d1,angles,16);
         //filtro
         qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
         filtered = filter_ridge(norm_m0d1,angles,freq,mask,0.5,0.5);
