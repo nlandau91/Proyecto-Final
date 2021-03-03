@@ -42,10 +42,11 @@ struct Preprocessed
 {
     cv::Mat original;
     cv::Mat normalized;
+    cv::Mat roi;
+    cv::Mat orientation;
+    cv::Mat frequency;
     cv::Mat filtered;
     cv::Mat thinned;
-    cv::Mat orientation;
-    cv::Mat roi;
     cv::Mat result;
 };
 

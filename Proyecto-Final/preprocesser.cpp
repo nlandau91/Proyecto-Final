@@ -360,19 +360,84 @@ cv::Mat get_oriented_window(const cv::Mat &im, int x, int y, float angle, int w,
     return oriented_window;
 }
 
+//suavisa un arreglo de floats
+void sig_smooth(std::vector<float> &sig)
+{
+    for(size_t i = 1; i < sig.size() -1; i++)
+    {
+        int smaller = sig[i-1] < sig[i+1] ? sig[i-1] : sig[i+1];
+        if(smaller > sig[i])
+        {
+            sig[i] = smaller;
+        }
+    }
+}
+
+//calcula la frecuencia de un arreglo de floats que se supone es sinusoidal
+float calc_freq(std::vector<float> &sig, float min, int min_wavelength, int max_wavelength)
+{
+    int n = 0;
+    int last_peak = -999;
+    int pixels = 0;
+    int valids = 0;
+    for(int i = 1; i < (int)sig.size() -1; i++)
+    {
+        int cur = sig[i];
+        if(cur >= min)
+        {
+            int pre = sig[i-1];
+            if(cur > pre)
+            {
+                int nex = sig[i+1];
+                if(!(nex > cur))
+                {
+                    n++;
+                    if(n == 1)
+                    {
+                        last_peak = i;
+                    }
+                    else
+                    {
+                        if(i - last_peak >= min_wavelength && i - last_peak <= max_wavelength)
+                        {
+                            pixels += (i - last_peak);
+                            valids++;
+                        }
+                        last_peak = i;
+                    }
+                }
+            }
+        }
+    }
+    float freq;
+    if(valids > 0)
+    {
+        freq = (float)valids / (float)pixels;
+    }
+    else
+    {
+        freq = -1;
+    }
+    return freq;
+}
 //calcula la frecuenca de crestas en un bloque
-float get_block_freq(const cv::Mat &im, float ang)
+float get_block_freq(const cv::Mat &im, int min_wavelength = 5, int max_wavelength = 25)
 {
     float freq = 0;
-    float sig[32] = {0};
+    std::vector<float> sig;
     for(int c = 0; c < im.cols; c++)
     {
+        float sum = 0;
         for(int r = 0; r < im.rows; r++)
         {
-            sig[c] += im.at<float>(r,c);
+            sum += im.at<float>(r,c);
         }
-        sig[c] /=  (float)im.rows;
+        sum /=  (float)im.rows;
+        sig.push_back(sum);
     }
+    cv::Scalar mean = cv::mean(sig);
+    sig_smooth(sig);
+    freq = calc_freq(sig,mean[0],min_wavelength,max_wavelength);
     return freq;
 }
 
@@ -397,7 +462,9 @@ cv::Mat ridge_freq2(const cv::Mat &im, const cv::Mat &angles,int blk_sze, int mi
             if(block_orientation > 0)
             {
                 cv::Mat oriented_window = get_oriented_window(im,i,j,block_orientation,l,w);
-                float freq = get_block_freq(oriented_window,block_orientation);
+                float block_freq = get_block_freq(oriented_window, min_wavelength, max_wavelength);
+                qDebug() << block_freq;
+                freq.at<float>(j/blk_sze,i/blk_sze) = block_freq;
             }
         }
     }
@@ -531,20 +598,16 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
     cv::Mat angles = calculate_angles(norm_req,blk_sze,3,3);
-    if(enhancement_method == GABOR)
-    {
-        //todo, mapa de frecuencia
-        qDebug() << "Preprocesser: calculando mapa de frecuencias...";
-        cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
-        ridge_freq2(norm_m0d1,angles,16);
-        //filtro
-        qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
-        filtered = filter_ridge(norm_m0d1,angles,freq,mask,0.5,0.5);
-    }
-    else
-    {
-        filtered = norm_req.clone();
-    }
+
+    //todo, mapa de frecuencia
+    qDebug() << "Preprocesser: calculando mapa de frecuencias...";
+    cv::Mat freq = ridge_freq(norm_m0d1,mask,angles,blk_sze);
+    cv::Mat freq2 = ridge_freq2(norm_m0d1,angles,16);
+    //filtro
+    qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
+    filtered = filter_ridge(norm_m0d1,angles,freq2,mask,0.5,0.5);
+
+
     filtered.convertTo(filtered,CV_8UC1);
     //esqueletizamos la imagen
     qDebug() << "Preprocesser: esqueletizamos...";
@@ -564,10 +627,11 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     Preprocessed pre;
     pre.original = src;
     pre.normalized = norm_req;
+    pre.roi = mask;
+    pre.orientation = angles;
+    pre.frequency = freq2;
     pre.filtered = filtered;
     pre.thinned = thinned;
-    pre.orientation = angles;
-    pre.roi = mask;
     pre.result = result;
 
     qDebug() << "Preprocess:: listo.";

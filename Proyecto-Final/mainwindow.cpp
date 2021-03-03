@@ -258,7 +258,8 @@ void MainWindow::on_btn_demo_clicked()
             qdir.mkdir("output");
             cv::imwrite("output/normalized.jpg",pre.normalized);
             cv::imwrite("output/roi.jpg",pre.roi);
-            cv::imwrite("output/orientation.jpg",fp::visualize_angles(pre.result,pre.orientation));;
+            cv::imwrite("output/orientation.jpg",fp::visualize_angles(pre.result,pre.orientation));
+            cv::imwrite("output/frequency.jpg",pre.frequency * 255);
             cv::imwrite("output/filtered.jpg",pre.filtered);
             cv::imwrite("output/thinned.jpg",pre.thinned);
             cv::imwrite("output/preprocessed.jpg",pre.result);
