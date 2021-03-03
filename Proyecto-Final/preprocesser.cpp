@@ -181,7 +181,6 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     // Fixed angle increment between filter orientations in degrees
     // Deberia ser divisor de 180
     int angleInc = 3;
-
     cv::Mat im;
     src.convertTo(im, CV_32FC1);
     int blk_sze = im.rows/orientation_map.rows;
@@ -227,7 +226,6 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
         int index = round(f*100);
         freqindex[index] = i;
     }
-
     //Generate filters corresponding to these distinct frequencies and
     //orientations in 'angleInc' increments.
     cv::Mat filter[unfreq.size()][180/angleInc];
@@ -310,27 +308,54 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     }
     // Finally do the filtering
     cv::Mat newim = cv::Mat::zeros(im.size(),im.type());
-    for(long unsigned i = 0; i < finalind.size(); i++)
+//    for(long unsigned i = 0; i < finalind.size(); i++)
+//    {
+
+//        int r = validr[finalind[i]];
+//        int c = validc[finalind[i]];
+
+//        //find filter corresponding to freq(r,c)
+//        int filterindex = freqindex[(int)round(freq.at<float>(r,c)*100)];
+
+//        int s = sze[filterindex];
+
+//        cv::Rect roi(c-s,r-s,2*s,2*s);
+//        cv::Mat subim(im(roi));
+//        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
+//        cv::Mat mulResult;
+//        cv::multiply(subim,subFilter,mulResult);
+
+//        if(cv::sum(mulResult)[0] > 0)
+//        {
+//            newim.at<float>(r,c) = 255;
+//        }
+//    }
+    for(int r = 0; r < im.rows; r++)
     {
-
-        int r = validr[finalind[i]];
-        int c = validc[finalind[i]];
-
-        //find filter corresponding to freq(r,c)
-        int filterindex = freqindex[(int)round(freq.at<float>(r,c)*100)];
-
-        int s = sze[filterindex];
-
-        cv::Rect roi(c-s,r-s,2*s,2*s);
-        cv::Mat subim(im(roi));
-        //cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
-        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
-        cv::Mat mulResult;
-        cv::multiply(subim,subFilter,mulResult);
-
-        if(cv::sum(mulResult)[0] > 0)
+        for(int c = 0; c < im.cols; c++)
         {
-            newim.at<float>(r,c) = 255;
+            //vemos si este punto es valido
+            if(freq.at<float>(r/blk_sze,c/blk_sze) > 0)
+            {
+                if(r > maxsze && r < im.rows - maxsze
+                        && c > maxsze && c < im.cols - maxsze)
+                {
+                    int filterindex = freqindex[(int)round(freq.at<float>(r/blk_sze,c/blk_sze)*100)];
+
+                    int s = sze[filterindex];
+
+                    cv::Rect roi(c-s,r-s,2*s,2*s);
+                    cv::Mat subim(im(roi));
+                    cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/blk_sze),trunc(c/blk_sze))];
+                    cv::Mat mulResult;
+                    cv::multiply(subim,subFilter,mulResult);
+
+                    if(cv::sum(mulResult)[0] > 0)
+                    {
+                        newim.at<float>(r,c) = 255;
+                    }
+                }
+            }
         }
     }
 
@@ -344,7 +369,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     mask.rowRange(0, maxsze + 1).colRange(0, mask.cols).setTo(0);
     mask.rowRange(mask.rows - maxsze, mask.rows).colRange(0, mask.cols).setTo(0);
     mask.rowRange(0, mask.rows).colRange(mask.cols - 2 * (maxsze + 1) - 1, mask.cols).setTo(0);
-
+    qDebug() << "OPA?";
     return newim;
 }
 
@@ -409,14 +434,10 @@ float calc_freq(std::vector<float> &sig, float min, int min_wavelength, int max_
             }
         }
     }
-    float freq;
+    float freq = 0;
     if(valids > 0)
     {
         freq = (float)valids / (float)pixels;
-    }
-    else
-    {
-        freq = -1;
     }
     return freq;
 }
@@ -485,8 +506,8 @@ cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &mask, const cv::Mat &angles
     Q_UNUSED(blk_sze);
     //todo, por el momento devuelve un valor fijo
     float freq = 0.11;
-    cv::Mat freq_map = freq * cv::Mat::ones(im.size(),im.type());
-    cv::bitwise_and(freq_map,freq_map,freq_map,mask);
+    cv::Mat freq_map = freq * cv::Mat::ones(angles.size(),im.type());
+    //cv::bitwise_and(freq_map,freq_map,freq_map,mask);
     return freq_map;
 }
 
