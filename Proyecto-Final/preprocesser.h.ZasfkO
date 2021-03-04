@@ -24,8 +24,8 @@ public:
     int blk_sze;
     float roi_threshold_ratio;
     bool segment;
-    float gabor_kx;
-    float gabor_ky;
+    float kx;
+    float ky;
 
     Preprocesser();
 

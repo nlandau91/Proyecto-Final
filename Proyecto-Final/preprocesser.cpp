@@ -619,7 +619,9 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     cv::Mat freq = ridge_freq(norm_m0d1,angles,5,15,mask);
     //filtro
     qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
-    filtered = filter_ridge(norm_m0d1,angles,freq,mask,0.5,0.5);
+    qDebug() << gabor_kx;
+    qDebug() << gabor_ky;
+    filtered = filter_ridge(norm_m0d1,angles,freq,mask,gabor_kx,gabor_ky);
 
 
     filtered.convertTo(filtered,CV_8UC1);

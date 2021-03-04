@@ -15,6 +15,11 @@ public:
     bool segment;
     int blk_size;
     float roi_threshold;
+    int blk_freq;
+    int blk_segm;
+    int blk_orient;
+    float gabor_kx;
+    float gabor_ky;
 
     //analyzer
     int minutiae_method;
@@ -27,11 +32,6 @@ public:
     bool edge_matching;
     double edge_dist;
     double edge_angle;
-
-    //blk sizes
-    int blk_freq;
-    int blk_segm;
-    int blk_orient;
 
     bool draw_over_output;
 

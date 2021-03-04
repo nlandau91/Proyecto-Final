@@ -193,6 +193,8 @@ void MainWindow::load_settings()
     preprocesser.norm_req_mean = 100;
     preprocesser.norm_req_var = 100;
     preprocesser.roi_threshold_ratio = app_settings.roi_threshold;
+    preprocesser.gabor_kx = app_settings.gabor_kx;
+    preprocesser.gabor_ky = app_settings.gabor_ky;
 
 
     analyzer = fp::Analyzer();

@@ -9,26 +9,18 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->setupUi(this);
 
     //preprocessing
-    ui->comboBox_blk->addItem("2");
-    ui->comboBox_blk->addItem("4");
-    ui->comboBox_blk->addItem("8");
-    ui->comboBox_blk->addItem("16");
-    ui->comboBox_blk->addItem("32");
-
-    ui->comboBox_enh->addItem("gabor");
-    ui->comboBox_enh->addItem("none");
 
     ui->comboBox_thi->addItem("none");
     ui->comboBox_thi->addItem("zhangsuen");
     ui->comboBox_thi->addItem("guohall");
-    ui->comboBox_thi->addItem("morph");
+    //ui->comboBox_thi->addItem("morph");
 
     ui->checkBox_seg->setChecked(true);
 
     //feature extraction
-    ui->comboBox_kp->addItem("harris");
-    ui->comboBox_kp->addItem("shitomasi");
-    ui->comboBox_kp->addItem("surf");
+    //ui->comboBox_kp->addItem("harris");
+    //ui->comboBox_kp->addItem("shitomasi");
+    //ui->comboBox_kp->addItem("surf");
     ui->comboBox_kp->addItem("cn");
 
     ui->comboBox_feat->addItem("orb");
@@ -44,8 +36,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->doubleSpinBox_edgeAngle->setValue(5.0);
     ui->doubleSpinBox_edgeDist->setValue(0.80);
 
-    ui->spinBox_freq->setValue(8);
-    ui->spinBox_orien->setValue(8);
+    ui->spinBox_maps->setValue(8);
     ui->spinBox_segm->setValue(8);
 
 
@@ -64,12 +55,14 @@ void ConfigDialog::load_settings()
     QString file = QApplication::applicationDirPath()+"/settings.ini";
     QSettings settings(file, QSettings::IniFormat);
     //preprocessing
-    ui->comboBox_blk->setCurrentText(settings.value("blk_size").toString());
 
-    ui->comboBox_enh->setCurrentText(settings.value("enhancement_method").toString());
     ui->comboBox_thi->setCurrentText(settings.value("thinning_method").toString());
     ui->checkBox_seg->setChecked(settings.value("segment").toBool());
     ui->doubleSpinBox_roi->setValue(settings.value("roi_threshold").toDouble());
+    ui->spinBox_maps->setValue(settings.value("blk_maps").toInt());
+    ui->spinBox_segm->setValue(settings.value("blk_segm").toInt());
+    ui->doubleSpinBox_kx->setValue(settings.value("gabor_kx").toDouble());
+    ui->doubleSpinBox_ky->setValue(settings.value("gabor_ky").toDouble());
 
     //feature extraction
     ui->comboBox_kp->setCurrentText(settings.value("keypoint_extractor").toString());
@@ -83,10 +76,6 @@ void ConfigDialog::load_settings()
     ui->doubleSpinBox_edgeAngle->setValue(settings.value("edge_angle").toDouble());
     ui->doubleSpinBox_edgeDist->setValue(settings.value("edge_dist").toDouble());
 
-    //block sizes
-    ui->spinBox_freq->setValue(settings.value("blk_freq").toInt());
-    ui->spinBox_orien->setValue(settings.value("blk_orient").toInt());
-    ui->spinBox_segm->setValue(settings.value("blk_segm").toInt());
 
 }
 
@@ -95,12 +84,14 @@ void ConfigDialog::save_settings()
     QString file = QApplication::applicationDirPath()+"/settings.ini";
     QSettings settings(file, QSettings::IniFormat);
     //preprocessing
-    settings.setValue("blk_size", ui->comboBox_blk->currentText());
 
-    settings.setValue("enhancement_method", ui->comboBox_enh->currentText());
     settings.setValue("thinning_method", ui->comboBox_thi->currentText());
     settings.setValue("segment",ui->checkBox_seg->isChecked());
     settings.setValue("roi_threshold", ui->doubleSpinBox_roi->value());
+    settings.setValue("blk_maps",ui->spinBox_maps->value());
+    settings.setValue("blk_segm",ui->spinBox_segm->value());
+    settings.setValue("gabor_kx",ui->doubleSpinBox_kx->value());
+    settings.setValue("gabor_ky",ui->doubleSpinBox_ky->value());
 
     //feature extraction
     settings.setValue("keypoint_extractor", ui->comboBox_kp->currentText());
@@ -113,11 +104,6 @@ void ConfigDialog::save_settings()
     settings.setValue("edge_matching",ui->checkBox_edgeMatching->isChecked());
     settings.setValue("edge_angle", ui->doubleSpinBox_edgeAngle->value());
     settings.setValue("edge_dist", ui->doubleSpinBox_edgeDist->value());
-
-    //blk sizes
-    settings.setValue("blk_freq",ui->spinBox_freq->value());
-    settings.setValue("blk_orient",ui->spinBox_orien->value());
-    settings.setValue("blk_segm",ui->spinBox_segm->value());
 
 }
 
