@@ -473,19 +473,20 @@ float get_block_freq(const cv::Mat &im, int min_wavelength = 5, int max_waveleng
 cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &angles, int min_wavelength = 5, int max_wavelength = 15, const cv::Mat &mask = cv::Mat())
 {
     //creamos valor y estructuras a utilizar
-    int blk_sze = im.rows / angles.rows;
-    int w = blk_sze;
-    int l = blk_sze * 2;
+    int o_blk_sze = im.rows / angles.rows;
+    int f_blk_sze = o_blk_sze;
+    int w = f_blk_sze;
+    int l = f_blk_sze * 2;
     std::vector<float> frequencies;
     cv::Mat freq = cv::Mat::zeros(angles.size(),im.type());
-    for(int j = blk_sze; j < im.rows - blk_sze; j+=blk_sze)
+    for(int j = o_blk_sze; j < im.rows - o_blk_sze; j+=o_blk_sze)
     {
-        for(int i = blk_sze; i < im.cols - blk_sze; i+=blk_sze)
+        for(int i = o_blk_sze; i < im.cols - o_blk_sze; i+=o_blk_sze)
         {
             //si estamos en una posicion valida
-            if( mask.empty() || (!mask.empty() && cv::countNonZero(mask(cv::Rect(i - blk_sze/2,j - blk_sze/2,blk_sze,blk_sze))) == blk_sze*blk_sze))
+            if( mask.empty() || (!mask.empty() && cv::countNonZero(mask(cv::Rect(i - o_blk_sze/2,j - o_blk_sze/2,o_blk_sze,o_blk_sze))) == o_blk_sze*o_blk_sze))
             {
-                float block_orientation = angles.at<float>(j/blk_sze,i/blk_sze);
+                float block_orientation = angles.at<float>(j/o_blk_sze,i/o_blk_sze);
                 if(block_orientation > 0)
                 {
                     //calculamos la ventana orientada
