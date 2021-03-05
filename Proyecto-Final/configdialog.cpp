@@ -15,7 +15,6 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->comboBox_thi->addItem("guohall");
     //ui->comboBox_thi->addItem("morph");
 
-    ui->checkBox_seg->setChecked(true);
 
     //feature extraction
     //ui->comboBox_kp->addItem("harris");
@@ -25,20 +24,6 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     ui->comboBox_feat->addItem("orb");
     ui->comboBox_feat->addItem("surf");
-
-    ui->lineEdit_thresh->setText("120");
-
-    ui->checkBox_draw->setChecked(true);
-
-    //feature matching
-    ui->lineEdit_match_thresh->setText("0.2");
-    ui->checkBox_edgeMatching->setEnabled(true);
-    ui->doubleSpinBox_edgeAngle->setValue(5.0);
-    ui->doubleSpinBox_edgeDist->setValue(0.80);
-
-    ui->spinBox_maps->setValue(8);
-    ui->spinBox_segm->setValue(8);
-
 
     load_settings();
 }
@@ -52,6 +37,7 @@ ConfigDialog::~ConfigDialog()
 
 void ConfigDialog::load_settings()
 {
+    //todo: checkear si existe. Si no existe, cargar default.ini. Boton de reset tambien
     QString file = QApplication::applicationDirPath()+"/settings.ini";
     QSettings settings(file, QSettings::IniFormat);
     //preprocessing
@@ -59,7 +45,8 @@ void ConfigDialog::load_settings()
     ui->comboBox_thi->setCurrentText(settings.value("thinning_method").toString());
     ui->checkBox_seg->setChecked(settings.value("segment").toBool());
     ui->doubleSpinBox_roi->setValue(settings.value("roi_threshold").toDouble());
-    ui->spinBox_maps->setValue(settings.value("blk_maps").toInt());
+    ui->spinBox_orient->setValue(settings.value("blk_orient").toInt());
+    ui->spinBox_freq->setValue(settings.value("blk_freq").toInt());
     ui->spinBox_segm->setValue(settings.value("blk_segm").toInt());
     ui->doubleSpinBox_kx->setValue(settings.value("gabor_kx").toDouble());
     ui->doubleSpinBox_ky->setValue(settings.value("gabor_ky").toDouble());
@@ -88,7 +75,8 @@ void ConfigDialog::save_settings()
     settings.setValue("thinning_method", ui->comboBox_thi->currentText());
     settings.setValue("segment",ui->checkBox_seg->isChecked());
     settings.setValue("roi_threshold", ui->doubleSpinBox_roi->value());
-    settings.setValue("blk_maps",ui->spinBox_maps->value());
+    settings.setValue("blk_orient",ui->spinBox_orient->value());
+    settings.setValue("blk_freq",ui->spinBox_freq->value());
     settings.setValue("blk_segm",ui->spinBox_segm->value());
     settings.setValue("gabor_kx",ui->doubleSpinBox_kx->value());
     settings.setValue("gabor_ky",ui->doubleSpinBox_ky->value());

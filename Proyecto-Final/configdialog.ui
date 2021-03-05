@@ -61,7 +61,7 @@
          <item>
           <widget class="QSpinBox" name="spinBox_segm">
            <property name="minimum">
-            <number>4</number>
+            <number>1</number>
            </property>
            <property name="maximum">
             <number>128</number>
@@ -75,14 +75,35 @@
          <item>
           <widget class="QLabel" name="label_18">
            <property name="text">
-            <string>Maps</string>
+            <string>Orient</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="spinBox_maps">
+          <widget class="QSpinBox" name="spinBox_orient">
            <property name="minimum">
-            <number>5</number>
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>128</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_16">
+           <property name="text">
+            <string>Freq</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBox_freq">
+           <property name="minimum">
+            <number>1</number>
            </property>
            <property name="maximum">
             <number>128</number>

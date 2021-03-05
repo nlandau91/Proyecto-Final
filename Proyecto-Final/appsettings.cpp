@@ -22,9 +22,9 @@ void AppSettings::load_settings()
     thinning_method = string_to_enum(settings.value("thinning_method").toString());
     segment = settings.value("segment").toBool();
     roi_threshold = settings.value("roi_threshold").toFloat();
-    blk_freq = settings.value("blk_maps").toInt();
+    blk_freq = settings.value("blk_freq").toInt();
     blk_segm = settings.value("blk_segm").toInt();
-    blk_orient = settings.value("blk_maps").toInt();
+    blk_orient = settings.value("blk_orient").toInt();
     gabor_kx = settings.value("gabor_kx").toFloat();
     gabor_ky = settings.value("gabor_ky").toFloat();
 
