@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QSettings>
+#include <QFile>
 
 int string_to_enum(const QString arg1);
 
@@ -14,6 +15,10 @@ AppSettings::AppSettings()
 void AppSettings::load_settings()
 {
     QString file = QApplication::applicationDirPath()+"/settings.ini";
+    if(!QFile::exists(file))
+    {
+        file = QApplication::applicationDirPath()+"/default.ini";
+    }
     QSettings settings(file, QSettings::IniFormat);
 
     //preprocesser

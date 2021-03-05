@@ -22,10 +22,12 @@ private slots:
     void on_buttonBox_accepted();
 
 
+    void on_btn_default_clicked();
+
 private:
     Ui::ConfigDialog *ui;
 
-    void load_settings();
+    void load_settings(bool def = false);
     void save_settings();
 };
 

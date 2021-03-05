@@ -1,5 +1,6 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
+#include <QFile>
 
 ConfigDialog::ConfigDialog(QWidget *parent) :
     QDialog(parent),
@@ -35,11 +36,15 @@ ConfigDialog::~ConfigDialog()
     delete ui;
 }
 
-void ConfigDialog::load_settings()
+void ConfigDialog::load_settings(bool def)
 {
-    //todo: checkear si existe. Si no existe, cargar default.ini. Boton de reset tambien
     QString file = QApplication::applicationDirPath()+"/settings.ini";
+    if(def || !QFile::exists(file))
+    {
+        file = QApplication::applicationDirPath()+"/default.ini";
+    }
     QSettings settings(file, QSettings::IniFormat);
+
     //preprocessing
 
     ui->comboBox_thi->setCurrentText(settings.value("thinning_method").toString());
@@ -98,4 +103,9 @@ void ConfigDialog::save_settings()
 void ConfigDialog::on_buttonBox_accepted()
 {
     save_settings();
+}
+
+void ConfigDialog::on_btn_default_clicked()
+{
+    load_settings(true);
 }
