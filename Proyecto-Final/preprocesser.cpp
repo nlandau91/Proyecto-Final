@@ -33,17 +33,69 @@ cv::Mat morphological_thinning(const cv::Mat &src)
 
 }
 
-cv::Mat Preprocesser::normalize(const cv::Mat &src, float req_mean, float req_var, const cv::_InputOutputArray &mask)
+cv::Mat normalize(const cv::Mat &src, float req_mean, float req_var, const cv::Mat &mask = cv::Mat())
 {
+    cv::imwrite("norm mask.jpg",mask);
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev,mask);
 
-    cv::Mat_<float> normalized_im = cv::Mat::zeros(src.size(), CV_32FC1);
+    cv::Mat normalized_im(src.size(), CV_32FC1);
 
     normalized_im = src - mean[0];
     normalized_im = normalized_im / stddev[0];
     normalized_im = req_mean + normalized_im * std::sqrt(req_var);
-    return std::move(normalized_im);
+    return normalized_im;
+}
+
+//normaliza un pixel, usado por normalize2
+float normalize_pixel(float x, float v, float v0, float m, float m0)
+{
+    float normalized = 0;
+    normalized = (x - m) * (x - m);
+    normalized *= v0/v;
+    normalized = std::sqrt(normalized);
+    if(x > m)
+    {
+        normalized = m0 + normalized;
+    }
+    else
+    {
+        normalized = m0 - normalized;
+    }
+    return normalized;
+}
+
+/*!
+ * \brief normalize2 normaliza una imagne para que tenga la madia y varianza indicadas
+ * implementa el metodo de Hong, Wan y Jain 98
+ * \param src
+ * \param m0 media deseada
+ * \param v0 varianza deseada
+ * \param mask mascara opcional
+ * \return
+ */
+cv::Mat normalize2(const cv::Mat &src, float m0, float v0, const cv::Mat &mask = cv::Mat())
+{
+    cv::Scalar mean,stddev;
+    cv::meanStdDev(src,mean,stddev,mask);
+    float v = stddev[0] * stddev[0];
+    float m = mean[0];
+
+    cv::Mat normalized_im(src.size(), CV_32FC1);
+    src.convertTo(normalized_im, CV_32FC1);
+
+    for(int r = 0; r < normalized_im.rows; r++)
+    {
+        for(int c = 0; c < normalized_im.cols; c++)
+        {
+            if(mask.empty() || (!mask.empty() && mask.at<uchar>(r,c) > 0))
+            {
+                normalized_im.at<float>(r,c) = normalize_pixel(normalized_im.at<float>(r,c),v,v0,m,m0);
+            }
+        }
+    }
+
+    return normalized_im;
 }
 
 //This is equivalent to Matlab's 'meshgrid' function
@@ -72,7 +124,7 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY)
  * \param smooth decide si se realiza un suavizado a los angulos
  * \return mapa con los angulos de la imagen. Tamaño de im/W
  */
-cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orientsmoothsigma = 3)
+cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orientsmoothsigma = 3, cv::Mat mask = cv::Mat())
 {
     int x = im.cols;
     int y = im.rows;
@@ -122,14 +174,17 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orien
                 const float *Gxy_l = Gxy_.ptr<float>(l);
                 for(int k = i; k < std::min(i + W, x - 1); k++)
                 {
-                    int Gxx = std::round(Gxx_l[k]);
-                    int Gyy = std::round(Gyy_l[k]);
-                    int Gxy = std::round(Gxy_l[k]);
+                    if(mask.empty() || (!mask.empty() && mask.at<uchar>(l,k) > 0))
+                    {
+                        int Gxx = std::round(Gxx_l[k]);
+                        int Gyy = std::round(Gyy_l[k]);
+                        int Gxy = std::round(Gxy_l[k]);
 
-                    int j1 = Gxy;;
-                    nominator += j1;
-                    int j2 = Gxx - Gyy;
-                    denominator += j2;
+                        int j1 = Gxy;;
+                        nominator += j1;
+                        int j2 = Gxx - Gyy;
+                        denominator += j2;
+                    }
                 }
             }
             cv::Point p(i/W,j/W);
@@ -314,27 +369,34 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     {
         for(int c = 0; c < im.cols; c++)
         {
-            //vemos si este punto es valido
-            if(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze) > 0)
+            if(mask.empty() || (!mask.empty() && mask.at<uchar>(r,c) > 0))
             {
-                if(r > maxsze && r < im.rows - maxsze
-                        && c > maxsze && c < im.cols - maxsze)
+                //vemos si este punto es valido
+                if(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze) > 0)
                 {
-                    int filterindex = freqindex[(int)round(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze)*100)];
-
-                    int s = sze[filterindex];
-
-                    cv::Rect roi(c-s,r-s,2*s,2*s);
-                    cv::Mat subim(im(roi));
-                    cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/orient_blk_sze),trunc(c/orient_blk_sze))];
-                    cv::Mat mulResult;
-                    cv::multiply(subim,subFilter,mulResult);
-
-                    if(cv::sum(mulResult)[0] > 0)
+                    if(r > maxsze && r < im.rows - maxsze
+                            && c > maxsze && c < im.cols - maxsze)
                     {
-                        newim.at<float>(r,c) = 255;
+                        int filterindex = freqindex[(int)round(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze)*100)];
+
+                        int s = sze[filterindex];
+
+                        cv::Rect roi(c-s,r-s,2*s,2*s);
+                        cv::Mat subim(im(roi));
+                        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/orient_blk_sze),trunc(c/orient_blk_sze))];
+                        cv::Mat mulResult;
+                        cv::multiply(subim,subFilter,mulResult);
+
+                        if(cv::sum(mulResult)[0] > 0)
+                        {
+                            newim.at<float>(r,c) = 255;
+                        }
                     }
                 }
+            }
+            else
+            {
+                newim.at<float>(r,c) = 255;
             }
         }
     }
@@ -344,7 +406,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     newim.rowRange(0, maxsze + 1).colRange(0, im.cols).setTo(255);
     newim.rowRange(im.rows - maxsze, im.rows).colRange(0, im.cols).setTo(255);
     newim.rowRange(0, im.rows).colRange(im.cols - 2 * (maxsze + 1) - 1, im.cols).setTo(255);
-
+    //actualizamos la mascara
     mask.rowRange(0, mask.rows).colRange(0, maxsze + 1).setTo(0);
     mask.rowRange(0, maxsze + 1).colRange(0, mask.cols).setTo(0);
     mask.rowRange(mask.rows - maxsze, mask.rows).colRange(0, mask.cols).setTo(0);
@@ -375,7 +437,7 @@ cv::Mat get_oriented_window(const cv::Mat &im, int x, int y, float angle, int w,
 }
 
 /*!
- * \brief sig_smooth suavia el arreglo de una senial seno
+ * \brief sig_smooth suavia y elimina ruido de un arreglo de una senial seno.
  * \param sig arreglo a suavizar, reemplaza los valores del mismo
  */
 void sig_smooth(std::vector<float> &sig)
@@ -524,7 +586,7 @@ cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &angles, int f_blk_sze = -1,
     return freq;
 }
 
-cv::Mat Preprocesser::thin(const cv::Mat &src, int thinning_method)
+cv::Mat thin(const cv::Mat &src, int thinning_method)
 {
     cv::Mat binary;
     cv::threshold(src,binary,0,255,cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
@@ -562,7 +624,7 @@ cv::Mat Preprocesser::thin(const cv::Mat &src, int thinning_method)
 }
 
 //calcula la roi de una imagen a partir de la variacion local
-cv::Mat Preprocesser::get_roi(const cv::Mat &src,int blk_sze, float threshold_ratio)
+cv::Mat get_roi(const cv::Mat &src,int blk_sze, float threshold_ratio)
 {
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev);
@@ -589,15 +651,6 @@ cv::Mat Preprocesser::get_roi(const cv::Mat &src,int blk_sze, float threshold_ra
 
 }
 
-cv::Mat normalise(const cv::Mat &im)
-{
-    cv::Scalar mean,stddev;
-    cv::meanStdDev(im,mean,stddev);
-    cv::Mat normalized = im.clone();
-    normalized = (im - mean[0]) / stddev[0];
-    return normalized;
-}
-
 fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 {
     //pipeline de preprocesamiento
@@ -607,25 +660,20 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     src.convertTo(src_32f,CV_32FC1);
 
     //normalizacion para eliminar ruido e imperfecciones
-    qDebug() << "Preprocesser: normalizando para mejorar contraste 1...";
-    cv::Mat norm_req = normalize(src_32f,norm_req_mean,norm_req_var);
-
+    qDebug() << "Preprocesser: normalizando para mejorar contraste...";
+    cv::Mat norm_req = normalize2(src_32f,norm_req_mean,norm_req_var);
 
     //obtencion del roi
     qDebug() << "Preprocesser: calculando roi...";
     cv::Mat mask = get_roi(norm_req,blk_mask,roi_threshold_ratio);
-    //segmentacion
-    qDebug() << "Preprocesser: segmentando...";
-    cv::Mat segmented = cv::Mat::zeros(norm_req.size(),norm_req.type());
-    cv::bitwise_and(norm_req,norm_req,segmented,mask);
 
     //normalizacion a media 0 y desviacion unitaria
     qDebug() << "Preprocesser: normalizando a media 0 y desviacion unitaria...";
-    cv::Mat norm_m0d1 = normalize(norm_req,0,1);
-    cv::Mat mask_inv;
-    cv::bitwise_not(mask,mask_inv);
-    norm_m0d1 = normalize(norm_m0d1,0,1,mask_inv);
+    cv::Mat norm_m0d1;
+    //norm_m0d1 = normalize2(norm_req,0,1);
+    norm_m0d1 = normalize(norm_req,0,1,mask);
 
+    cv::imwrite("norm_m0d1.jpg",norm_m0d1);
     cv::Mat filtered;
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
@@ -633,11 +681,9 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 
     //todo, mapa de frecuencia
     qDebug() << "Preprocesser: calculando mapa de frecuencias...";
-    cv::Mat freq = ridge_freq(norm_m0d1,angles,blk_freq,5,15,mask);
+    cv::Mat freq = ridge_freq(norm_req,angles,blk_freq,5,15,mask);
     //filtro
     qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
-    qDebug() << gabor_kx;
-    qDebug() << gabor_ky;
     filtered = filter_ridge(norm_m0d1,angles,freq,mask,gabor_kx,gabor_ky);
 
 
