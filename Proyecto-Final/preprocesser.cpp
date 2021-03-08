@@ -548,7 +548,7 @@ cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &angles, int f_blk_sze = -1,
         for(int i = w; i < im.cols - w; i+=w)
         {
             //si estamos en una posicion valida
-            if( mask.empty() || (!mask.empty() && cv::countNonZero(mask(cv::Rect(i - w/2,j - w/2,w,w))) == w*w))
+            if(mask.empty() || (!mask.empty() && cv::countNonZero(mask(cv::Rect(i - w/2,j - w/2,w,w))) == w*w))
             {
                 float block_orientation = angles.at<float>(j/o_blk_sze,i/o_blk_sze);
                 if(block_orientation > 0)

@@ -1,8 +1,17 @@
-Comparator:
-  Encontrar parametro ideal para el metodo basico de matching
-  Agregar metodo basado en minucias en el que se "registra" una huella (rotar y trasladar para que coincida) y se comparan pag 188
-  Intentar arreglar metodo basado en edges? pag 211 libro maltoni, pag 110 Thesis.dvi
-  Calcular angulos de keypoints correctamente, dentro de metodo cn
-  Agregar paso de consolidacion a comparator (maltoni 202)
-  armar mapa de frecuencias
+Preprocesser:
+    Limpiar minucias falsas (maltoni 157)
+    Normalizacion en bloque
+
+Analizer:
+    Calcular angulos de keypoints correctamente, dentro de metodo cn
+    Estimacion de calidad de la huella (maltoni 163)
+
+
+
+Comparator:    
+    Triangle matching (o algun otro invariante a escala y rotacion)
+    Registrar huellas
+    Agregar paso de consolidacion a comparator (maltoni 202)
+    
+    
 
