@@ -61,4 +61,4 @@ LIBS += `pkg-config --cflags --libs opencv4`
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 DISTFILES += \
-    settings.ini
+    default.ini
