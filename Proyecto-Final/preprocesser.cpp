@@ -35,7 +35,6 @@ cv::Mat morphological_thinning(const cv::Mat &src)
 
 cv::Mat normalize(const cv::Mat &src, float req_mean, float req_var, const cv::Mat &mask = cv::Mat())
 {
-    cv::imwrite("norm mask.jpg",mask);
     cv::Scalar mean,stddev;
     cv::meanStdDev(src,mean,stddev,mask);
 
@@ -673,7 +672,6 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     //norm_m0d1 = normalize2(norm_req,0,1);
     norm_m0d1 = normalize(norm_req,0,1,mask);
 
-    cv::imwrite("norm_m0d1.jpg",norm_m0d1);
     cv::Mat filtered;
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";

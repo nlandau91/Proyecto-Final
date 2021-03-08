@@ -10,8 +10,8 @@ Edge::Edge()
 }
 Edge::Edge(int x1, int y1, int x2, int y2)
 {
-    this->x = x1 - x2;
-    this->y = y1 = y2;
+    this->x = x1 - x2; //deberia ser valor absoluto?
+    this->y = y1 - y2; //idem
     this->length = std::sqrt(std::pow(x, 2) + std::pow(y, 2));
 
 }

@@ -63,7 +63,7 @@ std::vector<Edge> get_edges(const cv::Mat &keypoints, double min_dist = 5.0)
     return edges;
 }
 
-std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 5.0)
+std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 5.0, double max_dist = 50)
 {
     std::vector<Triangle> triangles;
     for(int i = 0; i < keypoints.rows - 2; i++)
@@ -77,7 +77,7 @@ std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 
             int x1 = keypoints.at<float>(j,0);
             int y1 = keypoints.at<float>(j,1);
             Edge edge1(x0, y0, x1, y1);
-            if(min_dist < edge1.length && edge1.length < min_dist*10)
+            if(min_dist < edge1.length && edge1.length < max_dist)
             {
                 for(int k = j + 1; k < keypoints.rows; k++)
                 {
@@ -86,8 +86,8 @@ std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 
                     int y2 = keypoints.at<float>(k,1);
                     Edge edge2(x0, y0, x2, y2);
                     Edge edge3(x1, y1, x2, y2);
-                    if(min_dist < edge2.length && edge2.length < min_dist*10
-                            && min_dist < edge3.length && edge3.length < min_dist*10)
+                    if(min_dist < edge2.length && edge2.length < max_dist
+                            && min_dist < edge3.length && edge3.length < max_dist)
                     {
                         triangles.push_back(Triangle(edge1,edge2,edge3));
                     }
@@ -126,9 +126,11 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         if(edge_matching)
         {
             //armamos los arcos
-            double min_dist = 10.0; // minima distancia que debe tener un arco
-            std::vector<Triangle> query_triangles = get_triangles(query_keypoints, min_dist);
-            std::vector<Triangle> train_triangles = get_triangles(train_keypoints, min_dist);
+            double min_dist = 5.0; // minima distancia que debe tener un arco
+            double max_dist = 50.0;
+            std::vector<Triangle> query_triangles = get_triangles(query_keypoints, min_dist, max_dist);
+            std::vector<Triangle> train_triangles = get_triangles(train_keypoints, min_dist, max_dist);
+            qDebug() << "Comparator: query_triangles: " << query_triangles.size();
 
             //comparamos los arcos
             for(const Triangle &t1 : query_triangles)
@@ -138,7 +140,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
                     bool comparation = t1.compare(t2,edge_angle,edge_dist);
                     if(comparation)
                     {
-                        qDebug() << "Triangle comparation: " << comparation;
+                       // qDebug() << "Triangle comparation: " << comparation;
                     }
                     else
                     {
