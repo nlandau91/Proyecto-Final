@@ -198,8 +198,8 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orien
     {
         ksize += 1;
     }
-    kernel1 = cv::getGaussianKernel(ksize,orientsmoothsigma, CV_32FC1);
-    kernel2 = cv::getGaussianKernel(ksize,orientsmoothsigma, CV_32FC1);
+    kernel1 = cv::getGaussianKernel(ksize,orientsmoothsigma);
+    kernel2 = cv::getGaussianKernel(ksize,orientsmoothsigma);
     kernel = kernel1 * kernel2.t();
     cv::filter2D(cosines, cosines, -1, kernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
     cv::filter2D(sines, sines, -1, kernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
@@ -652,15 +652,19 @@ cv::Mat get_roi(const cv::Mat &src,int blk_sze, float threshold_ratio)
 
 fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 {
-    //pipeline de preprocesamiento
+    //pipeline de preprocesamiento   
 
     //convertimos a 32f
     cv::Mat src_32f;
+    //cv::GaussianBlur(src,src_32f,cv::Size(5,5),0);
     src.convertTo(src_32f,CV_32FC1);
+
+
 
     //normalizacion para eliminar ruido e imperfecciones
     qDebug() << "Preprocesser: normalizando para mejorar contraste...";
     cv::Mat norm_req = normalize2(src_32f,norm_req_mean,norm_req_var);
+   // cv::normalize(norm_req,norm_req,0,255,cv::NORM_MINMAX);
 
     //obtencion del roi
     qDebug() << "Preprocesser: calculando roi...";
@@ -675,7 +679,7 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     cv::Mat filtered;
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
-    cv::Mat angles = calculate_angles(norm_req,blk_orient,1,1);
+    cv::Mat angles = calculate_angles(norm_req,blk_orient,1,1,mask);
 
     //todo, mapa de frecuencia
     qDebug() << "Preprocesser: calculando mapa de frecuencias...";

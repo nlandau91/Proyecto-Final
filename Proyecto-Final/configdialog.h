@@ -21,8 +21,11 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
-
     void on_btn_default_clicked();
+
+    void on_doubleSpinBox_maxEdge_valueChanged(double arg1);
+
+    void on_doubleSpinBox_minEdge_valueChanged(double arg1);
 
 private:
     Ui::ConfigDialog *ui;

@@ -126,13 +126,12 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         if(edge_matching)
         {
             //armamos los arcos
-            double min_dist = 5.0; // minima distancia que debe tener un arco
-            double max_dist = 50.0;
-            std::vector<Triangle> query_triangles = get_triangles(query_keypoints, min_dist, max_dist);
-            std::vector<Triangle> train_triangles = get_triangles(train_keypoints, min_dist, max_dist);
+            std::vector<Triangle> query_triangles = get_triangles(query_keypoints, triangle_min_edge, triangle_max_edge);
+            std::vector<Triangle> train_triangles = get_triangles(train_keypoints, triangle_min_edge, triangle_max_edge);
             qDebug() << "Comparator: query_triangles: " << query_triangles.size();
 
             //comparamos los arcos
+            int positives = 0;
             for(const Triangle &t1 : query_triangles)
             {
                 for(const Triangle &t2 : train_triangles)
@@ -140,13 +139,14 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
                     bool comparation = t1.compare(t2,edge_angle,edge_dist);
                     if(comparation)
                     {
-                       // qDebug() << "Triangle comparation: " << comparation;
+                       positives ++;
                     }
                     else
                     {
                     }
                 }
             }
+            qDebug() << "Comparator: positives: " << positives;
         }
 
         //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae

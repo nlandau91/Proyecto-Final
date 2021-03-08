@@ -67,6 +67,8 @@ void ConfigDialog::load_settings(bool def)
     ui->checkBox_edgeMatching->setChecked(settings.value("edge_matching").toBool());
     ui->doubleSpinBox_edgeAngle->setValue(settings.value("edge_angle").toDouble());
     ui->doubleSpinBox_edgeDist->setValue(settings.value("edge_dist").toDouble());
+    ui->doubleSpinBox_maxEdge->setValue(settings.value("triangle_max_edge").toDouble());
+    ui->doubleSpinBox_minEdge->setValue(settings.value("triangle_min_edge").toDouble());
 
 
 }
@@ -97,7 +99,8 @@ void ConfigDialog::save_settings()
     settings.setValue("edge_matching",ui->checkBox_edgeMatching->isChecked());
     settings.setValue("edge_angle", ui->doubleSpinBox_edgeAngle->value());
     settings.setValue("edge_dist", ui->doubleSpinBox_edgeDist->value());
-
+    settings.setValue("triangle_min_edge", ui->doubleSpinBox_minEdge->value());
+    settings.setValue("triangle_max_edge", ui->doubleSpinBox_maxEdge->value());
 }
 
 void ConfigDialog::on_buttonBox_accepted()
@@ -108,4 +111,17 @@ void ConfigDialog::on_buttonBox_accepted()
 void ConfigDialog::on_btn_default_clicked()
 {
     load_settings(true);
+}
+
+void ConfigDialog::on_doubleSpinBox_maxEdge_valueChanged(double arg1)
+{
+    ui->doubleSpinBox_minEdge->setMaximum(arg1);
+}
+
+void ConfigDialog::on_doubleSpinBox_minEdge_valueChanged(double arg1)
+{
+    if(arg1 > ui->doubleSpinBox_maxEdge->value())
+    {
+        //ui->doubleSpinBox_minEdge->setValue(ui->doubleSpinBox_maxEdge->value());
+    }
 }

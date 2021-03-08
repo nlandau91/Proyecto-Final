@@ -211,6 +211,8 @@ void MainWindow::load_settings()
     comparator.edge_matching = app_settings.edge_matching;
     comparator.edge_angle = app_settings.edge_angle;
     comparator.edge_dist = app_settings.edge_dist;
+    comparator.triangle_max_edge = app_settings.triangle_max_edge;
+    comparator.triangle_min_edge = app_settings.triangle_min_edge;
 }
 
 void MainWindow::on_actionOpciones_triggered()

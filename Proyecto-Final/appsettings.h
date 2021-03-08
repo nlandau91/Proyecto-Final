@@ -32,6 +32,8 @@ public:
     bool edge_matching;
     double edge_dist;
     double edge_angle;
+    double triangle_min_edge;
+    double triangle_max_edge;
 
     bool draw_over_output;
 

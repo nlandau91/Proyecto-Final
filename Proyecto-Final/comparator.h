@@ -37,6 +37,9 @@ public:
     double edge_dist;
 
     double edge_angle;
+
+    double triangle_max_edge;
+    double triangle_min_edge;
 };
 }
 #endif // COMPARATOR_H

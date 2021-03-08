@@ -44,6 +44,8 @@ void AppSettings::load_settings()
     edge_matching = settings.value("edge_matching").toBool();
     edge_angle = settings.value("edge_angle").toDouble();
     edge_dist = settings.value("edge_dist").toDouble();
+    triangle_min_edge = settings.value("triangle_min_edge").toDouble();
+    triangle_max_edge = settings.value("triangle_max_edge").toDouble();
 
 }
 
