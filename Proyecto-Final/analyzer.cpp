@@ -144,6 +144,90 @@ std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src, const cv::Mat &mask)
     return keypoints;
 }
 
+/*!
+ * \brief minutiae_angle calcula el angulo de una minucia a partir de su orientacion
+ * \param im bloque binario de 3x3 centrado en la minucia
+ * \param tipo tipo de minucia fp::ENDING o fp::BIFURCATION
+ * \param o orientacion de la minucia, rango [0,pi]
+ * \return devuelve angulo con respecto al horizontal, rango [0,2pi]
+ */
+float minutiae_angle(const cv::Mat &im, int tipo, float o)
+{
+    //calculamos los puntos donde hay cresta
+    std::vector<cv::Point> points;
+    points.push_back(cv::Point(0,0));
+    points.push_back(cv::Point(0,1));
+    points.push_back(cv::Point(0,2));
+    points.push_back(cv::Point(1,2));
+    points.push_back(cv::Point(2,2));
+    points.push_back(cv::Point(2,1));
+    points.push_back(cv::Point(2,0));
+    points.push_back(cv::Point(1,0));
+    points.push_back(cv::Point(0,0));
+    points.push_back(cv::Point(0,1));
+
+    cv::Point key_point;
+    //si es terminacion, buscamos el unico punto negro que rodea la minucia
+    if(tipo == fp::ENDING)
+    {
+        for(int i = 0; i < 8; i++)
+        {
+            cv::Point p = points[i];
+            if(im.at<uchar>(p) == 0)
+            {
+                key_point = p;
+            }
+
+        }
+    }
+    //si es bifurcacion, buscamos el punto blanco que abre la bifurcacion
+    if(tipo == fp::BIFURCATION)
+    {
+        for(int i = 1; i < 9; i++)
+        {
+            cv::Point p = points[i];
+            if(im.at<uchar>(p) == 0)
+            {
+                if(im.at<uchar>(points[i-1]) > 0 && im.at<uchar>(points[i+1]) > 0)
+                {
+                    key_point = p;
+                    //todo: podria tener dos puntos, en cuyo caso debo ver cual se alinea mejor con la orientacion
+                    //otro metodo seria calcularlo a partir del esqueleto invertido
+                }
+            }
+
+        }
+    }
+    int x = key_point.x;
+    int y = key_point.y;
+    float angle = o;
+    if(y == 0)
+    {
+        o -= 180;
+    }
+    if(y == 1 && x == 0)
+    {
+        if(o > M_PI/2)
+        {
+            angle = o + M_PI;
+        }
+    }
+    if(y == 1 && x == 2)
+    {
+        if(o < M_PI/2)
+        {
+            angle = o + M_PI;
+        }
+    }
+    if(y == 2)
+    {
+        angle = 0;
+    }
+
+
+    return angle;
+}
+
 //arma un mat a partir de una lista de keypoints
 //cada row es un kp
 //col 0 = pos x
@@ -160,7 +244,8 @@ cv::Mat custom_keypoints(const Analysis &analysis, const Preprocessed &pre)
         int x = kp.pt.x;
         int y = kp.pt.y;
         int tipo = kp.class_id;
-        float ang = pre.orientation.at<float>(trunc((double)kp.pt.y / blk_sze),trunc((double)kp.pt.x / blk_sze));
+        float orientation = pre.orientation.at<float>(trunc((double)kp.pt.y / blk_sze),trunc((double)kp.pt.x / blk_sze));
+        float ang = minutiae_angle(pre.result(cv::Rect(x-1,y-1,3,3)),tipo,orientation);
 
         descriptors.at<float>(index,0) = x;
         descriptors.at<float>(index,1) = y;

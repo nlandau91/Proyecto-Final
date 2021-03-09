@@ -683,7 +683,7 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 
     //todo, mapa de frecuencia
     qDebug() << "Preprocesser: calculando mapa de frecuencias...";
-    cv::Mat freq = ridge_freq(norm_req,angles,blk_freq,5,15,mask);
+    cv::Mat freq = ridge_freq(norm_req,angles,blk_freq,5,15,mask,true);
     //filtro
     qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
     filtered = filter_ridge(norm_m0d1,angles,freq,mask,gabor_kx,gabor_ky);
