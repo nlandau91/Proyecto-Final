@@ -156,15 +156,15 @@ float minutiae_angle(const cv::Mat &im, int tipo, float o)
     //calculamos los puntos donde hay cresta
     std::vector<cv::Point> points;
     points.push_back(cv::Point(0,0));
-    points.push_back(cv::Point(0,1));
-    points.push_back(cv::Point(0,2));
-    points.push_back(cv::Point(1,2));
-    points.push_back(cv::Point(2,2));
-    points.push_back(cv::Point(2,1));
-    points.push_back(cv::Point(2,0));
     points.push_back(cv::Point(1,0));
-    points.push_back(cv::Point(0,0));
+    points.push_back(cv::Point(2,0));
+    points.push_back(cv::Point(2,1));
+    points.push_back(cv::Point(2,2));
+    points.push_back(cv::Point(1,2));
+    points.push_back(cv::Point(0,2));
     points.push_back(cv::Point(0,1));
+    points.push_back(cv::Point(0,0));
+    points.push_back(cv::Point(1,0));
 
     cv::Point key_point;
     //si es terminacion, buscamos el unico punto negro que rodea la minucia
@@ -203,28 +203,22 @@ float minutiae_angle(const cv::Mat &im, int tipo, float o)
     float angle = o;
     if(y == 0)
     {
-        o -= 180;
+        angle += M_PI;
     }
     if(y == 1 && x == 0)
     {
         if(o > M_PI/2)
         {
-            angle = o + M_PI;
+            angle += M_PI;
         }
     }
     if(y == 1 && x == 2)
     {
         if(o < M_PI/2)
         {
-            angle = o + M_PI;
+            angle += M_PI;
         }
     }
-    if(y == 2)
-    {
-        angle = 0;
-    }
-
-
     return angle;
 }
 
@@ -422,6 +416,7 @@ fp::Analysis Analyzer::analize(const fp::Preprocessed &preprocessed)
     analysis.keypoints = custom_keypoints(analysis,preprocessed);
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
+    //analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
     analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
     qDebug() << "Analizer: listo.";
     return analysis;

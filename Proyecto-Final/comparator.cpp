@@ -152,7 +152,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
         //double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
         double score = (double)matches.size()/((query_descriptors.rows+train_descriptors.rows)/2.0);
-        qDebug() << "score avg: " << score;
+        qDebug() << "Comparator: score avg: " << score;
         comparation = score > threshold;
 
     }

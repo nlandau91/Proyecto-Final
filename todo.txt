@@ -1,12 +1,10 @@
 Preprocesser:
-    Limpiar minucias falsas (maltoni 157)
+    Limpiar minucias falsas (maltoni 157, zhao 2007)
     Normalizacion en bloque
 
 Analizer:
     Calcular angulos de keypoints correctamente, dentro de metodo cn
     Estimacion de calidad de la huella (maltoni 163)
-
-
 
 Comparator:    
     Triangle matching (o algun otro invariante a escala y rotacion)
