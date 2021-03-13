@@ -35,7 +35,7 @@ void AppSettings::load_settings()
 
     //analyzer
     keypoint_threshold = settings.value("keypoint_threshold").toInt();
-    minutiae_method = string_to_enum(settings.value("keypoint_extractor").toString());
+    keypoint_detector = string_to_enum(settings.value("keypoint_detector").toString());
     descriptor_method = string_to_enum(settings.value("feature_extractor").toString());
     draw_over_output = settings.value("draw_features").toBool();
 

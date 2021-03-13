@@ -22,7 +22,7 @@ public:
     float gabor_ky;
 
     //analyzer
-    int minutiae_method;
+    int keypoint_detector;
     int keypoint_threshold;
     int descriptor_method;
 

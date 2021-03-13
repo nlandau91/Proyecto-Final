@@ -115,7 +115,7 @@ void Database::ingresar_keypoints(const cv::Mat &keypoints, const QString &id)
 
 void Database::ingresar_fp(const Analysis &fp, const QString &id)
 {
-    if(!fp.descriptors.empty() && !fp.keypoints.empty())
+    if(!fp.descriptors.empty() && !fp.minutiae.empty())
     {
         //armamos el path
         QDir qdir = QDir::current();
@@ -143,7 +143,7 @@ void Database::ingresar_fp(const Analysis &fp, const QString &id)
         serialize_mat(descriptor_path.toStdString(),fp.descriptors);
 
         keypoint_path = keypoint_path + "/" + QString::number(sample);
-        serialize_mat(keypoint_path.toStdString(),fp.keypoints);
+        serialize_mat(keypoint_path.toStdString(),fp.minutiae);
         //ingresamos los descriptores a la base de datos
         query.prepare("INSERT INTO people(id, sample, descriptor_path, keypoint_path) VALUES (:id, :sample, :descriptor_path, :keypoint_path)");
         query.bindValue(":id",id);

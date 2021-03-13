@@ -43,7 +43,7 @@ void MainWindow::on_btn_ingresar_clicked()
             cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
             if(app_settings.draw_over_output)
             {
-                enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+                enhanced_marked = fp::draw_keypoints(enhanced_marked,analysis.keypoints);
                 enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
             }
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
@@ -90,7 +90,7 @@ void MainWindow::on_btn_verificar_clicked()
                 cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
                 if(app_settings.draw_over_output)
                 {
-                    enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+                    enhanced_marked = fp::draw_keypoints(enhanced_marked,analysis.keypoints);
                     enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
                 }
                 ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
@@ -105,7 +105,7 @@ void MainWindow::on_btn_verificar_clicked()
                     std::vector<cv::Mat> lista_keypoints;
                     lista_keypoints = db.recuperar_keypoints(id);
                     //verificamos
-                    verificado = comparator.compare(analysis.descriptors, lista_descriptores, analysis.keypoints, lista_keypoints);
+                    verificado = comparator.compare(analysis.descriptors, lista_descriptores, analysis.minutiae, lista_keypoints);
                 }
                 if(verificado)
                 {
@@ -143,7 +143,7 @@ void MainWindow::on_btn_identificar_clicked()
                 cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
                 if(app_settings.draw_over_output)
                 {
-                    enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+                    enhanced_marked = fp::draw_keypoints(enhanced_marked,analysis.keypoints);
                     enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
                 }
                 ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
@@ -163,7 +163,7 @@ void MainWindow::on_btn_identificar_clicked()
                         std::vector<cv::Mat> lista_keypoints;
                         lista_keypoints = db.recuperar_keypoints(id);
                         //verificamos
-                        verificado = comparator.compare(analysis.descriptors, lista_descriptores, analysis.keypoints, lista_keypoints);
+                        verificado = comparator.compare(analysis.descriptors, lista_descriptores, analysis.minutiae, lista_keypoints);
                         if(verificado)
                         {
                             std::cout << "Match encontrado: " << id.toStdString() << std::endl;;
@@ -199,7 +199,7 @@ void MainWindow::load_settings()
 
     analyzer = fp::Analyzer();
     analyzer.l1_features_method = fp::POINCARE;
-    analyzer.l2_features_method = app_settings.minutiae_method;
+    analyzer.keypoint_method = app_settings.keypoint_detector;
     analyzer.keypoint_threshold = app_settings.keypoint_threshold;
     analyzer.descriptor_method = app_settings.descriptor_method;
     analyzer.blk_sze = app_settings.blk_size;
@@ -248,7 +248,9 @@ void MainWindow::on_btn_demo_clicked()
             cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
             if(app_settings.draw_over_output)
             {
-                enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.l2_features);
+
+                enhanced_marked = fp::draw_keypoints(enhanced_marked,analysis.keypoints);
+                enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.minutiae);
                 enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
             }
             output_window = new OutputWindow();

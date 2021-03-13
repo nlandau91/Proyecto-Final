@@ -18,10 +18,10 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
 
     //feature extraction
-    //ui->comboBox_kp->addItem("harris");
-    //ui->comboBox_kp->addItem("shitomasi");
-    //ui->comboBox_kp->addItem("surf");
-    ui->comboBox_kp->addItem("cn");
+    ui->comboBox_kp->addItem("harris");
+    ui->comboBox_kp->addItem("shitomasi");
+    ui->comboBox_kp->addItem("surf");
+    //ui->comboBox_kp->addItem("cn");
 
     ui->comboBox_feat->addItem("orb");
     ui->comboBox_feat->addItem("surf");
@@ -57,7 +57,7 @@ void ConfigDialog::load_settings(bool def)
     ui->doubleSpinBox_ky->setValue(settings.value("gabor_ky").toDouble());
 
     //feature extraction
-    ui->comboBox_kp->setCurrentText(settings.value("keypoint_extractor").toString());
+    ui->comboBox_kp->setCurrentText(settings.value("keypoint_detector").toString());
     ui->comboBox_feat->setCurrentText(settings.value("feature_extractor").toString());
     ui->lineEdit_thresh->setText(settings.value("keypoint_threshold").toString());
     ui->checkBox_draw->setChecked(settings.value("draw_features").toBool());
@@ -89,7 +89,7 @@ void ConfigDialog::save_settings()
     settings.setValue("gabor_ky",ui->doubleSpinBox_ky->value());
 
     //feature extraction
-    settings.setValue("keypoint_extractor", ui->comboBox_kp->currentText());
+    settings.setValue("keypoint_detector", ui->comboBox_kp->currentText());
     settings.setValue("feature_extractor", ui->comboBox_feat->currentText());
     settings.setValue("keypoint_threshold", ui->lineEdit_thresh->text());
     settings.setValue("draw_features",ui->checkBox_draw->isChecked());

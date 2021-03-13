@@ -52,10 +52,10 @@ QPixmap cvMatToQPixmap( const cv::Mat &inMat )
     return QPixmap::fromImage( cvMatToQImage( inMat ) );
 }
 
-cv::Mat draw_minutiae( const cv::Mat &src, const std::vector<cv::KeyPoint> &mintiaes)
+cv::Mat draw_keypoints( const cv::Mat &src, const std::vector<cv::KeyPoint> &keypoints)
 {
     cv::Mat drawed = src.clone();
-    for(const cv::KeyPoint &kp : mintiaes)
+    for(const cv::KeyPoint &kp : keypoints)
     {
         //ridge ending
         if(kp.class_id == ENDING)
@@ -74,6 +74,36 @@ cv::Mat draw_minutiae( const cv::Mat &src, const std::vector<cv::KeyPoint> &mint
                 cv::drawMarker(drawed,kp.pt,cv::Scalar(0,255,0,255),cv::MARKER_CROSS,5);
             }
         }
+
+    }
+    return drawed;
+}
+
+cv::Mat draw_minutiae(const cv::Mat &src, const cv::Mat &minutiaes)
+{
+    cv::Mat drawed = src.clone();
+    for(int r = 0; r < minutiaes.rows; r++)
+    {
+        cv::Point p(minutiaes.at<float>(r,0),minutiaes.at<float>(r,1));
+        int tipo = minutiaes.at<float>(r,2);
+        //ridge ending
+        if(tipo == ENDING)
+        {
+            cv::drawMarker(drawed,p,cv::Scalar(255,0,0,255),cv::MARKER_CROSS,5);
+        }
+        else
+        {
+            //ridge bifurcation
+            if(tipo == BIFURCATION)
+            {
+                cv::drawMarker(drawed,p,cv::Scalar(0,0,255,255),cv::MARKER_CROSS,5);
+            }
+            else
+            {
+                cv::drawMarker(drawed,p,cv::Scalar(0,255,0,255),cv::MARKER_CROSS,5);
+            }
+        }
+
 
     }
     return drawed;

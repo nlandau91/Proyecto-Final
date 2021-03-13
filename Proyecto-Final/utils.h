@@ -31,12 +31,20 @@ QPixmap cvMatToQPixmap(const cv::Mat &inMat );
 cv::Mat draw_singularities(const cv::Mat &src, const std::vector<cv::KeyPoint> &singularities);
 
 /*!
- * \brief draw_minutiae dibuja sobre la imagen las minucias pasadas por parametro
- * \param src imagen donde se dibujaran las minucias
- * \param mintiaes vector de minucias que se dibujaran
+ * \brief draw_keypoints dibuja sobre la imagen los keypoints pasadas por parametro
+ * \param src imagen donde se dibujaran os keypoints
+ * \param keypoints vector de keypoints que se dibujaran
  * \return la imagen dibujada
  */
-cv::Mat draw_minutiae(const cv::Mat &src, const std::vector<cv::KeyPoint> &mintiaes);
+cv::Mat draw_keypoints(const cv::Mat &src, const std::vector<cv::KeyPoint> &keypoints);
+
+/*!
+ * \brief draw_minutiae
+ * \param src
+ * \param minutiaes
+ * \return
+ */
+cv::Mat draw_minutiae(const cv::Mat &src, const cv::Mat &minutiaes);
 
 /*!
  * \brief mat_cos calcula el coseno de cada pixel de la imagen

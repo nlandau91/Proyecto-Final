@@ -238,7 +238,7 @@
        <item>
         <widget class="QLabel" name="label_9">
          <property name="text">
-          <string>Minutiae detector</string>
+          <string>Keypoint Detector</string>
          </property>
         </widget>
        </item>

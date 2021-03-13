@@ -22,24 +22,35 @@ void OutputWindow::setup(const fp::Analysis &analysis, const cv::Mat &output)
     int cores = 0;
     int whorls = 0;
     QString type = "tba";
-    for(const cv::KeyPoint &kp : analysis.l2_features)
+    for(int r = 0; r < analysis.minutiae.rows; r++)
     {
-        if(kp.class_id ==fp::ENDING)
+        if(analysis.minutiae.at<float>(r,2) == fp::ENDING)
         {
             terminaciones++;
         }
-        if(kp.class_id == fp::BIFURCATION)
+        if(analysis.minutiae.at<float>(r,2) == fp::BIFURCATION)
         {
             bifurcaciones++;
         }
     }
+//    for(const cv::KeyPoint &kp : analysis.keypoints)
+//    {
+//        if((int)kp.class_id == fp::ENDING)
+//        {
+//            terminaciones++;
+//        }
+//        if((int)kp.class_id == fp::BIFURCATION)
+//        {
+//            bifurcaciones++;
+//        }
+//    }
     for(const cv::KeyPoint &kp : analysis.l1_features)
     {
-        if(kp.class_id == fp::DELTA)
+        if((int)kp.class_id == fp::DELTA)
         {
             deltas++;
         }
-        if(kp.class_id == fp::LOOP)
+        if((int)kp.class_id == fp::LOOP)
         {
             cores++;
         }

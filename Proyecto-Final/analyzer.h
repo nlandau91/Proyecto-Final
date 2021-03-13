@@ -12,7 +12,7 @@ namespace fp
 class Analyzer
 {
 public:
-    int l2_features_method;
+    int keypoint_method;
     int keypoint_threshold;
     int descriptor_method;
     int max_match_dist;
@@ -46,7 +46,7 @@ private:
      * \param pre
      * \return
      */
-    std::vector<cv::KeyPoint> find_l2_features(const Preprocessed &pre);
+    std::vector<cv::KeyPoint> get_keypoints(const Preprocessed &pre);
 
     /*!
      * \brief calcular_descriptors calcula los decriptores para los puntos claves

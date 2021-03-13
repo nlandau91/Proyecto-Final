@@ -12,7 +12,7 @@ Analyzer::Analyzer()
 
 //buscamos los keypoints en una imagen con el detector de esquinas de Harris
 //la imagen ya debe estar preprocesada
-std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_threshold)
+std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_threshold = -1)
 {
     cv::Mat harris_corners, harris_normalised;
     harris_corners = cv::Mat::zeros(preprocesado.size(), CV_32FC1);
@@ -29,7 +29,7 @@ std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_t
     {
         for(int y = 0; y < harris_normalised.rows; y++)
         {
-            if((int)harris_normalised.at<float>(y,x) > keypoint_threshold)
+            if( keypoint_threshold == -1 || (int)harris_normalised.at<float>(y,x) > keypoint_threshold)
             {
                 //guardamos el keypoint
                 keypoints.push_back(cv::KeyPoint(x,y,5));
@@ -228,12 +228,13 @@ float minutiae_angle(const cv::Mat &im, int tipo, float o)
 //col 1 = pos y
 //col 2 = tipo de minucia
 //col 4 = angulo entre 0 y pi
-cv::Mat custom_keypoints(const Analysis &analysis, const Preprocessed &pre)
+cv::Mat get_minutiae(const Preprocessed &pre)
 {
+    std::vector<cv::KeyPoint> kps = kp_cn(pre.result,pre.roi);
     int blk_sze = trunc((double)pre.result.rows / pre.orientation.rows);
-    cv::Mat descriptors(analysis.l2_features.size(),4,CV_32FC1);
+    cv::Mat descriptors(kps.size(),4,CV_32FC1);
     int index = 0;
-    for(const cv::KeyPoint &kp : analysis.l2_features)
+    for(const cv::KeyPoint &kp : kps)
     {
         int x = kp.pt.x;
         int y = kp.pt.y;
@@ -251,14 +252,15 @@ cv::Mat custom_keypoints(const Analysis &analysis, const Preprocessed &pre)
     return descriptors;
 }
 
-std::vector<cv::KeyPoint> Analyzer::find_l2_features(const Preprocessed &pre)
+std::vector<cv::KeyPoint> Analyzer::get_keypoints(const Preprocessed &pre)
 {
     std::vector<cv::KeyPoint> l2_features;
-    switch(l2_features_method)
+    switch(keypoint_method)
     {
     case HARRIS:
     {
         l2_features = kp_harris(pre.result, keypoint_threshold);
+
         break;
     }
     case SHITOMASI:
@@ -412,12 +414,12 @@ fp::Analysis Analyzer::analize(const fp::Preprocessed &preprocessed)
     analysis.l1_features = find_l1_features(preprocessed);
     //buscamos los puntos minuciosos (minutae)
     qDebug() << "Analizer: buscando minutiae...";
-    analysis.l2_features = find_l2_features(preprocessed);
-    analysis.keypoints = custom_keypoints(analysis,preprocessed);
+    analysis.keypoints = get_keypoints(preprocessed);
+    analysis.minutiae = get_minutiae(preprocessed);
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
     //analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
-    analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
+    analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.keypoints);
     qDebug() << "Analizer: listo.";
     return analysis;
 }
