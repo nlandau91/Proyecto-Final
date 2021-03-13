@@ -656,10 +656,8 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 
     //convertimos a 32f
     cv::Mat src_32f;
-    //cv::GaussianBlur(src,src_32f,cv::Size(5,5),0);
     src.convertTo(src_32f,CV_32FC1);
-
-
+    //cv::GaussianBlur(src_32f,src_32f,cv::Size(5,5),0);
 
     //normalizacion para eliminar ruido e imperfecciones
     qDebug() << "Preprocesser: normalizando para mejorar contraste...";

@@ -40,10 +40,10 @@ std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_t
     return keypoints;
 }
 
-std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src)
+std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src, int keypoint_threshold)
 {
     cv::Mat kp_positions;
-    cv::goodFeaturesToTrack(src,kp_positions,300,0.01,10);
+    cv::goodFeaturesToTrack(src,kp_positions,keypoint_threshold,0.01,10);
     std::vector<cv::KeyPoint> keypoints;
     for(int y = 0; y < kp_positions.rows; y++)
     {
@@ -109,7 +109,7 @@ int crosses(const cv::Mat &bin, int col, int row)
 
 //encuentra las minutiae en una huella digital
 //src se supone que ya es esqueletizada y en rango 0-255
-std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src, const cv::Mat &mask)
+std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src)
 {
     int blk_sze = 7;
     std::vector<cv::KeyPoint> keypoints;
@@ -122,22 +122,15 @@ std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src, const cv::Mat &mask)
         //for(int row = 1; row < bin.rows - 1; row++)
         for(int row = blk_sze/2; row < bin.rows - blk_sze/2; row++)
         {
-            //cv::Rect neighbours(col-1,row-1,3,3);
-            cv::Rect neighbours(col-blk_sze/2,row-blk_sze/2,blk_sze,blk_sze);
-            int valid_neighbours = cv::countNonZero(mask(neighbours));
-            //if(valid_neighbours == 9)
-            if(valid_neighbours == blk_sze*blk_sze)
+            int cn = crosses(bin, col, row);
+            //1 representa terminacion, 3 representa bifurcacion
+            if(cn == 1 || cn == 3)
             {
-                int cn = crosses(bin, col, row);
-                //1 representa terminacion, 3 representa bifurcacion
-                if(cn == 1 || cn == 3)
-                {
-                    //armamos el keypoint
-                    int tipo = (cn==1 ? ENDING : BIFURCATION);
-                    cv::KeyPoint kp(col,row,1);
-                    kp.class_id = tipo;
-                    keypoints.push_back(kp);
-                }
+                //armamos el keypoint
+                int tipo = (cn==1 ? ENDING : BIFURCATION);
+                cv::KeyPoint kp(col,row,1);
+                kp.class_id = tipo;
+                keypoints.push_back(kp);
             }
         }
     }
@@ -222,6 +215,27 @@ float minutiae_angle(const cv::Mat &im, int tipo, float o)
     return angle;
 }
 
+/*!
+ * \brief clean_keypoints limpia minutiaes falsas
+ * Por el momento solo limpia las minutia que estan en los bordes
+ * \param keypoints
+ * \param blk_sze
+ * \return
+ */
+std::vector<cv::KeyPoint> clean_keypoints(const std::vector<cv::KeyPoint> &keypoints, const cv::Mat &mask, int blk_sze)
+{
+    std::vector<cv::KeyPoint> good_keypoints;
+    for(const cv::KeyPoint &kp : keypoints)
+    {
+        cv::Rect blk(kp.pt.x - blk_sze/2, kp.pt.y - blk_sze/2, blk_sze, blk_sze);
+        if(cv::countNonZero(mask(blk)) == blk_sze*blk_sze)
+        {
+            good_keypoints.push_back(kp);
+        }
+    }
+    return good_keypoints;
+}
+
 //arma un mat a partir de una lista de keypoints
 //cada row es un kp
 //col 0 = pos x
@@ -230,8 +244,9 @@ float minutiae_angle(const cv::Mat &im, int tipo, float o)
 //col 4 = angulo entre 0 y pi
 cv::Mat get_minutiae(const Preprocessed &pre)
 {
-    std::vector<cv::KeyPoint> kps = kp_cn(pre.result,pre.roi);
+    std::vector<cv::KeyPoint> all_kps = kp_cn(pre.result);
     int blk_sze = trunc((double)pre.result.rows / pre.orientation.rows);
+    std::vector<cv::KeyPoint> kps = clean_keypoints(all_kps,pre.roi,blk_sze);
     cv::Mat descriptors(kps.size(),4,CV_32FC1);
     int index = 0;
     for(const cv::KeyPoint &kp : kps)
@@ -265,7 +280,7 @@ std::vector<cv::KeyPoint> Analyzer::get_keypoints(const Preprocessed &pre)
     }
     case SHITOMASI:
     {
-        keypoints = kp_shitomasi(pre.result);
+        keypoints = kp_shitomasi(pre.result, keypoint_threshold);
         break;
     }
     case SURF:
@@ -280,13 +295,15 @@ std::vector<cv::KeyPoint> Analyzer::get_keypoints(const Preprocessed &pre)
     }
     case CN:
     {
-        keypoints = kp_cn(pre.result,pre.roi);
+        keypoints = kp_cn(pre.result);
         break;
     }
     default:
         break;
     }
-    return keypoints;
+    int blk_sze = pre.result.rows / pre.orientation.rows;
+    std::vector<cv::KeyPoint> good_keypoints = clean_keypoints(keypoints,pre.roi,blk_sze);
+    return good_keypoints;
 }
 
 
