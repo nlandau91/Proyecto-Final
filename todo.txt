@@ -5,6 +5,7 @@ Preprocesser:
 Analizer:
     Calcular angulos de keypoints correctamente, dentro de metodo cn
     Estimacion de calidad de la huella (maltoni 163)
+    armar keypoints para matching en grayscale
 
 Comparator:    
     Triangle matching (o algun otro invariante a escala y rotacion)
