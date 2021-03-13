@@ -116,10 +116,40 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
         break;
     }
+    case SIFT:
+    {
+        //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
+        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
+        //remove_outliers_ransac(query_descriptors,train_descriptors)
+        //keep dist < 2.5 median
+    }
     }
     bool comparation = false;
     if(matches.size() > 1)
     {
+        //limpiamos los matches malos
+        //ordenamos de forma creciente por distancia
+        std::sort(matches.begin(),matches.end(),[] (cv::DMatch const& m1, cv::DMatch const& m2) -> bool
+        {
+            return m1.distance < m2.distance;
+        });
+        //nos quedamos con la mitad de los matches con la distancia menor
+        //otra opcion es quedarse con los que tengan una distancia menor a un multiplo de la media
+        double median = 0.0;
+        for(const cv::DMatch &m : matches)
+        {
+            median += m.distance;
+        }
+        median /= matches.size();
+        std::vector<cv::DMatch> good_matches;
+        for(const cv::DMatch &m : matches)
+        {
+            if(m.distance <= 1.5 * median)
+            {
+                good_matches.push_back(m);
+            }
+        }
+
         //metodo de edge matching
         //arma arcos que contienen distancia y angulo de cada nodo(minutiae)
         //en teoria es invariante a traslacion y rotacion, por lo que sirve como metodo de matching
@@ -139,7 +169,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
                     bool comparation = t1.compare(t2,edge_angle,edge_dist);
                     if(comparation)
                     {
-                       positives ++;
+                        positives ++;
                     }
                     else
                     {
@@ -151,7 +181,8 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
 
         //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
         //double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
-        double score = (double)matches.size()/((query_descriptors.rows+train_descriptors.rows)/2.0);
+        //double score = (double)matches.size()/((query_descriptors.rows+train_descriptors.rows)/2.0);
+        double score = (double)good_matches.size()/((query_descriptors.rows+train_descriptors.rows)/2.0);
         qDebug() << "Comparator: score avg: " << score;
         comparation = score > threshold;
 

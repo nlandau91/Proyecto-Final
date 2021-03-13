@@ -17,14 +17,15 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     //ui->comboBox_thi->addItem("morph");
 
 
-    //feature extraction
+    //analizing
     ui->comboBox_kp->addItem("harris");
     ui->comboBox_kp->addItem("shitomasi");
     ui->comboBox_kp->addItem("surf");
-    //ui->comboBox_kp->addItem("cn");
+    ui->comboBox_kp->addItem("cn");
 
     ui->comboBox_feat->addItem("orb");
     ui->comboBox_feat->addItem("surf");
+    ui->comboBox_feat->addItem("sift");
 
     load_settings();
 }

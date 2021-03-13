@@ -43,7 +43,7 @@ std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_t
 std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src)
 {
     cv::Mat kp_positions;
-    cv::goodFeaturesToTrack(src,kp_positions,25,0.01,10);
+    cv::goodFeaturesToTrack(src,kp_positions,300,0.01,10);
     std::vector<cv::KeyPoint> keypoints;
     for(int y = 0; y < kp_positions.rows; y++)
     {
@@ -254,34 +254,39 @@ cv::Mat get_minutiae(const Preprocessed &pre)
 
 std::vector<cv::KeyPoint> Analyzer::get_keypoints(const Preprocessed &pre)
 {
-    std::vector<cv::KeyPoint> l2_features;
+    std::vector<cv::KeyPoint> keypoints;
     switch(keypoint_method)
     {
     case HARRIS:
     {
-        l2_features = kp_harris(pre.result, keypoint_threshold);
+        keypoints = kp_harris(pre.result, keypoint_threshold);
 
         break;
     }
     case SHITOMASI:
     {
-        l2_features = kp_shitomasi(pre.result);
+        keypoints = kp_shitomasi(pre.result);
         break;
     }
     case SURF:
     {
-        l2_features = kp_surf(pre.result);
+        keypoints = kp_surf(pre.result);
+        break;
+    }
+    case SIFT:
+    {
+        keypoints = kp_sift(pre.result);
         break;
     }
     case CN:
     {
-        l2_features = kp_cn(pre.result,pre.roi);
+        keypoints = kp_cn(pre.result,pre.roi);
         break;
     }
     default:
         break;
     }
-    return l2_features;
+    return keypoints;
 }
 
 
@@ -373,27 +378,31 @@ std::vector<cv::KeyPoint> Analyzer::find_l1_features(const Preprocessed &pre)
 
 cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPoint> &keypoints)
 {
-    cv::Ptr<cv::Feature2D> extractor;
     cv::Mat descriptors;
     switch(descriptor_method)
     {
     case ORB:
     {
-        extractor = cv::ORB::create();
-        extractor->compute(src,keypoints,descriptors);
+        cv::Ptr<cv::Feature2D> orb_extractor = cv::ORB::create();
+        orb_extractor->compute(src,keypoints,descriptors);
         break;
     }
     case BRIEF:
     {
-        extractor = cv::xfeatures2d::BriefDescriptorExtractor::create();
-        extractor->compute(src,keypoints,descriptors);
+        cv::Ptr<cv::Feature2D> brief_extractor = cv::xfeatures2d::BriefDescriptorExtractor::create();
+        brief_extractor->compute(src,keypoints,descriptors);
         break;
     }
     case SURF:
     {
-        extractor = cv::xfeatures2d::SURF::create();
-        extractor->compute(src,keypoints,descriptors);
+        cv::Ptr<cv::Feature2D> surf_extractor = cv::xfeatures2d::SURF::create();
+        surf_extractor->compute(src,keypoints,descriptors);
         break;
+    }
+    case SIFT:
+    {
+        cv::Ptr<cv::Feature2D> sift_extractor = cv::SIFT::create();
+        sift_extractor->compute(src,keypoints,descriptors);
     }
     default:
         break;
