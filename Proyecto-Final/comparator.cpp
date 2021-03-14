@@ -98,6 +98,14 @@ std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 
     return triangles;
 }
 
+std::vector<cv::DMatch> remove_outliers_ransac(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const std::vector<cv::DMatch> &matches)
+{
+    std::vector<cv::DMatch> good_matches;
+
+
+    //usamos findHomography o estimateRigidTransform ? Creo que ambos usan ransac
+    return good_matches;
+}
 
 bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold)
 {
@@ -120,8 +128,6 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
     {
         //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
         matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
-        //remove_outliers_ransac(query_descriptors,train_descriptors)
-        //keep dist < 2.5 median
     }
     }
     bool comparation = false;
@@ -133,22 +139,32 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         {
             return m1.distance < m2.distance;
         });
-        //nos quedamos con la mitad de los matches con la distancia menor
-        //otra opcion es quedarse con los que tengan una distancia menor a un multiplo de la media
-        double median = 0.0;
-        for(const cv::DMatch &m : matches)
-        {
-            median += m.distance;
-        }
-        median /= matches.size();
         std::vector<cv::DMatch> good_matches;
-        for(const cv::DMatch &m : matches)
+        //ransac?
+        bool use_ransac = true;
+        if(use_ransac)
         {
-            if(m.distance <= 1.5 * median)
+            good_matches = remove_outliers_ransac(query_descriptors,train_descriptors,matches);
+        }
+        else
+        {
+            //nos quedamos con los que tengan una distancia menor a un multiplo de la media
+            double median = 0.0;
+            for(const cv::DMatch &m : matches)
             {
-                good_matches.push_back(m);
+                median += m.distance;
+            }
+            median /= matches.size();
+
+            for(const cv::DMatch &m : matches)
+            {
+                if(m.distance <= 1.5 * median)
+                {
+                    good_matches.push_back(m);
+                }
             }
         }
+
 
         //metodo de edge matching
         //arma arcos que contienen distancia y angulo de cada nodo(minutiae)

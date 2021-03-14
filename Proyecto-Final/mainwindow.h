@@ -9,6 +9,7 @@
 #include "comparator.h"
 #include "utils.h"
 #include "outputwindow.h"
+#include "fingerprinttemplate.h"
 
 #include <QMainWindow>
 #include <QFileDialog>

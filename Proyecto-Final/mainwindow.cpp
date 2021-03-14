@@ -54,6 +54,8 @@ void MainWindow::on_btn_ingresar_clicked()
                 QString id = ui->lineEdit->text();
                 //db.ingresar_descriptores(analysis.descriptors,id);
                 db.ingresar_fp(analysis,id);
+                fp::FingerprintTemplate t;
+
                 std::cout << "Huella ingresada" << std::endl;
             }
             else

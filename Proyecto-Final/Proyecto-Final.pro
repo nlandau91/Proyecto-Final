@@ -22,6 +22,7 @@ SOURCES += \
     configdialog.cpp \
     database.cpp \
     edge.cpp \
+    fingerprinttemplate.cpp \
     main.cpp \
     mainwindow.cpp \
     outputwindow.cpp \
@@ -37,6 +38,7 @@ HEADERS += \
     configdialog.h \
     database.h \
     edge.h \
+    fingerprinttemplate.h \
     mainwindow.h \
     outputwindow.h \
     preprocesser.h \
