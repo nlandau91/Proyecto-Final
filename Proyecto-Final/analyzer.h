@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "utils.h"
+#include "fingerprinttemplate.h"
 namespace fp
 {
 /*!
