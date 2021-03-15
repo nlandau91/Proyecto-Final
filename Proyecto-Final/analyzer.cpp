@@ -43,7 +43,7 @@ std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_t
 std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src, int keypoint_threshold)
 {
     cv::Mat kp_positions;
-    cv::goodFeaturesToTrack(src,kp_positions,keypoint_threshold,0.01,10);
+    cv::goodFeaturesToTrack(src,kp_positions,keypoint_threshold,0.01,5);
     std::vector<cv::KeyPoint> keypoints;
     for(int y = 0; y < kp_positions.rows; y++)
     {

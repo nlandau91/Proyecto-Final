@@ -98,6 +98,56 @@ std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 
     return triangles;
 }
 
+//metodo de edge matching
+//arma arcos que contienen distancia y angulo de cada nodo(minutiae)
+//en teoria es invariante a traslacion y rotacion, por lo que sirve como metodo de matching
+int triangle_matching(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template,double triangle_min_edge, double triangle_max_edge,double edge_angle,double edge_dist)
+{
+    //armamos los arcos
+    std::vector<Triangle> query_triangles = get_triangles(query_template.descriptors, triangle_min_edge, triangle_max_edge);
+    std::vector<Triangle> train_triangles = get_triangles(train_template.descriptors, triangle_min_edge, triangle_max_edge);
+    qDebug() << "Comparator: query_triangles: " << query_triangles.size();
+
+    //comparamos los arcos
+    int positives = 0;
+    for(const Triangle &t1 : query_triangles)
+    {
+        for(const Triangle &t2 : train_triangles)
+        {
+            bool comparation = t1.compare(t2,edge_angle,edge_dist);
+            if(comparation)
+            {
+                positives ++;
+            }
+            else
+            {
+            }
+        }
+    }
+    qDebug() << "Comparator: positives: " << positives;
+    return positives;
+}
+
+std::vector<cv::DMatch> remove_outliers_median(const std::vector<cv::DMatch> &matches, double ratio = 2.0)
+{
+    //nos quedamos con los que tengan una distancia menor a un multiplo de la media
+    double median = 0.0;
+    for(const cv::DMatch &m : matches)
+    {
+        median += m.distance;
+    }
+    median /= (double)matches.size();
+    std::vector<cv::DMatch> good_matches;
+    for(const cv::DMatch &m : matches)
+    {
+        if(m.distance <= ratio * median)
+        {
+            good_matches.push_back(m);
+        }
+    }
+    return good_matches;
+}
+
 std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &query_keypoints, const std::vector<cv::KeyPoint> &train_keypoints, const std::vector<cv::DMatch> &matches, double ransac_threshold = 3.0)
 {
     std::vector<cv::DMatch> good_matches;
@@ -159,66 +209,17 @@ bool Comparator::compare(const fp::FingerprintTemplate &query_template, const fp
         {
             return m1.distance < m2.distance;
         });
-        std::vector<cv::DMatch> good_matches;
-        //ransac?
-        bool use_ransac = true;
-        if(use_ransac)
-        {
-            good_matches = remove_outliers_ransac(query_template.keypoints,train_template.keypoints,matches);
-        }
-        else
-        {
-            //nos quedamos con los que tengan una distancia menor a un multiplo de la media
-            double median = 0.0;
-            for(const cv::DMatch &m : matches)
-            {
-                median += m.distance;
-            }
-            median /= matches.size();
-
-            for(const cv::DMatch &m : matches)
-            {
-                if(m.distance <= 1.5 * median)
-                {
-                    good_matches.push_back(m);
-                }
-            }
-        }
-
-
-        //metodo de edge matching
-        //arma arcos que contienen distancia y angulo de cada nodo(minutiae)
-        //en teoria es invariante a traslacion y rotacion, por lo que sirve como metodo de matching
-        if(edge_matching)
-        {
-            //armamos los arcos
-            std::vector<Triangle> query_triangles = get_triangles(query_template.descriptors, triangle_min_edge, triangle_max_edge);
-            std::vector<Triangle> train_triangles = get_triangles(train_template.descriptors, triangle_min_edge, triangle_max_edge);
-            qDebug() << "Comparator: query_triangles: " << query_triangles.size();
-
-            //comparamos los arcos
-            int positives = 0;
-            for(const Triangle &t1 : query_triangles)
-            {
-                for(const Triangle &t2 : train_triangles)
-                {
-                    bool comparation = t1.compare(t2,edge_angle,edge_dist);
-                    if(comparation)
-                    {
-                        positives ++;
-                    }
-                    else
-                    {
-                    }
-                }
-            }
-            qDebug() << "Comparator: positives: " << positives;
-        }
+        //limpiamos los outliers
+        std::vector<cv::DMatch> inliners_median;
+        inliners_median = remove_outliers_median(matches,2.0);
+        std::vector<cv::DMatch> inliners_ransac;
+        inliners_ransac = remove_outliers_ransac(query_template.keypoints,train_template.keypoints,inliners_median);
+        std::vector<cv::DMatch> good_matches = inliners_ransac;
 
         //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
-        //double score = (double)matches.size()/std::max(query_template.descriptors.rows,train_template.descriptors.rows);
-        //double score = (double)matches.size()/((query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
-        double score = (double)good_matches.size()/((query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
+        double score = (double)good_matches.size()/std::max(query_template.descriptors.rows,train_template.descriptors.rows);
+        //double score = (double)good_matches.size()/((query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
+        //double score = (double)good_matches.size()/((query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
         qDebug() << "Comparator: score avg: " << score;
         comparation = score > threshold;
 
