@@ -10,7 +10,7 @@ class FingerprintTemplate
 public:
     FingerprintTemplate();
     FingerprintTemplate(const std::string& file);
-    bool serialize(const std::string& file);
+    bool serialize(const std::string& file) const;
     bool deserialize(const std::string& file);
 
     cv::Mat descriptors;

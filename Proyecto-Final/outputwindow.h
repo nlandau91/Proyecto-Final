@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "utils.h"
+#include "fingerprinttemplate.h"
 
 #include <QWidget>
 
@@ -22,7 +23,7 @@ public:
      * \param analisis resultado del analisis de la huella
      * \param output imagen a mostrar en el panel
      */
-    void setup(const fp::Analysis &analisis, const cv::Mat &output);
+    void setup(const fp::FingerprintTemplate &fp_template, const cv::Mat &output);
 
 private:
     Ui::OutputWindow *ui;

@@ -36,24 +36,25 @@ void MainWindow::on_btn_ingresar_clicked()
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
-            fp::Analysis analysis = analyzer.analize(pre);
-            qDebug() << "Descriptores hallado: " << analysis.descriptors.rows;
+            fp::FingerprintTemplate fp_template = analyzer.analize(pre);
+            qDebug() << "Descriptores hallado: " << fp_template.descriptors.rows;
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
             cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
             if(app_settings.draw_over_output)
             {
-                enhanced_marked = fp::draw_keypoints(enhanced_marked,analysis.keypoints);
-                enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
+                enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.keypoints);
+                enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.minutiaes);
+                enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
             }
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
             //solo admitimos huellas que sean suficientemente buenas
-            if(analysis.descriptors.rows > 0)
+            if(fp_template.descriptors.rows > 0)
             {
                 //guardamos el descriptor e ingresamos los descriptores a la base de datos
                 QString id = ui->lineEdit->text();
                 //db.ingresar_descriptores(analysis.descriptors,id);
-                db.ingresar_fp(analysis,id);
+                db.ingresar_fp(fp_template,id);
                 std::cout << "Huella ingresada" << std::endl;
             }
             else
@@ -84,28 +85,26 @@ void MainWindow::on_btn_verificar_clicked()
                 //preprocesamos la imagen
                 fp::Preprocessed pre = preprocesser.preprocess(src);
                 //obtenemos los descriptores
-                fp::Analysis analysis = analyzer.analize(pre);
+                fp::FingerprintTemplate fp_template = analyzer.analize(pre);
                 //dibujamos sobre la imagen de salida
                 cv::Mat enhanced_marked;
                 cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
                 if(app_settings.draw_over_output)
                 {
-                    enhanced_marked = fp::draw_keypoints(enhanced_marked,analysis.keypoints);
-                    enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
+                    enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.keypoints);
+                    enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.minutiaes);
+                    enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
                 }
                 ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
                 //solo admitimos huellas que sean suficientemente buenas
                 bool verificado = false;
-                if(analysis.descriptors.rows > 0)
+                if(fp_template.descriptors.rows > 0)
                 {
                     //obtenemos la lista de descriptores de la base de datos
                     QString id = ui->lineEdit->text();
-                    std::vector<cv::Mat> lista_descriptores;
-                    lista_descriptores = db.recuperar_descriptores(id);
-                    std::vector<cv::Mat> lista_keypoints;
-                    lista_keypoints = db.recuperar_keypoints(id);
+                    std::vector<fp::FingerprintTemplate> train_templates = db.recuperar_fp(id);
                     //verificamos
-                    verificado = comparator.compare(analysis.descriptors, lista_descriptores, analysis.minutiae, lista_keypoints);
+                    verificado = comparator.compare(fp_template, train_templates);
                 }
                 if(verificado)
                 {
@@ -137,18 +136,19 @@ void MainWindow::on_btn_identificar_clicked()
                 //preprocesamos la imagen
                 fp::Preprocessed pre = preprocesser.preprocess(src);
                 //obtenemos los descriptores
-                fp::Analysis analysis = analyzer.analize(pre);
+                fp::FingerprintTemplate fp_template = analyzer.analize(pre);
                 //dibujamos sobre la imagen de salida
                 cv::Mat enhanced_marked;
                 cv::cvtColor(pre.result,enhanced_marked,cv::COLOR_GRAY2BGR);
                 if(app_settings.draw_over_output)
                 {
-                    enhanced_marked = fp::draw_keypoints(enhanced_marked,analysis.keypoints);
-                    enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
+                    enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.keypoints);
+                    enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.minutiaes);
+                    enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
                 }
                 ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
                 //solo admitimos huellas que sean suficientemente buenas
-                if(analysis.descriptors.rows > 0)
+                if(fp_template.descriptors.rows > 0)
                 {
                     //obtenemos una lista con los id de la base de datos
                     std::vector<QString> lista_id;
@@ -159,11 +159,8 @@ void MainWindow::on_btn_identificar_clicked()
                     {
                         //obtenemos la lista de descriptores de la base de datos
                         std::vector<cv::Mat> lista_descriptores;
-                        lista_descriptores = db.recuperar_descriptores(id);
-                        std::vector<cv::Mat> lista_keypoints;
-                        lista_keypoints = db.recuperar_keypoints(id);
                         //verificamos
-                        verificado = comparator.compare(analysis.descriptors, lista_descriptores, analysis.minutiae, lista_keypoints);
+                        //verificado = comparator.compare(fp_template.descriptors, lista_descriptores, fp_template.minutiae, lista_keypoints);
                         if(verificado)
                         {
                             std::cout << "Match encontrado: " << id.toStdString() << std::endl;;
@@ -241,7 +238,7 @@ void MainWindow::on_btn_demo_clicked()
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
-            fp::Analysis analysis = analyzer.analize(pre);
+            fp::FingerprintTemplate fp_template = analyzer.analize(pre);
 
             //dibujamos sobre la imagen de salida
             cv::Mat enhanced_marked;
@@ -249,12 +246,12 @@ void MainWindow::on_btn_demo_clicked()
             if(app_settings.draw_over_output)
             {
 
-                //enhanced_marked = fp::draw_keypoints(enhanced_marked,analysis.keypoints);
-                enhanced_marked = fp::draw_minutiae(enhanced_marked,analysis.minutiae);
-                enhanced_marked = fp::draw_singularities(enhanced_marked,analysis.l1_features);
+                enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.keypoints);
+                enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.minutiaes);
+                enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
             }
             output_window = new OutputWindow();
-            output_window->setup(analysis, enhanced_marked);
+            output_window->setup(fp_template, enhanced_marked);
             output_window->show();
 
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));

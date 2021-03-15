@@ -12,7 +12,7 @@ FingerprintTemplate::FingerprintTemplate(const std::string& file)
     deserialize(file);
 }
 
-bool FingerprintTemplate::serialize(const std::string& file)
+bool FingerprintTemplate::serialize(const std::string& file) const
 {
     cv::FileStorage fs( file, cv::FileStorage::WRITE );
     if( fs.isOpened() )

@@ -31,7 +31,7 @@ public:
      * \param preprocessed estructura que contiene el preprocesamiento hecho a la huella dactilar
      * \return devuelve una estructura que contiene el analisis hecho
      */
-    Analysis analize(const Preprocessed &preprocessed);
+    FingerprintTemplate analize(const Preprocessed &preprocessed);
 
 private:
 

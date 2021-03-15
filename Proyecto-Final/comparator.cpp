@@ -107,32 +107,149 @@ std::vector<cv::DMatch> remove_outliers_ransac(const cv::Mat &query_descriptors,
     return good_matches;
 }
 
-bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold)
+//bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold)
+//{
+//    std::vector<cv::DMatch> matches;
+//    switch(matcher_method)
+//    {
+//    case ORB:
+//    {
+//        //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_HAMMING,0.75);
+//        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_HAMMING);
+//        break;
+//    }
+//    case SURF:
+//    {
+//        //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
+//        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
+//        break;
+//    }
+//    case SIFT:
+//    {
+//        //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
+//        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
+//    }
+//    }
+//    bool comparation = false;
+//    if(matches.size() > 1)
+//    {
+//        //limpiamos los matches malos
+//        //ordenamos de forma creciente por distancia
+//        std::sort(matches.begin(),matches.end(),[] (cv::DMatch const& m1, cv::DMatch const& m2) -> bool
+//        {
+//            return m1.distance < m2.distance;
+//        });
+//        std::vector<cv::DMatch> good_matches;
+//        //ransac?
+//        bool use_ransac = true;
+//        if(use_ransac)
+//        {
+//            good_matches = remove_outliers_ransac(query_descriptors,train_descriptors,matches);
+//        }
+//        else
+//        {
+//            //nos quedamos con los que tengan una distancia menor a un multiplo de la media
+//            double median = 0.0;
+//            for(const cv::DMatch &m : matches)
+//            {
+//                median += m.distance;
+//            }
+//            median /= matches.size();
+
+//            for(const cv::DMatch &m : matches)
+//            {
+//                if(m.distance <= 1.5 * median)
+//                {
+//                    good_matches.push_back(m);
+//                }
+//            }
+//        }
+
+
+//        //metodo de edge matching
+//        //arma arcos que contienen distancia y angulo de cada nodo(minutiae)
+//        //en teoria es invariante a traslacion y rotacion, por lo que sirve como metodo de matching
+//        if(edge_matching)
+//        {
+//            //armamos los arcos
+//            std::vector<Triangle> query_triangles = get_triangles(query_keypoints, triangle_min_edge, triangle_max_edge);
+//            std::vector<Triangle> train_triangles = get_triangles(train_keypoints, triangle_min_edge, triangle_max_edge);
+//            qDebug() << "Comparator: query_triangles: " << query_triangles.size();
+
+//            //comparamos los arcos
+//            int positives = 0;
+//            for(const Triangle &t1 : query_triangles)
+//            {
+//                for(const Triangle &t2 : train_triangles)
+//                {
+//                    bool comparation = t1.compare(t2,edge_angle,edge_dist);
+//                    if(comparation)
+//                    {
+//                        positives ++;
+//                    }
+//                    else
+//                    {
+//                    }
+//                }
+//            }
+//            qDebug() << "Comparator: positives: " << positives;
+//        }
+
+//        //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
+//        //double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
+//        //double score = (double)matches.size()/((query_descriptors.rows+train_descriptors.rows)/2.0);
+//        double score = (double)good_matches.size()/((query_descriptors.rows+train_descriptors.rows)/2.0);
+//        qDebug() << "Comparator: score avg: " << score;
+//        comparation = score > threshold;
+
+//    }
+
+//    return comparation;
+//}
+
+//bool Comparator::compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, const cv::Mat &query_keypoints, const std::vector<cv::Mat> &train_keypoints_list)
+//{
+//    bool comparation = false;
+//    //qDebug() << "Comparator: obteniendo matches...";
+//    int i = 0;
+//    for(const cv::Mat &td : train_descriptors_list)
+//    {
+//        comparation = comparation || compare(query_descriptors, td, query_keypoints, train_keypoints_list[i], match_threshold);
+//        i++;
+//    }
+
+//    return comparation;
+//}
+
+bool Comparator::compare(const fp::FingerprintTemplate &query_template, const fp::FingerprintTemplate &train_template, double threshold)
 {
+    qDebug() << "Comparator: Realizando matches entre keypoints...";
     std::vector<cv::DMatch> matches;
+
     switch(matcher_method)
     {
     case ORB:
     {
         //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_HAMMING,0.75);
-        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_HAMMING);
+        matches = find_matches(query_template.descriptors,train_template.descriptors,cv::NORM_HAMMING);
         break;
     }
     case SURF:
     {
         //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
-        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
+        matches = find_matches(query_template.descriptors,train_template.descriptors,cv::NORM_L2);
         break;
     }
     case SIFT:
     {
         //matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2,0.75);
-        matches = find_matches(query_descriptors,train_descriptors,cv::NORM_L2);
+        matches = find_matches(query_template.descriptors,train_template.descriptors,cv::NORM_L2);
     }
     }
     bool comparation = false;
     if(matches.size() > 1)
     {
+        qDebug() << "Comparator: Analizando matches entre keypoints... ";
         //limpiamos los matches malos
         //ordenamos de forma creciente por distancia
         std::sort(matches.begin(),matches.end(),[] (cv::DMatch const& m1, cv::DMatch const& m2) -> bool
@@ -141,10 +258,10 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         });
         std::vector<cv::DMatch> good_matches;
         //ransac?
-        bool use_ransac = true;
+        bool use_ransac = false;
         if(use_ransac)
         {
-            good_matches = remove_outliers_ransac(query_descriptors,train_descriptors,matches);
+            good_matches = remove_outliers_ransac(query_template.descriptors,train_template.descriptors,matches);
         }
         else
         {
@@ -172,8 +289,8 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         if(edge_matching)
         {
             //armamos los arcos
-            std::vector<Triangle> query_triangles = get_triangles(query_keypoints, triangle_min_edge, triangle_max_edge);
-            std::vector<Triangle> train_triangles = get_triangles(train_keypoints, triangle_min_edge, triangle_max_edge);
+            std::vector<Triangle> query_triangles = get_triangles(query_template.descriptors, triangle_min_edge, triangle_max_edge);
+            std::vector<Triangle> train_triangles = get_triangles(train_template.descriptors, triangle_min_edge, triangle_max_edge);
             qDebug() << "Comparator: query_triangles: " << query_triangles.size();
 
             //comparamos los arcos
@@ -198,7 +315,7 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
         //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
         //double score = (double)matches.size()/std::max(query_descriptors.rows,train_descriptors.rows);
         //double score = (double)matches.size()/((query_descriptors.rows+train_descriptors.rows)/2.0);
-        double score = (double)good_matches.size()/((query_descriptors.rows+train_descriptors.rows)/2.0);
+        double score = (double)good_matches.size()/((query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
         qDebug() << "Comparator: score avg: " << score;
         comparation = score > threshold;
 
@@ -207,14 +324,14 @@ bool Comparator::compare(const cv::Mat &query_descriptors, const cv::Mat &train_
     return comparation;
 }
 
-bool Comparator::compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, const cv::Mat &query_keypoints, const std::vector<cv::Mat> &train_keypoints_list)
+bool Comparator::compare(const fp::FingerprintTemplate &query_template, const std::vector<fp::FingerprintTemplate> &train_templates)
 {
     bool comparation = false;
     //qDebug() << "Comparator: obteniendo matches...";
     int i = 0;
-    for(const cv::Mat &td : train_descriptors_list)
+    for(const fp::FingerprintTemplate &train_template : train_templates)
     {
-        comparation = comparation || compare(query_descriptors, td, query_keypoints, train_keypoints_list[i], match_threshold);
+        comparation = comparation || compare(query_template, train_template, match_threshold);
         i++;
     }
 

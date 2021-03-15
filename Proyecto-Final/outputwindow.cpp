@@ -13,38 +13,27 @@ OutputWindow::~OutputWindow()
     delete ui;
 }
 
-void OutputWindow::setup(const fp::Analysis &analysis, const cv::Mat &output)
+void OutputWindow::setup(const fp::FingerprintTemplate &fp_template, const cv::Mat &output)
 {
-    int descriptores = analysis.descriptors.rows;
+    int descriptores = fp_template.descriptors.rows;
     int terminaciones = 0;
     int bifurcaciones = 0;
     int deltas = 0;
     int cores = 0;
     int whorls = 0;
     QString type = "tba";
-    for(int r = 0; r < analysis.minutiae.rows; r++)
+    for(const cv::KeyPoint &kp : fp_template.minutiaes)
     {
-        if(analysis.minutiae.at<float>(r,2) == fp::ENDING)
+        if((int)kp.class_id == fp::ENDING)
         {
             terminaciones++;
         }
-        if(analysis.minutiae.at<float>(r,2) == fp::BIFURCATION)
+        if((int)kp.class_id == fp::BIFURCATION)
         {
             bifurcaciones++;
         }
     }
-//    for(const cv::KeyPoint &kp : analysis.keypoints)
-//    {
-//        if((int)kp.class_id == fp::ENDING)
-//        {
-//            terminaciones++;
-//        }
-//        if((int)kp.class_id == fp::BIFURCATION)
-//        {
-//            bifurcaciones++;
-//        }
-//    }
-    for(const cv::KeyPoint &kp : analysis.l1_features)
+    for(const cv::KeyPoint &kp : fp_template.singularities)
     {
         if((int)kp.class_id == fp::DELTA)
         {
@@ -54,6 +43,10 @@ void OutputWindow::setup(const fp::Analysis &analysis, const cv::Mat &output)
         {
             cores++;
         }
+        if((int)kp.class_id == fp::WHORL)
+        {
+            whorls++;
+        }
     }
     deltas = round(deltas / 4.0);
     cores = round(cores / 4.0);
@@ -61,7 +54,7 @@ void OutputWindow::setup(const fp::Analysis &analysis, const cv::Mat &output)
     {
         type = "Arch";
     }
-    if(cores == 2 || whorls == 1)
+    if(cores >= 2 || whorls >= 1)
     {
         type = "Whorl";
     }

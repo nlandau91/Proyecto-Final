@@ -4,6 +4,7 @@
 #include "common.h"
 #include "edge.h"
 #include "triangle.h"
+#include "fingerprinttemplate.h"
 
 namespace fp{
 
@@ -22,9 +23,13 @@ public:
      * \param threshold minimo score de similitud necesario para considerar una comparacion positiva.
      * \return true si se consideran suficientemente iguales, falso en caso contrario
      */
-    bool compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, const cv::Mat &query_keypoints, const std::vector<cv::Mat> &train_keypoints_list);
+//    bool compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, const cv::Mat &query_keypoints, const std::vector<cv::Mat> &train_keypoints_list);
 
-    bool compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold = 0.1);
+//    bool compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold = 0.1);
+
+    bool compare(const fp::FingerprintTemplate &query_template, const fp::FingerprintTemplate &train_template, double threshold);
+
+    bool compare(const fp::FingerprintTemplate &query_template, const std::vector<fp::FingerprintTemplate> &train_templates);
 
 
 

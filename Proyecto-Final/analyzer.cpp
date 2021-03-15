@@ -451,33 +451,25 @@ cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPo
 }
 
 
-fp::Analysis Analyzer::analize(const fp::Preprocessed &preprocessed)
+FingerprintTemplate Analyzer::analize(const fp::Preprocessed &preprocessed)
 {
 
-    Analysis analysis;
-    cv::bitwise_not(preprocessed.result,analysis.fingerprint);
-    //analysis.fingerprint = preprocessed.result.clone();
+    FingerprintTemplate fp_template;
+    //trabajamos con la huella invertida
+    //cv::Mat inverted;
+    //cv::bitwise_not(preprocessed.result,inverted);
     //buscamos las features de nivel 1
     qDebug() << "Analyzer: buscando singularidades...";
-    analysis.l1_features = find_l1_features(preprocessed);
+    fp_template.singularities = find_l1_features(preprocessed);
     //buscamos los puntos minuciosos (minutae)
     qDebug() << "Analizer: buscando minutiae...";
-    analysis.keypoints = get_keypoints(preprocessed);
-    analysis.minutiae = get_minutiae(preprocessed);
+    fp_template.keypoints = get_keypoints(preprocessed);
+    fp_template.minutiaes = get_minutiae(preprocessed,1);
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
-    //analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.l2_features);
-    analysis.descriptors = calcular_descriptors(analysis.fingerprint, analysis.keypoints);
+    fp_template.descriptors = calcular_descriptors(preprocessed.result, fp_template.keypoints);
     qDebug() << "Analizer: listo.";
-    fp::FingerprintTemplate t;
-    t.singularities = analysis.l1_features;
-    t.keypoints = analysis.keypoints;
-    t.minutiaes = get_minutiae(preprocessed,1);
-    t.descriptors = analysis.descriptors;
-    t.serialize("test");
-    fp::FingerprintTemplate t2("test");
-    std::cout << t2.descriptors << std::endl;
 
-    return analysis;
+    return fp_template;
 }
 }
