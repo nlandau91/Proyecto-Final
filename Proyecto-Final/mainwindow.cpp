@@ -54,7 +54,7 @@ void MainWindow::on_btn_ingresar_clicked()
                 //guardamos el descriptor e ingresamos los descriptores a la base de datos
                 QString id = ui->lineEdit->text();
                 //db.ingresar_descriptores(analysis.descriptors,id);
-                db.ingresar_fp(fp_template,id);
+                db.ingresar_template(fp_template,id);
                 std::cout << "Huella ingresada" << std::endl;
             }
             else
@@ -102,7 +102,7 @@ void MainWindow::on_btn_verificar_clicked()
                 {
                     //obtenemos la lista de descriptores de la base de datos
                     QString id = ui->lineEdit->text();
-                    std::vector<fp::FingerprintTemplate> train_templates = db.recuperar_fp(id);
+                    std::vector<fp::FingerprintTemplate> train_templates = db.recuperar_template(id);
                     //verificamos
                     verificado = comparator.compare(fp_template, train_templates);
                 }
@@ -158,9 +158,10 @@ void MainWindow::on_btn_identificar_clicked()
                     for(const QString &id : lista_id)
                     {
                         //obtenemos la lista de descriptores de la base de datos
-                        std::vector<cv::Mat> lista_descriptores;
+                        std::vector<fp::FingerprintTemplate> train_templates = db.recuperar_template(id);
                         //verificamos
-                        //verificado = comparator.compare(fp_template.descriptors, lista_descriptores, fp_template.minutiae, lista_keypoints);
+                        verificado = comparator.compare(fp_template, train_templates);
+
                         if(verificado)
                         {
                             std::cout << "Match encontrado: " << id.toStdString() << std::endl;;

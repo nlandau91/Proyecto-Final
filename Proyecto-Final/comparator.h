@@ -14,21 +14,21 @@ public:
     Comparator();
 
     /*!
-     * \brief compare compara los descriptores de consulta contra una lista de descriptores de comparacio
-     * Adicionalmente utiliza keypoints personalizados para realizar un test de bordes para mejorar la deteccion
-     * \param query_descriptors descriptores de consulta
-     * \param train_descriptors_list descriptores de comparacion
-     * \param query_keypoints keypoints personalizados de consulta
-     * \param train_keypoints_list keypoints personalizados de comparacion
-     * \param threshold minimo score de similitud necesario para considerar una comparacion positiva.
-     * \return true si se consideran suficientemente iguales, falso en caso contrario
+     * \brief compare compara dos template de huellas dactilares y decide si se corresponden al mismo dedo
+     * \param query_template template de consulta
+     * \param train_template template de verificacion
+     * \param threshold umbral de decicion. Mientras mas alto, mas estricto. Rango [0,1]
+     * \return true si se considera que los templates corresponden a un mismo dedo
      */
-//    bool compare(const cv::Mat &query_descriptors, const std::vector<cv::Mat> &train_descriptors_list, const cv::Mat &query_keypoints, const std::vector<cv::Mat> &train_keypoints_list);
-
-//    bool compare(const cv::Mat &query_descriptors, const cv::Mat &train_descriptors, const cv::Mat &query_keypoints, const cv::Mat &train_keypoints, double threshold = 0.1);
-
     bool compare(const fp::FingerprintTemplate &query_template, const fp::FingerprintTemplate &train_template, double threshold);
 
+    /*!
+     * \brief compare compara un template con una lista de templates y decide si se corresponde a alguno de ellos
+     * La idea es que la lista de templates contenga distintos templates del mismo dedo
+     * \param query_template template de consulta
+     * \param train_templates templates de verificacion
+     * \return true si se considera que el template de consulta corresponde a alguno de la lista
+     */
     bool compare(const fp::FingerprintTemplate &query_template, const std::vector<fp::FingerprintTemplate> &train_templates);
 
 

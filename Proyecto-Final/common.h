@@ -50,14 +50,6 @@ struct Preprocessed
     cv::Mat result;
 };
 
-struct Analysis
-{
-    cv::Mat fingerprint;
-    std::vector<cv::KeyPoint> l1_features;
-    std::vector<cv::KeyPoint> keypoints;
-    cv::Mat descriptors;
-    cv::Mat minutiae;
-};
 
 }
 

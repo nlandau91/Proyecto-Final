@@ -23,9 +23,9 @@ public:
      */
     void init();
 
-    void ingresar_fp(const FingerprintTemplate &fp, const QString &id);
+    void ingresar_template(const FingerprintTemplate &fp_template, const QString &id);
 
-    std::vector<FingerprintTemplate> recuperar_fp(const QString &id);
+    std::vector<FingerprintTemplate> recuperar_template(const QString &id);
 
     /*!
      * \brief obtener_lista_id devuelve una lista con los id dentro de la base de datos

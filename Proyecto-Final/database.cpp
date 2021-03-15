@@ -33,7 +33,7 @@ Database::Database()
 
 }
 
-void Database::ingresar_fp(const FingerprintTemplate &fp, const QString &id)
+void Database::ingresar_template(const FingerprintTemplate &fp_template, const QString &id)
 {
 
     //armamos el path
@@ -56,8 +56,8 @@ void Database::ingresar_fp(const FingerprintTemplate &fp, const QString &id)
     }
     //guardamos el archivo en disco armando el nombre
     template_path = template_path + "/" + QString::number(sample);
-    serialize_mat(template_path.toStdString(),fp.descriptors);
-    fp.serialize(template_path.toStdString());
+    serialize_mat(template_path.toStdString(),fp_template.descriptors);
+    fp_template.serialize(template_path.toStdString());
 
     //ingresamos los descriptores a la base de datos
     query.prepare("INSERT INTO people(id, sample, template_path) VALUES (:id, :sample, :template_path)");
@@ -72,7 +72,7 @@ void Database::ingresar_fp(const FingerprintTemplate &fp, const QString &id)
 
 }
 
-std::vector<FingerprintTemplate> Database::recuperar_fp(const QString &id)
+std::vector<FingerprintTemplate> Database::recuperar_template(const QString &id)
 {
     std::vector<FingerprintTemplate> lista_templates;
 
