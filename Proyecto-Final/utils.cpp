@@ -71,39 +71,9 @@ cv::Mat draw_keypoints( const cv::Mat &src, const std::vector<cv::KeyPoint> &key
             }
             else
             {
-                cv::drawMarker(drawed,kp.pt,cv::Scalar(0,255,0,255),cv::MARKER_CROSS,5);
+                cv::drawMarker(drawed,kp.pt,cv::Scalar(50,200,50,255),cv::MARKER_DIAMOND,5);
             }
         }
-
-    }
-    return drawed;
-}
-
-cv::Mat draw_minutiae(const cv::Mat &src, const cv::Mat &minutiaes)
-{
-    cv::Mat drawed = src.clone();
-    for(int r = 0; r < minutiaes.rows; r++)
-    {
-        cv::Point p(minutiaes.at<float>(r,0),minutiaes.at<float>(r,1));
-        int tipo = minutiaes.at<float>(r,2);
-        //ridge ending
-        if(tipo == ENDING)
-        {
-            cv::drawMarker(drawed,p,cv::Scalar(255,0,0,255),cv::MARKER_CROSS,5);
-        }
-        else
-        {
-            //ridge bifurcation
-            if(tipo == BIFURCATION)
-            {
-                cv::drawMarker(drawed,p,cv::Scalar(0,0,255,255),cv::MARKER_CROSS,5);
-            }
-            else
-            {
-                cv::drawMarker(drawed,p,cv::Scalar(0,255,0,255),cv::MARKER_CROSS,5);
-            }
-        }
-
 
     }
     return drawed;
@@ -124,7 +94,7 @@ cv::Mat draw_singularities( const cv::Mat &src, const std::vector<cv::KeyPoint> 
         }
         if(kp.class_id == DELTA)
         {
-            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_DIAMOND,10);
+            cv::drawMarker(drawed,kp.pt,cv::Scalar(0,0,255,255),cv::MARKER_SQUARE,10);
         }
     }
     return drawed;

@@ -247,8 +247,9 @@ void MainWindow::on_btn_demo_clicked()
             if(app_settings.draw_over_output)
             {
 
-                enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.keypoints);
                 enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.minutiaes);
+                enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.keypoints);
+
                 enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
             }
             output_window = new OutputWindow();

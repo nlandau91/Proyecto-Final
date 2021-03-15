@@ -98,7 +98,7 @@ std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 
     return triangles;
 }
 
-std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &query_keypoints, const std::vector<cv::KeyPoint> &train_keypoints, const std::vector<cv::DMatch> &matches, double ransac_threshold = 3.0)
+std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &query_keypoints, const std::vector<cv::KeyPoint> &train_keypoints, const std::vector<cv::DMatch> &matches)
 {
     std::vector<cv::DMatch> good_matches;
     std::vector<cv::Point> src_points;
@@ -108,12 +108,13 @@ std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &
         src_points.push_back(query_keypoints[m.queryIdx].pt);
         dst_points.push_back(train_keypoints[m.trainIdx].pt);
     }
-    //usamos findHomography o estimateAffine2D? ambos usan ransac
+    //usamos findHomography o estimateAffine2D ? Creo que ambos usan ransac
     cv::Mat mask;
-    cv::findHomography(src_points,dst_points,cv::RANSAC, ransac_threshold ,mask);
-
-    //cv::estimateAffine2D(src_points,dst_points,mask,cv::RANSAC,ransac_threshold);
-
+    cv::findHomography(src_points,dst_points,cv::RANSAC, 3.0,mask);
+    cv::Mat mask2;
+    cv::estimateAffine2D(src_points,dst_points,mask2,cv::RANSAC,3.0);
+    cv::Mat mask3;
+    cv::estimateAffinePartial2D(src_points,dst_points,mask3,cv::RANSAC,3.0);
     for(int i = 0; i < mask.rows; i++)
     {
         if(mask.at<uchar>(i,0) > 0)
@@ -121,6 +122,11 @@ std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &
             good_matches.push_back(matches[i]);
         }
     }
+    //debug para ver ratios
+    double den = (query_keypoints.size() / train_keypoints.size())/2.0;
+    qDebug() << cv::countNonZero(mask);
+    qDebug() << cv::countNonZero(mask2);
+    qDebug() << cv::countNonZero(mask3);
     return good_matches;
 }
 
