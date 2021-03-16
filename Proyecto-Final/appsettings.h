@@ -34,6 +34,7 @@ public:
     double edge_angle;
     double triangle_min_edge;
     double triangle_max_edge;
+    double ransac_threshold;
 
     bool draw_over_output;
 

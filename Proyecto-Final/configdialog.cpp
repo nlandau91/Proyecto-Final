@@ -70,6 +70,7 @@ void ConfigDialog::load_settings(bool def)
     ui->doubleSpinBox_edgeDist->setValue(settings.value("edge_dist").toDouble());
     ui->doubleSpinBox_maxEdge->setValue(settings.value("triangle_max_edge").toDouble());
     ui->doubleSpinBox_minEdge->setValue(settings.value("triangle_min_edge").toDouble());
+    ui->doubleSpinBox_ransac->setValue(settings.value("ransac_threshold").toDouble());
 
 
 }
@@ -102,6 +103,7 @@ void ConfigDialog::save_settings()
     settings.setValue("edge_dist", ui->doubleSpinBox_edgeDist->value());
     settings.setValue("triangle_min_edge", ui->doubleSpinBox_minEdge->value());
     settings.setValue("triangle_max_edge", ui->doubleSpinBox_maxEdge->value());
+    settings.setValue("ransac_threshold", ui->doubleSpinBox_ransac->value());
 }
 
 void ConfigDialog::on_buttonBox_accepted()

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>488</width>
+    <width>529</width>
     <height>461</height>
    </rect>
   </property>
@@ -344,7 +344,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_ransac"/>
        </item>
        <item>
         <spacer name="verticalSpacer_3">

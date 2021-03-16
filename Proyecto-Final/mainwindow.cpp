@@ -211,6 +211,7 @@ void MainWindow::load_settings()
     comparator.edge_dist = app_settings.edge_dist;
     comparator.triangle_max_edge = app_settings.triangle_max_edge;
     comparator.triangle_min_edge = app_settings.triangle_min_edge;
+    comparator.ransac_threshold = app_settings.ransac_threshold;
 }
 
 void MainWindow::on_actionOpciones_triggered()

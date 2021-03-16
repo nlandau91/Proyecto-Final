@@ -34,17 +34,13 @@ public:
 
 
     int matcher_method;
-
     double match_threshold;
-
     bool edge_matching;
-
     double edge_dist;
-
     double edge_angle;
-
     double triangle_max_edge;
     double triangle_min_edge;
+    double ransac_threshold;
 };
 }
 #endif // COMPARATOR_H

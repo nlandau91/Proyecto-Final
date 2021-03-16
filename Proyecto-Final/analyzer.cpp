@@ -51,6 +51,7 @@ std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src, int keypoint_threshol
         cv::KeyPoint keypoint = cv::KeyPoint(pt,5);
         keypoints.push_back(keypoint);
     }
+
     return keypoints;
 }
 
@@ -224,56 +225,25 @@ float minutiae_angle(const cv::Mat &im, int tipo, float o)
  */
 std::vector<cv::KeyPoint> clean_keypoints(const std::vector<cv::KeyPoint> &keypoints, const cv::Mat &mask, int blk_sze)
 {
+    qDebug() << "limpiando...";
     std::vector<cv::KeyPoint> good_keypoints;
     for(const cv::KeyPoint &kp : keypoints)
     {
-        cv::Rect blk(kp.pt.x - blk_sze/2, kp.pt.y - blk_sze/2, blk_sze, blk_sze);
-        if(cv::countNonZero(mask(blk)) == blk_sze*blk_sze)
+        if(!(kp.pt.x - blk_sze/2 < 0 || kp.pt.x + blk_sze/2 >= mask.cols
+             ||kp.pt.y - blk_sze/2 <= 0 || kp.pt.y + blk_sze/2 >= mask.rows))
         {
-            good_keypoints.push_back(kp);
+            cv::Rect blk(kp.pt.x - blk_sze/2, kp.pt.y - blk_sze/2, blk_sze, blk_sze);
+            if(cv::countNonZero(mask(blk)) == blk_sze*blk_sze)
+            {
+                good_keypoints.push_back(kp);
+            }
         }
     }
+    qDebug() << "done...";
     return good_keypoints;
 }
 
-//arma un mat a partir de una lista de keypoints
-//cada row es un kp
-//col 0 = pos x
-//col 1 = pos y
-//col 2 = tipo de minucia
-//col 4 = angulo entre 0 y pi
-cv::Mat get_minutiae(const Preprocessed &pre)
-{
-    std::vector<cv::KeyPoint> all_kps = kp_cn(pre.result);
-    int blk_sze = trunc((double)pre.result.rows / pre.orientation.rows);
-    std::vector<cv::KeyPoint> kps = clean_keypoints(all_kps,pre.roi,blk_sze);
-    cv::Mat descriptors(kps.size(),4,CV_32FC1);
-    int index = 0;
-    for(const cv::KeyPoint &kp : kps)
-    {
-        int x = kp.pt.x;
-        int y = kp.pt.y;
-        int tipo = kp.class_id;
-        float orientation = pre.orientation.at<float>(trunc((double)kp.pt.y / blk_sze),trunc((double)kp.pt.x / blk_sze));
-        float ang = minutiae_angle(pre.result(cv::Rect(x-1,y-1,3,3)),tipo,orientation);
-
-        descriptors.at<float>(index,0) = x;
-        descriptors.at<float>(index,1) = y;
-        descriptors.at<float>(index,2) = tipo;
-        descriptors.at<float>(index,3) = ang;
-        index++;
-    }
-
-    return descriptors;
-}
-
-//arma un mat a partir de una lista de keypoints
-//cada row es un kp
-//col 0 = pos x
-//col 1 = pos y
-//col 2 = tipo de minucia
-//col 4 = angulo entre 0 y pi
-std::vector<cv::KeyPoint> get_minutiae(const Preprocessed &pre, int n)
+std::vector<cv::KeyPoint> get_minutiae(const Preprocessed &pre)
 {
     std::vector<cv::KeyPoint> all_kps = kp_cn(pre.result);
     int blk_sze = trunc((double)pre.result.rows / pre.orientation.rows);
@@ -462,9 +432,10 @@ FingerprintTemplate Analyzer::analize(const fp::Preprocessed &preprocessed)
     qDebug() << "Analyzer: buscando singularidades...";
     fp_template.singularities = find_l1_features(preprocessed);
     //buscamos los puntos minuciosos (minutae)
-    qDebug() << "Analizer: buscando minutiae...";
+    qDebug() << "Analizer: buscando keypoints...";
     fp_template.keypoints = get_keypoints(preprocessed);
-    fp_template.minutiaes = get_minutiae(preprocessed,1);
+    qDebug() << "Analizer: buscando minutiae...";
+    fp_template.minutiaes = get_minutiae(preprocessed);
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
     fp_template.descriptors = calcular_descriptors(preprocessed.result, fp_template.keypoints);

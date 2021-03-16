@@ -9,6 +9,16 @@ Preprocesser::Preprocesser()
 
 }
 
+cv::Mat sharpening(const cv::Mat &im, double scale)
+{
+    cv::Mat sharp = im.clone();
+    cv::Mat smooth;
+    cv::GaussianBlur(im,smooth,cv::Size(3,3),0);
+    sharp = (1+scale)*im - scale*smooth;
+
+    return sharp;
+}
+
 cv::Mat morphological_thinning(const cv::Mat &src)
 {
 
@@ -658,6 +668,8 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     cv::Mat src_32f;
     src.convertTo(src_32f,CV_32FC1);
     //cv::GaussianBlur(src_32f,src_32f,cv::Size(5,5),0);
+    cv::Mat sharpened = sharpening(src_32f,2.0);
+    sharpened.convertTo(sharpened,CV_8UC1);
 
     //normalizacion para eliminar ruido e imperfecciones
     qDebug() << "Preprocesser: normalizando para mejorar contraste...";
@@ -711,6 +723,7 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     pre.frequency = freq;
     pre.filtered = filtered;
     pre.thinned = thinned;
+    pre.grayscale = sharpened;
     pre.result = result;
 
     qDebug() << "Preprocess:: listo.";

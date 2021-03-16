@@ -47,6 +47,7 @@ struct Preprocessed
     cv::Mat frequency;
     cv::Mat filtered;
     cv::Mat thinned;
+    cv::Mat grayscale;
     cv::Mat result;
 };
 
