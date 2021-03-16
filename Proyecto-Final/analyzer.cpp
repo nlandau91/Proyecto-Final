@@ -43,7 +43,7 @@ std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_t
 std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src, int keypoint_threshold)
 {
     cv::Mat kp_positions;
-    cv::goodFeaturesToTrack(src,kp_positions,keypoint_threshold,0.01,5);
+    cv::goodFeaturesToTrack(src,kp_positions,keypoint_threshold,0.01,10);
     std::vector<cv::KeyPoint> keypoints;
     for(int y = 0; y < kp_positions.rows; y++)
     {
@@ -438,7 +438,7 @@ FingerprintTemplate Analyzer::analize(const fp::Preprocessed &preprocessed)
     fp_template.minutiaes = get_minutiae(preprocessed);
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
-    fp_template.descriptors = calcular_descriptors(preprocessed.result, fp_template.keypoints);
+    fp_template.descriptors = calcular_descriptors(preprocessed.grayscale, fp_template.keypoints);
     qDebug() << "Analizer: listo.";
 
     return fp_template;

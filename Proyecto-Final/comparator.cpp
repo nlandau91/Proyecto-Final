@@ -211,7 +211,7 @@ bool Comparator::compare(const fp::FingerprintTemplate &query_template, const fp
 //        });
         //limpiamos los outliers
         std::vector<cv::DMatch> inliners_median;
-        inliners_median = remove_outliers_median(matches,2.0);
+        inliners_median = remove_outliers_median(matches,2.5);
         std::vector<cv::DMatch> inliners_ransac;
         inliners_ransac = remove_outliers_ransac(query_template.keypoints,train_template.keypoints,inliners_median,ransac_threshold);
         std::vector<cv::DMatch> good_matches = inliners_ransac;
