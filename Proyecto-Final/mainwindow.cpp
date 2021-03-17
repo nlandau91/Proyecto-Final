@@ -21,9 +21,10 @@ MainWindow::MainWindow(QWidget *parent)
         tester.preprocesser = preprocesser;
         tester.analyzer = analyzer;
         tester.comparator = comparator;
-        //tester.load_database(db);
-        double far = tester.test_far(db);
-        qDebug() << far;
+        tester.load_database(db);
+        //double far = tester.test_far(db);
+        //double frr = tester.test_frr(db);
+        //qDebug() << frr;
     }
 
 }

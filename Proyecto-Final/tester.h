@@ -12,12 +12,10 @@ class Tester
 {
 public:
     Tester();
-    void load_database(fp::Database &db);
-    double test_far(const FingerprintTemplate &query_template, const QString &genuine_id, const Database &db);
+    void load_database(Database &db);
     double test_far(const Database &db);
-
-    double test_frr(const FingerprintTemplate &query_template, const QString &genuine_id, const Database &db);
     double test_frr(const Database &db);
+
     Preprocesser preprocesser;
     Analyzer analyzer;
     Comparator comparator;

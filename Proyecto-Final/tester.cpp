@@ -65,43 +65,6 @@ void Tester::load_database(fp::Database &db)
     }
 }
 
-//funcion que calcula el false accept rate
-//genuine_id indica el id genuino de la huella, no se testea contra este id
-double Tester::test_far(const FingerprintTemplate &query_template, const QString &genuine_id, const Database &db)
-{
-    double far = 0.0;
-    //obtenemos una lista con los id de la base de datos
-    std::vector<QString> lista_id;
-    lista_id = db.obtener_lista_id();
-    //para cada id, realizamos la verificacion
-    int testeos = 0;
-    int aceptados = 0;
-    int rechazados = 0;
-    for(const QString &id : lista_id)
-    {
-        if(id != genuine_id)
-        {
-            //obtenemos la lista de descriptores de la base de datos
-            std::vector<fp::FingerprintTemplate> train_templates = db.recuperar_template(id);
-            //verificamos
-            for(const fp::FingerprintTemplate &fp : train_templates)
-            {
-                testeos++;
-                bool aceptado = comparator.compare(query_template, fp);
-                if(aceptado)
-                {
-                    aceptados++;
-                }
-                else
-                {
-                    rechazados++;
-                }
-            }
-        }
-    }
-    far = (double)aceptados/(double)testeos;
-    return far;
-}
 
 //funcion que calcula el false accept rate
 //genuine_id indica el id genuino de la huella, no se testea contra este id
@@ -120,7 +83,7 @@ double Tester::test_far(const Database &db)
         std::vector<fp::FingerprintTemplate> genuine_templates = db.recuperar_template(genuine_id);
         for(const QString &impostor_id : lista_id)
         {
-            if(genuine_id != impostor_id)
+            if( impostor_id.toInt() > genuine_id.toInt() )
             {
                 std::vector<fp::FingerprintTemplate> impostor_templates = db.recuperar_template(impostor_id);
                 for(fp::FingerprintTemplate genuine_template : genuine_templates)
@@ -137,10 +100,10 @@ double Tester::test_far(const Database &db)
                         {
                             rechazados++;
                         }
-                         std::cout << "Test: " << (double)testeos / (64*64) << "%" << std::endl;
-                         std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
                     }
                 }
+                std::cout << "Test: " << (double)testeos / (64*64) << "%" << std::endl;
+                std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
             }
         }
 
@@ -151,7 +114,7 @@ double Tester::test_far(const Database &db)
 
 //funcion que calcula el false reject rate
 //genuine_id indica el id genuino de la huella, se testea solo contra este id
-double Tester::test_frr(const FingerprintTemplate &query_template, const QString &genuine_id, const Database &db)
+double Tester::test_frr(const Database &db)
 {
     double frr = 0.0;
     //obtenemos una lista con los id de la base de datos
@@ -161,28 +124,37 @@ double Tester::test_frr(const FingerprintTemplate &query_template, const QString
     int testeos = 0;
     int aceptados = 0;
     int rechazados = 0;
-    for(const QString &id : lista_id)
+    for(const QString &genuine_id : lista_id)
     {
-        if(id == genuine_id)
+        std::vector<fp::FingerprintTemplate> genuine_templates = db.recuperar_template(genuine_id);
+
+        int indx1 = 0;
+        for(fp::FingerprintTemplate fp_template_1 : genuine_templates)
         {
-            //obtenemos la lista de descriptores de la base de datos
-            std::vector<fp::FingerprintTemplate> train_templates = db.recuperar_template(id);
-            //verificamos
-            for(const fp::FingerprintTemplate &fp : train_templates)
+            int indx2 = 0;
+            for(fp::FingerprintTemplate fp_template_2 : genuine_templates)
             {
-                testeos++;
-                bool aceptado = comparator.compare(query_template, fp);
-                if(aceptado)
+                if(indx1 <= indx2)
                 {
-                    aceptados++;
+                    testeos++;
+                    bool aceptado = comparator.compare(fp_template_1, fp_template_2);
+                    if(aceptado)
+                    {
+                        aceptados++;
+                    }
+                    else
+                    {
+                        rechazados++;
+                    }
                 }
-                else
-                {
-                    rechazados++;
-                }
+                indx2++;
             }
+            std::cout << "Test: " << (double)testeos / (2880) << "%" << std::endl;
+            std::cout << "Test: " << 100.0*(double)rechazados/(double)testeos << "% frr" << std::endl;
+            indx1++;
         }
+
     }
-    frr = (double)rechazados/(double)testeos;
+    frr = (double)aceptados/(double)testeos;
     return frr;
 }
