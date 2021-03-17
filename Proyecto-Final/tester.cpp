@@ -103,6 +103,52 @@ double Tester::test_far(const FingerprintTemplate &query_template, const QString
     return far;
 }
 
+//funcion que calcula el false accept rate
+//genuine_id indica el id genuino de la huella, no se testea contra este id
+double Tester::test_far(const Database &db)
+{
+    double far = 0.0;
+    //obtenemos una lista con los id de la base de datos
+    std::vector<QString> lista_id;
+    lista_id = db.obtener_lista_id();
+    //para cada id, realizamos la verificacion
+    int testeos = 0;
+    int aceptados = 0;
+    int rechazados = 0;
+    for(const QString &genuine_id : lista_id)
+    {
+        std::vector<fp::FingerprintTemplate> genuine_templates = db.recuperar_template(genuine_id);
+        for(const QString &impostor_id : lista_id)
+        {
+            if(genuine_id != impostor_id)
+            {
+                std::vector<fp::FingerprintTemplate> impostor_templates = db.recuperar_template(impostor_id);
+                for(fp::FingerprintTemplate genuine_template : genuine_templates)
+                {
+                    for(fp::FingerprintTemplate impostor_template : impostor_templates)
+                    {
+                        testeos++;
+                        bool aceptado = comparator.compare(genuine_template, impostor_template);
+                        if(aceptado)
+                        {
+                            aceptados++;
+                        }
+                        else
+                        {
+                            rechazados++;
+                        }
+                         std::cout << "Test: " << (double)testeos / (64*64) << "%" << std::endl;
+                         std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
+                    }
+                }
+            }
+        }
+
+    }
+    far = (double)aceptados/(double)testeos;
+    return far;
+}
+
 //funcion que calcula el false reject rate
 //genuine_id indica el id genuino de la huella, se testea solo contra este id
 double Tester::test_frr(const FingerprintTemplate &query_template, const QString &genuine_id, const Database &db)

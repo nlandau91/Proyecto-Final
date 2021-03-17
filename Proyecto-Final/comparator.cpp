@@ -199,28 +199,31 @@ bool Comparator::compare(const FingerprintTemplate &query_template, const Finger
     }
     }
     bool comparation = false;
-    if(matches.size() > 1)
+    if(matches.size() > 4)
     {
         qDebug() << "Comparator: Analizando matches entre keypoints... ";
         //limpiamos los matches malos
         //ordenamos de forma creciente por distancia
-//        std::sort(matches.begin(),matches.end(),[] (cv::DMatch const& m1, cv::DMatch const& m2) -> bool
-//        {
-//            return m1.distance < m2.distance;
-//        });
+        //        std::sort(matches.begin(),matches.end(),[] (cv::DMatch const& m1, cv::DMatch const& m2) -> bool
+        //        {
+        //            return m1.distance < m2.distance;
+        //        });
         //limpiamos los outliers
         std::vector<cv::DMatch> inliners_median;
         inliners_median = remove_outliers_median(matches,2.5);
-        std::vector<cv::DMatch> inliners_ransac;
-        inliners_ransac = remove_outliers_ransac(query_template.keypoints,train_template.keypoints,inliners_median,ransac_threshold);
-        std::vector<cv::DMatch> good_matches = inliners_ransac;
+        if(inliners_median.size() > 4)
+        {
+            std::vector<cv::DMatch> inliners_ransac;
+            inliners_ransac = remove_outliers_ransac(query_template.keypoints,train_template.keypoints,inliners_median,ransac_threshold);
+            std::vector<cv::DMatch> good_matches = inliners_ransac;
 
-        //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
-        double score = (double)good_matches.size()/std::max(query_template.descriptors.rows,train_template.descriptors.rows);
-        double score2 = (double)good_matches.size()/((query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
-        qDebug() << "Comparator: score: " << score;
-        qDebug() << "Comparator: score2: " << score2;
-        comparation = score > match_threshold;
+            //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
+            double score = (double)good_matches.size()/std::max(query_template.descriptors.rows,train_template.descriptors.rows);
+            double score2 = (double)good_matches.size()/((query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
+            qDebug() << "Comparator: score: " << score;
+            qDebug() << "Comparator: score2: " << score2;
+            comparation = score > match_threshold;
+        }
 
     }
 
