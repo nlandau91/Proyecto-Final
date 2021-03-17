@@ -1,8 +1,7 @@
 #include "database.h"
 #include <QDebug>
 
-namespace fp
-{
+using namespace fp;
 
 void Database::init()
 {
@@ -33,7 +32,7 @@ Database::Database()
 
 }
 
-void Database::ingresar_template(const FingerprintTemplate &fp_template, const QString &id)
+void Database::ingresar_template(const FingerprintTemplate &fp_template, const QString &id) const
 {
 
     //armamos el path
@@ -72,7 +71,7 @@ void Database::ingresar_template(const FingerprintTemplate &fp_template, const Q
 
 }
 
-std::vector<FingerprintTemplate> Database::recuperar_template(const QString &id)
+std::vector<FingerprintTemplate> Database::recuperar_template(const QString &id) const
 {
     std::vector<FingerprintTemplate> lista_templates;
 
@@ -86,7 +85,7 @@ std::vector<FingerprintTemplate> Database::recuperar_template(const QString &id)
     while(query.next())
     {
         QString path = query.value(0).toString();
-        fp::FingerprintTemplate fp_template(path.toStdString());
+        FingerprintTemplate fp_template(path.toStdString());
         lista_templates.push_back(fp_template);
     }
 
@@ -94,7 +93,7 @@ std::vector<FingerprintTemplate> Database::recuperar_template(const QString &id)
     return lista_templates;
 }
 
-std::vector<QString> Database::obtener_lista_id()
+std::vector<QString> Database::obtener_lista_id() const
 {
     std::vector<QString> lista_id;
     QSqlQuery query;
@@ -109,5 +108,4 @@ std::vector<QString> Database::obtener_lista_id()
         lista_id.push_back(id);
     }
     return lista_id;
-}
 }

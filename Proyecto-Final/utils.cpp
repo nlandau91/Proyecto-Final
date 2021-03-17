@@ -1,11 +1,10 @@
 #include "utils.h"
 #include <QDebug>
 
-namespace fp
-{
+namespace fp{
 
 //convierte una imagen de tipo cv::Mat a una de tipo QImage
-QImage cvMatToQImage( const cv::Mat &inMat )
+QImage cvMatToQImage(const cv::Mat &inMat)
 {
     switch ( inMat.type() )
     {
@@ -231,5 +230,4 @@ bool read_serialized_mat(const std::string& file, cv::Mat& mat, const std::strin
     }
     return false;
 }
-
 }

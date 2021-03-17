@@ -13,6 +13,17 @@ MainWindow::MainWindow(QWidget *parent)
     db.init();
     qDebug("Loading settings...");
     load_settings();
+
+    bool testing = true;
+    if(testing)
+    {
+        fp::Tester tester;
+        tester.preprocesser = preprocesser;
+        tester.analyzer = analyzer;
+        tester.comparator = comparator;
+        tester.load_database(db);
+    }
+
 }
 
 MainWindow::~MainWindow()
@@ -129,6 +140,7 @@ void MainWindow::on_btn_identificar_clicked()
         if(!fileName.isEmpty())
         {
             //leemos la imagen en escala de gris
+            qDebug() << fileName;
             cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
             if(!src.empty())
             {
@@ -160,11 +172,15 @@ void MainWindow::on_btn_identificar_clicked()
                         //obtenemos la lista de descriptores de la base de datos
                         std::vector<fp::FingerprintTemplate> train_templates = db.recuperar_template(id);
                         //verificamos
-                        verificado = comparator.compare(fp_template, train_templates);
 
+                        for(const fp::FingerprintTemplate &fp : train_templates)
+                        {
+                            verificado = verificado || comparator.compare(fp_template, fp);
+
+                        }
                         if(verificado)
                         {
-                            std::cout << "Match encontrado: " << id.toStdString() << std::endl;;
+                            std::cout << "Match encontrado: " << id.toStdString() << std::endl;
                         }
                     }
                 }

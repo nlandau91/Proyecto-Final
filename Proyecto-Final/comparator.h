@@ -20,7 +20,7 @@ public:
      * \param threshold umbral de decicion. Mientras mas alto, mas estricto. Rango [0,1]
      * \return true si se considera que los templates corresponden a un mismo dedo
      */
-    bool compare(const fp::FingerprintTemplate &query_template, const fp::FingerprintTemplate &train_template, double threshold);
+    bool compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template);
 
     /*!
      * \brief compare compara un template con una lista de templates y decide si se corresponde a alguno de ellos
@@ -29,7 +29,7 @@ public:
      * \param train_templates templates de verificacion
      * \return true si se considera que el template de consulta corresponde a alguno de la lista
      */
-    bool compare(const fp::FingerprintTemplate &query_template, const std::vector<fp::FingerprintTemplate> &train_templates);
+    bool compare(const FingerprintTemplate &query_template, const std::vector<FingerprintTemplate> &train_templates);
 
 
 

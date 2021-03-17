@@ -2,8 +2,7 @@
 #include <opencv2/xfeatures2d/nonfree.hpp>
 #include <QDebug>
 
-namespace fp
-{
+using namespace fp;
 
 Analyzer::Analyzer()
 {
@@ -141,7 +140,7 @@ std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src)
 /*!
  * \brief minutiae_angle calcula el angulo de una minucia a partir de su orientacion
  * \param im bloque binario de 3x3 centrado en la minucia
- * \param tipo tipo de minucia fp::ENDING o fp::BIFURCATION
+ * \param tipo tipo de minucia ENDING o BIFURCATION
  * \param o orientacion de la minucia, rango [0,pi]
  * \return devuelve angulo con respecto al horizontal, rango [0,2pi]
  */
@@ -162,7 +161,7 @@ float minutiae_angle(const cv::Mat &im, int tipo, float o)
 
     cv::Point key_point;
     //si es terminacion, buscamos el unico punto negro que rodea la minucia
-    if(tipo == fp::ENDING)
+    if(tipo == ENDING)
     {
         for(int i = 0; i < 8; i++)
         {
@@ -175,7 +174,7 @@ float minutiae_angle(const cv::Mat &im, int tipo, float o)
         }
     }
     //si es bifurcacion, buscamos el punto blanco que abre la bifurcacion
-    if(tipo == fp::BIFURCATION)
+    if(tipo == BIFURCATION)
     {
         for(int i = 1; i < 9; i++)
         {
@@ -421,7 +420,7 @@ cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPo
 }
 
 
-FingerprintTemplate Analyzer::analize(const fp::Preprocessed &preprocessed)
+FingerprintTemplate Analyzer::analize(const Preprocessed &preprocessed)
 {
 
     FingerprintTemplate fp_template;
@@ -443,4 +442,4 @@ FingerprintTemplate Analyzer::analize(const fp::Preprocessed &preprocessed)
 
     return fp_template;
 }
-}
+

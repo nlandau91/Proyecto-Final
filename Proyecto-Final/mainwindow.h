@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "outputwindow.h"
 #include "fingerprinttemplate.h"
+#include "tester.h"
 
 #include <QMainWindow>
 #include <QFileDialog>
@@ -42,7 +43,7 @@ private:
     Ui::MainWindow *ui;
     OutputWindow *output_window;
     fp::Database db;
-    AppSettings app_settings;
+    fp::AppSettings app_settings;
     fp::Preprocesser preprocesser;
     fp::Analyzer analyzer;
     fp::Comparator comparator;

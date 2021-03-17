@@ -2,8 +2,7 @@
 #include <QDebug>
 #include <iostream>
 
-namespace fp
-{
+using namespace fp;
 Comparator::Comparator()
 {
 
@@ -174,7 +173,7 @@ std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &
     return good_matches;
 }
 
-bool Comparator::compare(const fp::FingerprintTemplate &query_template, const fp::FingerprintTemplate &train_template, double threshold)
+bool Comparator::compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template)
 {
     qDebug() << "Comparator: Realizando matches entre keypoints...";
     std::vector<cv::DMatch> matches;
@@ -221,25 +220,25 @@ bool Comparator::compare(const fp::FingerprintTemplate &query_template, const fp
         double score2 = (double)good_matches.size()/((query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
         qDebug() << "Comparator: score: " << score;
         qDebug() << "Comparator: score2: " << score2;
-        comparation = score > threshold;
+        comparation = score > match_threshold;
 
     }
 
     return comparation;
 }
 
-bool Comparator::compare(const fp::FingerprintTemplate &query_template, const std::vector<fp::FingerprintTemplate> &train_templates)
+bool Comparator::compare(const FingerprintTemplate &query_template, const std::vector<FingerprintTemplate> &train_templates)
 {
     bool comparation = false;
     //qDebug() << "Comparator: obteniendo matches...";
     int i = 0;
-    for(const fp::FingerprintTemplate &train_template : train_templates)
+    for(const FingerprintTemplate &train_template : train_templates)
     {
-        comparation = comparation || compare(query_template, train_template, match_threshold);
+        comparation = comparation || compare(query_template, train_template);
         i++;
     }
 
     return comparation;
 }
 
-}
+

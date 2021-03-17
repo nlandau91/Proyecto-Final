@@ -1,7 +1,7 @@
 #include "fingerprinttemplate.h"
 
-namespace fp
-{
+using namespace fp;
+
 FingerprintTemplate::FingerprintTemplate()
 {
 
@@ -45,5 +45,4 @@ bool FingerprintTemplate::deserialize(const std::string& file)
         return true;
     }
     return false;
-}
 }

@@ -1,8 +1,7 @@
 #include "preprocesser.h"
 #include <QDebug>
 
-namespace fp
-{
+using namespace fp;
 
 Preprocesser::Preprocesser()
 {
@@ -315,7 +314,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
         cv::pow(y,2,term2);
         term2 *= 1.0f / (sigmay*sigmay);
 
-        term3 = fp::mat_cos(2.0*M_PI*unfreq[i]*x);
+        term3 = mat_cos(2.0*M_PI*unfreq[i]*x);
 
         cv::Mat reffilter = cv::Mat::zeros(x.size(),CV_32FC1);
         cv::exp(-(term1 + term2)/2.0,reffilter);
@@ -660,7 +659,7 @@ cv::Mat get_roi(const cv::Mat &src,int blk_sze, float threshold_ratio)
 
 }
 
-fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
+Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 {
     //pipeline de preprocesamiento   
 
@@ -728,7 +727,5 @@ fp::Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 
     qDebug() << "Preprocess:: listo.";
     return pre;
-
-}
 
 }

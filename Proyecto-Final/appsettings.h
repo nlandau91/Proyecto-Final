@@ -3,6 +3,7 @@
 
 #include "common.h"
 
+namespace fp{
 class AppSettings
 {
 public:
@@ -39,5 +40,6 @@ public:
     bool draw_over_output;
 
 };
+}
 
 #endif // APPSETTINGS_H

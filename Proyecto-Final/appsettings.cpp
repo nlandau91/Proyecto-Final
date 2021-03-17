@@ -4,6 +4,8 @@
 #include <QSettings>
 #include <QFile>
 
+using namespace fp;
+
 int string_to_enum(const QString arg1);
 
 AppSettings::AppSettings()
@@ -54,19 +56,20 @@ int string_to_enum(const QString arg1)
 {
     int not_found = -1;
 
-    if(arg1 == "gabor") return fp::GABOR;
-    if(arg1 == "none") return fp::NONE;
-    if(arg1 == "guohall") return fp::GUOHALL;
-    if(arg1 == "zhangsuen") return fp::ZHANGSUEN;
-    if(arg1 == "morph") return fp::MORPH;
-    if(arg1 == "harris") return fp::HARRIS;
-    if(arg1 == "shitomasi") return fp::SHITOMASI;
-    if(arg1 == "orb") return fp::ORB;
-    if(arg1 == "surf") return fp::SURF;
-    if(arg1 == "custom") return fp::CUSTOM;
-    if(arg1 == "sift") return fp::SIFT;
-    if(arg1 == "cn") return fp::CN;
-    if(arg1 == "poincare") return fp::POINCARE;
+    if(arg1 == "gabor") return GABOR;
+    if(arg1 == "none") return NONE;
+    if(arg1 == "guohall") return GUOHALL;
+    if(arg1 == "zhangsuen") return ZHANGSUEN;
+    if(arg1 == "morph") return MORPH;
+    if(arg1 == "harris") return HARRIS;
+    if(arg1 == "shitomasi") return SHITOMASI;
+    if(arg1 == "orb") return ORB;
+    if(arg1 == "surf") return SURF;
+    if(arg1 == "custom") return CUSTOM;
+    if(arg1 == "sift") return SIFT;
+    if(arg1 == "cn") return CN;
+    if(arg1 == "poincare") return POINCARE;
 
     return not_found;
 }
+

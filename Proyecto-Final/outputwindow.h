@@ -6,7 +6,6 @@
 #include "fingerprinttemplate.h"
 
 #include <QWidget>
-
 namespace Ui {
 class OutputWindow;
 }
