@@ -82,7 +82,42 @@
         <item>
          <widget class="QPushButton" name="btn_demo">
           <property name="text">
-           <string>Demostracion</string>
+           <string>Analizar huella</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Benchmark</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_far">
+          <property name="text">
+           <string>Test FAR</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_frr">
+          <property name="text">
+           <string>Test FRR</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_db">
+          <property name="text">
+           <string>Reload DB</string>
           </property>
          </widget>
         </item>

@@ -13,20 +13,6 @@ MainWindow::MainWindow(QWidget *parent)
     db.init();
     qDebug("Loading settings...");
     load_settings();
-
-    bool testing = true;
-    if(testing)
-    {
-        fp::Tester tester;
-        tester.preprocesser = preprocesser;
-        tester.analyzer = analyzer;
-        tester.comparator = comparator;
-        tester.load_database(db);
-        //double far = tester.test_far(db);
-        //double frr = tester.test_frr(db);
-        //qDebug() << frr;
-    }
-
 }
 
 MainWindow::~MainWindow()
@@ -231,6 +217,10 @@ void MainWindow::load_settings()
     comparator.triangle_max_edge = app_settings.triangle_max_edge;
     comparator.triangle_min_edge = app_settings.triangle_min_edge;
     comparator.ransac_threshold = app_settings.ransac_threshold;
+
+    tester.preprocesser = preprocesser;
+    tester.analyzer = analyzer;
+    tester.comparator = comparator;
 }
 
 void MainWindow::on_actionOpciones_triggered()
@@ -292,4 +282,21 @@ void MainWindow::on_btn_demo_clicked()
 
         }
     }
+}
+
+
+
+void MainWindow::on_btn_far_clicked()
+{
+        tester.test_far(db);
+}
+
+void MainWindow::on_btn_frr_clicked()
+{
+    tester.test_frr(db);
+}
+
+void MainWindow::on_btn_db_clicked()
+{
+    tester.load_database(db);
 }

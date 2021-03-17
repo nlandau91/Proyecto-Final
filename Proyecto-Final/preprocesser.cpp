@@ -373,9 +373,10 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     }
     // Finally do the filtering
     cv::Mat newim = cv::Mat::zeros(im.size(),im.type());
-    std::cout << "debug: " << 1 << std::endl;
+    //std::cout << "debug: " << 1 << std::endl;
     for(int r = 0; r < im.rows; r++)
     {
+        //std::cout << "debug: r" << r << std::endl;
         for(int c = 0; c < im.cols; c++)
         {
             if(mask.empty() || (!mask.empty() && mask.at<uchar>(r,c) > 0))
@@ -393,10 +394,9 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
                         cv::Rect roi(c-s,r-s,2*s,2*s);
                         cv::Mat subim(im(roi));
                         cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/orient_blk_sze),trunc(c/orient_blk_sze))];
-                        cv::Mat mulResult;
-                        cv::multiply(subim,subFilter,mulResult);
-                        std::cout << "debug: r" << r << std::endl;
-                        std::cout << "debug: c" << c << std::endl;
+                        cv::Mat mulResult(subim.size(),subim.type());
+                        cv::multiply(subim,subFilter,mulResult);                       
+                        //std::cout << "debug: c" << c << std::endl;
                         if(cv::sum(mulResult)[0] > 0)
                         {
                             newim.at<float>(r,c) = 255;

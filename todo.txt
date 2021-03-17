@@ -1,6 +1,7 @@
 Preprocesser:
     Limpiar minucias falsas (maltoni 157, zhao 2007)
     Normalizacion en bloque
+    ver crash con orient blk 12 en release mode (???)
 
 Analizer:
     Calcular angulos de keypoints correctamente, dentro de metodo cn

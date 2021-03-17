@@ -39,6 +39,12 @@ private slots:
 
     void on_btn_demo_clicked();
 
+    void on_btn_far_clicked();
+
+    void on_btn_frr_clicked();
+
+    void on_btn_db_clicked();
+
 private:
     Ui::MainWindow *ui;
     OutputWindow *output_window;
@@ -47,6 +53,7 @@ private:
     fp::Preprocesser preprocesser;
     fp::Analyzer analyzer;
     fp::Comparator comparator;
+    fp::Tester tester;
     void load_settings();
 
 };

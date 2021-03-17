@@ -39,7 +39,6 @@ void Tester::load_database(fp::Database &db)
             //para cada huella, la procesamos y la ingresamos
             std::string abs_path = (path+"/"+fileName).toStdString();
             cv::Mat src = cv::imread(abs_path,cv::IMREAD_GRAYSCALE);
-            std::cout << "1"<< std::endl;
             if(!src.empty())
             {
                 //preprocesamos la imagen
@@ -102,7 +101,7 @@ double Tester::test_far(const Database &db)
                         }
                     }
                 }
-                std::cout << "Test: " << (double)testeos / (64*64) << "%" << std::endl;
+                std::cout << "Test: " << (double)testeos / (2073.60) << "%" << std::endl;
                 std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
             }
         }
@@ -149,7 +148,7 @@ double Tester::test_frr(const Database &db)
                 }
                 indx2++;
             }
-            std::cout << "Test: " << (double)testeos / (2880) << "%" << std::endl;
+            std::cout << "Test: " << (double)testeos / (28.80) << "%" << std::endl;
             std::cout << "Test: " << 100.0*(double)rechazados/(double)testeos << "% frr" << std::endl;
             indx1++;
         }
