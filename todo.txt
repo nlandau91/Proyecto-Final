@@ -1,16 +1,17 @@
 Preprocesser:
-    Limpiar minucias falsas (maltoni 157, zhao 2007)
-    Normalizacion en bloque
-    ver crash con orient blk 12 en release mode (???)
+    Limpiar minucias falsas (maltoni 157, zhao 2007) (parcialmente hecho)
+    Normalizacion en bloque (deberia ser facil, mejora far y frr?)
 
 Analizer:
-    Calcular angulos de keypoints correctamente, dentro de metodo cn
-    Estimacion de calidad de la huella (maltoni 163)
+    Estimacion de calidad de la huella (maltoni 163) (but why?)
 
 Comparator:    
-    Triangle matching (o algun otro invariante a escala y rotacion)
-    Registrar huellas
     Agregar paso de consolidacion a comparator (maltoni 202)
+    
+General:
+    Encontrar mejores parametros. Por ahora default.ini tiene far<4% y frr<19%
+    Seguir escribiendo informe
+    Armar presentacion?
     
     
 
