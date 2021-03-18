@@ -101,7 +101,7 @@ double Tester::test_far(const Database &db)
                         }
                     }
                 }
-                std::cout << "Test: " << (double)testeos / (2073.60) << "%" << std::endl;
+                std::cout << "Test: " << (double)testeos / (2022.40) << "%" << std::endl;
                 std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
             }
         }
