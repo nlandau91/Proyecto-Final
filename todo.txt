@@ -5,7 +5,8 @@ Preprocesser:
 Analizer:
     Estimacion de calidad de la huella (maltoni 163) (but why?)
 
-Comparator:    
+Comparator:
+    Agregar tipo de singularidad a la comparacion
     Agregar paso de consolidacion a comparator (maltoni 202)
     
 General:
