@@ -13,5 +13,8 @@ General:
     Seguir escribiendo informe
     Armar presentacion?
     
+Informe:
+    Seguir escribiendo
+    Agregar imagenes
     
 
