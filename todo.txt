@@ -8,9 +8,11 @@ Analizer:
 Comparator:
     Agregar tipo de singularidad a la comparacion
     Agregar paso de consolidacion a comparator (maltoni 202)
+    Optimizar?
     
 General:
     Encontrar mejores parametros. Por ahora default.ini tiene far<4% y frr<19%
+    Mejorar estadisticas (para mejorar parametros)
     Seguir escribiendo informe
     Armar presentacion?
     

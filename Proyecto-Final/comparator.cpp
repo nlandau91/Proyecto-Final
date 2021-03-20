@@ -314,6 +314,68 @@ bool Comparator::compare(const FingerprintTemplate &query_template, const Finger
     return comparation;
 }
 
+double Comparator::compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template, bool flag)
+{
+    qDebug() << "Comparator: Realizando matches entre keypoints...";
+    double score = 0.0;
+    //testing: si son distinta singularidad, devolvemos falso de una
+    //solo se hace si ambas tienen singularidad
+    if(flag && !compare_singularities(query_template.singularities, train_template.singularities))
+    {
+        return score;
+    }
+    std::vector<cv::DMatch> matches;
+
+    switch(matcher_method)
+    {
+    case ORB:
+    {
+        //matches = find_matches(query_template.descriptors,train_template.descriptors,cv::NORM_HAMMING,0.75);
+        matches = find_matches(query_template.descriptors,train_template.descriptors,cv::NORM_HAMMING);
+        break;
+    }
+    case SURF:
+    {
+        //matches = find_matches(query_template.descriptors,train_template.descriptors,cv::NORM_L2,0.75);
+        matches = find_matches(query_template.descriptors,train_template.descriptors,cv::NORM_L2);
+        break;
+    }
+    case SIFT:
+    {
+        //matches = find_matches(query_template.descriptors,train_template.descriptors,cv::NORM_L2,0.75);
+        matches = find_matches(query_template.descriptors,train_template.descriptors,cv::NORM_L2);
+    }
+    }
+    if(matches.size() > 4)
+    {
+        qDebug() << "Comparator: Analizando matches entre keypoints... ";
+        //limpiamos los matches malos
+        //ordenamos de forma creciente por distancia
+        //        std::sort(matches.begin(),matches.end(),[] (cv::DMatch const& m1, cv::DMatch const& m2) -> bool
+        //        {
+        //            return m1.distance < m2.distance;
+        //        });
+        //limpiamos los outliers
+        std::vector<cv::DMatch> inliners_median;
+        inliners_median = remove_outliers_median(matches,2.5);
+        if(inliners_median.size() > 4)
+        {
+            std::vector<cv::DMatch> inliners_ransac;
+            inliners_ransac = remove_outliers_ransac(query_template.keypoints,train_template.keypoints,inliners_median,ransac_threshold,2000);
+            std::vector<cv::DMatch> good_matches = inliners_ransac;
+
+            //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
+            score = (double)good_matches.size()/std::max(query_template.descriptors.rows,train_template.descriptors.rows);
+            //double score2 = (double)good_matches.size()/((query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
+            qDebug() << "Comparator: score: " << score;
+            //qDebug() << "Comparator: score2: " << score2;
+        }
+
+    }
+
+    return score;
+}
+
 bool Comparator::compare(const FingerprintTemplate &query_template, const std::vector<FingerprintTemplate> &train_templates)
 {
     bool comparation = false;

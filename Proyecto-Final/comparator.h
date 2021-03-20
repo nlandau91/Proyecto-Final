@@ -22,6 +22,8 @@ public:
      */
     bool compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template);
 
+    double compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template, bool flag);
+
     /*!
      * \brief compare compara un template con una lista de templates y decide si se corresponde a alguno de ellos
      * La idea es que la lista de templates contenga distintos templates del mismo dedo

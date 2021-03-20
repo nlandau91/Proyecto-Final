@@ -64,6 +64,22 @@ void Tester::load_database(fp::Database &db)
     }
 }
 
+void score_stats(std::vector<double> scores)
+{
+    //calculamos la media
+    double mean = 0;
+    for(double score : scores)
+    {
+        mean += score;
+    }
+    mean = mean/scores.size();
+    //calculamos el 1% bajo y alto
+    std::sort(scores.begin(),scores.end());
+    int low_pcnt_index = std::trunc((scores.size() - 1) * 0.05);
+    double low_pcnt = scores[low_pcnt_index];
+    std::cout << "Score stats: mean    = " << mean << std::endl;
+    std::cout << "Score stats: low 5%  = " << low_pcnt << std::endl;
+}
 
 //funcion que calcula el false accept rate
 //genuine_id indica el id genuino de la huella, no se testea contra este id
@@ -77,6 +93,7 @@ double Tester::test_far(const Database &db)
     int testeos = 0;
     int aceptados = 0;
     int rechazados = 0;
+    std::vector<double> scores = {0};
     for(size_t i = 0; i < lista_id.size()-1; i++)
     {
         QString genuine_id = lista_id[i];
@@ -90,7 +107,11 @@ double Tester::test_far(const Database &db)
                 for(fp::FingerprintTemplate impostor_template : impostor_templates)
                 {
                     testeos++;
-                    bool aceptado = comparator.compare(genuine_template, impostor_template);
+                    bool aceptado = false;
+                    //aceptado = comparator.compare(genuine_template, impostor_template);
+                    double score = comparator.compare(genuine_template, impostor_template,false);
+                    scores.push_back(score);
+                    aceptado = comparator.match_threshold < score;
                     if(aceptado)
                     {
                         aceptados++;
@@ -103,7 +124,9 @@ double Tester::test_far(const Database &db)
             }
             std::cout << "Test: " << (double)testeos / (2022.40) << "%" << std::endl;
             std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
+            score_stats(scores);
         }
+
     }
 
     far = (double)aceptados/(double)testeos;
@@ -123,7 +146,7 @@ double Tester::test_frr(const Database &db)
     int aceptados = 0;
     int rechazados = 0;
 
-
+    std::vector<double> scores = {0};
     for(const QString &genuine_id : lista_id)
     {
         std::vector<fp::FingerprintTemplate> genuine_templates = db.recuperar_template(genuine_id);
@@ -134,7 +157,11 @@ double Tester::test_frr(const Database &db)
             {
                 FingerprintTemplate fp_template_2 = genuine_templates[j];
                 testeos++;
-                bool aceptado = comparator.compare(fp_template_1, fp_template_2);
+                bool aceptado = false;
+                //aceptado = comparator.compare(fp_template_1, fp_template_2);
+                double score = comparator.compare(fp_template_1, fp_template_2,false);
+                scores.push_back(score);
+                aceptado = comparator.match_threshold < score;
                 if(aceptado)
                 {
                     aceptados++;
@@ -149,6 +176,7 @@ double Tester::test_frr(const Database &db)
         }
 
     }
+    score_stats(scores);
     frr = (double)aceptados/(double)testeos;
     return frr;
 }
