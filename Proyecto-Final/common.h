@@ -35,6 +35,7 @@ enum Params
     LOOP,
     DELTA,
     WHORL,
+    ARCH,
 
 };
 

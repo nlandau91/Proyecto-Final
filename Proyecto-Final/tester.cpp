@@ -77,36 +77,35 @@ double Tester::test_far(const Database &db)
     int testeos = 0;
     int aceptados = 0;
     int rechazados = 0;
-    for(const QString &genuine_id : lista_id)
+    for(size_t i = 0; i < lista_id.size()-1; i++)
     {
+        QString genuine_id = lista_id[i];
         std::vector<fp::FingerprintTemplate> genuine_templates = db.recuperar_template(genuine_id);
-        for(const QString &impostor_id : lista_id)
+        for(size_t j = i+1; j < lista_id.size(); j++)
         {
-            if( impostor_id.toInt() > genuine_id.toInt() )
+            QString impostor_id = lista_id[j];
+            std::vector<fp::FingerprintTemplate> impostor_templates = db.recuperar_template(impostor_id);
+            for(fp::FingerprintTemplate genuine_template : genuine_templates)
             {
-                std::vector<fp::FingerprintTemplate> impostor_templates = db.recuperar_template(impostor_id);
-                for(fp::FingerprintTemplate genuine_template : genuine_templates)
+                for(fp::FingerprintTemplate impostor_template : impostor_templates)
                 {
-                    for(fp::FingerprintTemplate impostor_template : impostor_templates)
+                    testeos++;
+                    bool aceptado = comparator.compare(genuine_template, impostor_template);
+                    if(aceptado)
                     {
-                        testeos++;
-                        bool aceptado = comparator.compare(genuine_template, impostor_template);
-                        if(aceptado)
-                        {
-                            aceptados++;
-                        }
-                        else
-                        {
-                            rechazados++;
-                        }
+                        aceptados++;
+                    }
+                    else
+                    {
+                        rechazados++;
                     }
                 }
-                std::cout << "Test: " << (double)testeos / (2022.40) << "%" << std::endl;
-                std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
             }
+            std::cout << "Test: " << (double)testeos / (2022.40) << "%" << std::endl;
+            std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
         }
-
     }
+
     far = (double)aceptados/(double)testeos;
     return far;
 }
@@ -123,34 +122,30 @@ double Tester::test_frr(const Database &db)
     int testeos = 0;
     int aceptados = 0;
     int rechazados = 0;
+
+
     for(const QString &genuine_id : lista_id)
     {
         std::vector<fp::FingerprintTemplate> genuine_templates = db.recuperar_template(genuine_id);
-
-        int indx1 = 0;
-        for(fp::FingerprintTemplate fp_template_1 : genuine_templates)
+        for(size_t i = 0; i < genuine_templates.size(); i++)
         {
-            int indx2 = 0;
-            for(fp::FingerprintTemplate fp_template_2 : genuine_templates)
+            FingerprintTemplate fp_template_1 = genuine_templates[i];
+            for(size_t j = i; j < genuine_templates.size(); j++)
             {
-                if(indx1 <= indx2)
+                FingerprintTemplate fp_template_2 = genuine_templates[j];
+                testeos++;
+                bool aceptado = comparator.compare(fp_template_1, fp_template_2);
+                if(aceptado)
                 {
-                    testeos++;
-                    bool aceptado = comparator.compare(fp_template_1, fp_template_2);
-                    if(aceptado)
-                    {
-                        aceptados++;
-                    }
-                    else
-                    {
-                        rechazados++;
-                    }
+                    aceptados++;
                 }
-                indx2++;
+                else
+                {
+                    rechazados++;
+                }
             }
             std::cout << "Test: " << (double)testeos / (28.80) << "%" << std::endl;
             std::cout << "Test: " << 100.0*(double)rechazados/(double)testeos << "% frr" << std::endl;
-            indx1++;
         }
 
     }
