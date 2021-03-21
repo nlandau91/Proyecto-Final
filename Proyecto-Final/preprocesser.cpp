@@ -260,19 +260,13 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     // y genero un arreglo de frecuencias unicas
     cv::Mat valid_points;
     cv::findNonZero(freq,valid_points);
-    std::vector<int> validr;
-    std::vector<int> validc;
-    std::vector<float> ind;
     std::vector<float> unfreq;
     for(int i = 0; i < valid_points.rows;i++)
     {
-        int row = valid_points.at<cv::Point>(i).y;
-        int col = valid_points.at<cv::Point>(i).x;
-        validr.push_back(row);
-        validc.push_back(col);
-        float new_freq = static_cast<float>(round(100.0*freq.at<float>(row,col))/100.0);
-        freq.at<float>(row,col) = new_freq;
-        ind.push_back(new_freq);
+        cv::Point p = valid_points.at<cv::Point>(i);
+        float new_freq = round(100.0*freq.at<float>(p))/100.0;
+        freq.at<float>(p) = new_freq;
+
         if(std::find(unfreq.begin(),unfreq.end(),new_freq) == unfreq.end())
         {
             unfreq.push_back(new_freq);
@@ -283,11 +277,11 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     // an integer index, returns the index within the unfreq array that it
     // corresponds to
 
-    float freqindex[100];
+    float freqindex[101] = {0};
     for(size_t i = 0; i < unfreq.size(); i++)
     {
         float f = unfreq[i];
-        int index = round(f*100);
+        int index = (int)round(f*100);
         freqindex[index] = i;
     }
     //Generate filters corresponding to these distinct frequencies and
@@ -362,52 +356,39 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     }
     //Find indices of matrix points greater than maxsze from the image boundary
     int maxsze = sze[0];
-    std::vector<int> finalind;
-    for(long unsigned i = 0; i < validr.size();i++)
-    {
-        if(validr[i] > maxsze && validr[i] < im.rows - maxsze
-                && validc[i] > maxsze && validc[i] < im.cols - maxsze)
-        {
-            finalind.push_back(i);
-        }
-    }
+
     // Finally do the filtering
     cv::Mat newim = cv::Mat::zeros(im.size(),im.type());
     //std::cout << "debug: " << 1 << std::endl;
-    for(int r = 0; r < im.rows; r++)
+    for(int r = maxsze + 1; r < im.rows - maxsze; r++)
     {
         //std::cout << "debug: r" << r << std::endl;
-        for(int c = 0; c < im.cols; c++)
+        for(int c = maxsze + 1; c < im.cols - maxsze; c++)
         {
-            if(mask.empty() || (!mask.empty() && mask.at<uchar>(r,c) > 0))
+            //if(mask.empty() || (!mask.empty() && mask.at<uchar>(r,c) > 0))
+            //{
+            //vemos si este punto es valido
+            if(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze) > 0)
             {
-                //vemos si este punto es valido
-                if(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze) > 0)
+                int filterindex = freqindex[(int)trunc(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze)*100)];
+                int s = sze[filterindex];
+                cv::Rect roi(c-s,r-s,2*s,2*s);
+                cv::Mat subim(im(roi));
+                cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/orient_blk_sze),trunc(c/orient_blk_sze))];
+                cv::Mat mulResult(subim.size(),subim.type());
+                cv::multiply(subim,subFilter,mulResult);
+                //std::cout << "debug: c" << c << std::endl;
+                if(cv::sum(mulResult)[0] > 0)
                 {
-                    if(r > maxsze && r < im.rows - maxsze
-                            && c > maxsze && c < im.cols - maxsze)
-                    {
-                        int filterindex = freqindex[(int)round(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze)*100)];
-
-                        int s = sze[filterindex];
-
-                        cv::Rect roi(c-s,r-s,2*s,2*s);
-                        cv::Mat subim(im(roi));
-                        cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/orient_blk_sze),trunc(c/orient_blk_sze))];
-                        cv::Mat mulResult(subim.size(),subim.type());
-                        cv::multiply(subim,subFilter,mulResult);                       
-                        //std::cout << "debug: c" << c << std::endl;
-                        if(cv::sum(mulResult)[0] > 0)
-                        {
-                            newim.at<float>(r,c) = 255;
-                        }
-                    }
+                    newim.at<float>(r,c) = 255;
                 }
+
             }
-            else
-            {
-                newim.at<float>(r,c) = 255;
-            }
+            //}
+            //else
+            // {
+            //     newim.at<float>(r,c) = 255;
+            // }
         }
     }
 
@@ -663,7 +644,7 @@ cv::Mat get_roi(const cv::Mat &src,int blk_sze, float threshold_ratio)
 
 Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 {
-    //pipeline de preprocesamiento   
+    //pipeline de preprocesamiento
 
     //convertimos a 32f
     cv::Mat src_32f;
@@ -675,7 +656,7 @@ Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     //normalizacion para eliminar ruido e imperfecciones
     qDebug() << "Preprocesser: normalizando para mejorar contraste...";
     cv::Mat norm_req = normalize2(src_32f,norm_req_mean,norm_req_var);
-   // cv::normalize(norm_req,norm_req,0,255,cv::NORM_MINMAX);
+    // cv::normalize(norm_req,norm_req,0,255,cv::NORM_MINMAX);
 
     //obtencion del roi
     qDebug() << "Preprocesser: calculando roi...";
@@ -687,7 +668,6 @@ Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     //norm_m0d1 = normalize2(norm_req,0,1);
     norm_m0d1 = normalize(norm_req,0,1,mask);
 
-    cv::Mat filtered;
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
     cv::Mat angles = calculate_angles(norm_req,blk_orient,1,1,mask);
@@ -697,6 +677,7 @@ Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     cv::Mat freq = ridge_freq(norm_req,angles,blk_freq,5,15,mask,true);
     //filtro
     qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
+    cv::Mat filtered;
     filtered = filter_ridge(norm_m0d1,angles,freq,mask,gabor_kx,gabor_ky);
 
 
