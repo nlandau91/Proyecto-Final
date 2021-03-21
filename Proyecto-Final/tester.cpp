@@ -112,7 +112,7 @@ double Tester::test_far(const Database &db)
                     testeos++;
                     bool aceptado = false;
                     //aceptado = comparator.compare(genuine_template, impostor_template);
-                    double score = comparator.compare(genuine_template, impostor_template,false);
+                    double score = comparator.compare(genuine_template, impostor_template,true);
                     scores.push_back(score);
                     aceptado = comparator.match_threshold < score;
                     if(aceptado)
@@ -162,7 +162,7 @@ double Tester::test_frr(const Database &db)
                 testeos++;
                 bool aceptado = false;
                 //aceptado = comparator.compare(fp_template_1, fp_template_2);
-                double score = comparator.compare(fp_template_1, fp_template_2,false);
+                double score = comparator.compare(fp_template_1, fp_template_2,true);
                 scores.push_back(score);
                 aceptado = comparator.match_threshold < score;
                 if(aceptado)
