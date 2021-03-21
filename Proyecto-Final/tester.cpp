@@ -77,8 +77,11 @@ void score_stats(std::vector<double> scores)
     std::sort(scores.begin(),scores.end());
     int low_pcnt_index = std::trunc((scores.size() - 1) * 0.05);
     double low_pcnt = scores[low_pcnt_index];
+    int high_pcnt_index = std::trunc((scores.size() - 1) * 0.95);
+    double high_pcnt = scores[high_pcnt_index];
     std::cout << "Score stats: mean    = " << mean << std::endl;
     std::cout << "Score stats: low 5%  = " << low_pcnt << std::endl;
+    std::cout << "Score stats: high 5%  = " << high_pcnt << std::endl;
 }
 
 //funcion que calcula el false accept rate
