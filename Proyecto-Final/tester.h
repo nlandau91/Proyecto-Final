@@ -13,8 +13,8 @@ class Tester
 public:
     Tester();
     void load_database(Database &db);
-    double test_far(const Database &db);
-    double test_frr(const Database &db);
+    std::vector<double> test_far(const Database &db);
+    std::vector<double> test_frr(const Database &db);
 
     Preprocesser preprocesser;
     Analyzer analyzer;

@@ -115,6 +115,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="btn_fullTest">
+          <property name="text">
+           <string>Full Test</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btn_db">
           <property name="text">
            <string>Reload DB</string>

@@ -45,6 +45,8 @@ private slots:
 
     void on_btn_db_clicked();
 
+    void on_btn_fullTest_clicked();
+
 private:
     Ui::MainWindow *ui;
     OutputWindow *output_window;

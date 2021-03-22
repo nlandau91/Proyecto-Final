@@ -1,4 +1,5 @@
 #include "tester.h"
+#include "stats.h"
 
 #include <QDebug>
 
@@ -64,36 +65,11 @@ void Tester::load_database(fp::Database &db)
     }
 }
 
-void score_stats(std::vector<double> scores)
-{
-    //calculamos la media
-    double mean = 0;
-    int n = 0;
-    for(double score : scores)
-    {
-        if(score>0 && score < 1)
-        {
-            mean += score;
-            n++;
-        }
-    }
-    mean = mean/n;
-    //calculamos el 1% bajo y alto
-    std::sort(scores.begin(),scores.end());
-    int low_pcnt_index = std::trunc((scores.size() - 1) * 0.05);
-    double low_pcnt = scores[low_pcnt_index];
-    int high_pcnt_index = std::trunc((scores.size() - 1) * 0.95);
-    double high_pcnt = scores[high_pcnt_index];
-    std::cout << "Score stats: mean    = " << mean << std::endl;
-    std::cout << "Score stats: low 5%  = " << low_pcnt << std::endl;
-    std::cout << "Score stats: high 5%  = " << high_pcnt << std::endl;
-}
-
 //funcion que calcula el false accept rate
 //genuine_id indica el id genuino de la huella, no se testea contra este id
-double Tester::test_far(const Database &db)
+std::vector<double> Tester::test_far(const Database &db)
 {
-    double far = 0.0;
+    //double far = 0.0;
     //obtenemos una lista con los id de la base de datos
     std::vector<QString> lista_id;
     lista_id = db.obtener_lista_id();
@@ -130,22 +106,19 @@ double Tester::test_far(const Database &db)
                     }
                 }
             }
-            std::cout << "Test: " << (double)testeos / (2022.40) << "%" << std::endl;
-            std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
-            score_stats(scores);
+            std::cout << "Test far: " << (double)testeos / (2022.40) << "%" << std::endl;
+            //std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
         }
-
     }
-
-    far = (double)aceptados/(double)testeos;
-    return far;
+    //far = (double)aceptados/(double)testeos;
+    return scores;
 }
 
 //funcion que calcula el false reject rate
 //genuine_id indica el id genuino de la huella, se testea solo contra este id
-double Tester::test_frr(const Database &db)
+std::vector<double> Tester::test_frr(const Database &db)
 {
-    double frr = 0.0;
+    //double frr = 0.0;
     //obtenemos una lista con los id de la base de datos
     std::vector<QString> lista_id;
     lista_id = db.obtener_lista_id();
@@ -177,13 +150,11 @@ double Tester::test_frr(const Database &db)
                 {
                     rechazados++;
                 }
-            }
-            std::cout << "Test: " << (double)testeos / (28.80) << "%" << std::endl;
-            std::cout << "Test: " << 100.0*(double)rechazados/(double)testeos << "% frr" << std::endl;
+            }           
         }
-
+        std::cout << "Test frr: " << (double)testeos / (28.80) << "%" << std::endl;
+        //std::cout << "Test: " << 100.0*(double)rechazados/(double)testeos << "% frr" << std::endl;
     }
-    score_stats(scores);
-    frr = (double)aceptados/(double)testeos;
-    return frr;
+    //frr = (double)aceptados/(double)testeos;
+    return scores;
 }

@@ -27,6 +27,7 @@ SOURCES += \
     mainwindow.cpp \
     outputwindow.cpp \
     preprocesser.cpp \
+    stats.cpp \
     tester.cpp \
     triangle.cpp \
     utils.cpp
@@ -43,6 +44,7 @@ HEADERS += \
     mainwindow.h \
     outputwindow.h \
     preprocesser.h \
+    stats.h \
     tester.h \
     triangle.h \
     utils.h

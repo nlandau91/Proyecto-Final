@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "configdialog.h"
+#include "stats.h"
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -292,15 +293,29 @@ void MainWindow::on_btn_demo_clicked()
 
 void MainWindow::on_btn_far_clicked()
 {
-        tester.test_far(db);
+    std::vector<double> scores = tester.test_far(db);
+    std::cout << "Score stats: mean    = " << fp::get_mean(scores,true) << std::endl;
+    std::cout << "Score stats: low 5%  = " << fp::get_low_pcnt(scores,0.05) << std::endl;
+    std::cout << "Score stats: high 5%  = " << fp::get_high_pcnt(scores,0.05) << std::endl;
 }
 
 void MainWindow::on_btn_frr_clicked()
 {
-    tester.test_frr(db);
+    std::vector<double> scores = tester.test_frr(db);
+    std::cout << "Score stats: mean    = " << fp::get_mean(scores,true) << std::endl;
+    std::cout << "Score stats: low 5%  = " << fp::get_low_pcnt(scores,0.05) << std::endl;
+    std::cout << "Score stats: high 5%  = " << fp::get_high_pcnt(scores,0.05) << std::endl;
 }
 
 void MainWindow::on_btn_db_clicked()
 {
     tester.load_database(db);
+}
+
+void MainWindow::on_btn_fullTest_clicked()
+{
+    std::vector<double> scores_frr = tester.test_frr(db);
+    std::vector<double> scores_far = tester.test_far(db);
+
+
 }
