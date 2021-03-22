@@ -224,7 +224,7 @@ std::vector<cv::DMatch> remove_outliers_median(const std::vector<cv::DMatch> &ma
     return good_matches;
 }
 
-std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &query_keypoints, const std::vector<cv::KeyPoint> &train_keypoints, const std::vector<cv::DMatch> &matches, double ransac_threshold = 3.0, int max_iter = 2000, double conf = 0.995)
+std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &query_keypoints, const std::vector<cv::KeyPoint> &train_keypoints, const std::vector<cv::DMatch> &matches, int transform = HOMOGRAPHY, double ransac_threshold = 3.0, int max_iter = 2000, double conf = 0.995)
 {
     std::vector<cv::DMatch> good_matches;
     std::vector<cv::Point> src_points;
@@ -236,9 +236,26 @@ std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &
     }
     //usamos findHomography o estimateAffine2D? ambos usan ransac
     cv::Mat mask;
-    //cv::findHomography(src_points,dst_points,cv::RANSAC, ransac_threshold ,mask, max_iter, conf);
-    //cv::estimateAffine2D(src_points,dst_points,mask,cv::RANSAC,ransac_threshold,max_iter, conf);
-    cv::estimateAffinePartial2D(src_points,dst_points,mask,cv::RANSAC,ransac_threshold,max_iter,conf);
+    switch(transform)
+    {
+    case HOMOGRAPHY:
+    {
+        cv::findHomography(src_points,dst_points,cv::RANSAC, ransac_threshold ,mask, max_iter, conf);
+        break;
+    }
+    case AFFINE:
+    {
+        cv::estimateAffine2D(src_points,dst_points,mask,cv::RANSAC,ransac_threshold,max_iter, conf);
+        break;
+    }
+    case PARTIALAFFINE:
+    {
+        cv::estimateAffinePartial2D(src_points,dst_points,mask,cv::RANSAC,ransac_threshold,max_iter,conf);
+        break;
+    }
+    }
+
+
 
     for(int i = 0; i < mask.rows; i++)
     {
@@ -304,9 +321,7 @@ double Comparator::compare(const FingerprintTemplate &query_template, const Fing
         if(inliners_median.size() > 4)
         {
             std::vector<cv::DMatch> inliners_ransac;
-            int ransac_iter = 500;
-            double ransac_conf = 0.995;
-            inliners_ransac = remove_outliers_ransac(query_template.keypoints,train_template.keypoints,inliners_median,ransac_threshold,ransac_iter,ransac_conf);
+            inliners_ransac = remove_outliers_ransac(query_template.keypoints,train_template.keypoints,inliners_median,ransac_transform, ransac_threshold,ransac_iter,ransac_conf);
             std::vector<cv::DMatch> good_matches = inliners_ransac;
 
             //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae

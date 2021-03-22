@@ -68,11 +68,16 @@ void score_stats(std::vector<double> scores)
 {
     //calculamos la media
     double mean = 0;
+    int n = 0;
     for(double score : scores)
     {
-        mean += score;
+        if(score>0 && score < 1)
+        {
+            mean += score;
+            n++;
+        }
     }
-    mean = mean/scores.size();
+    mean = mean/n;
     //calculamos el 1% bajo y alto
     std::sort(scores.begin(),scores.end());
     int low_pcnt_index = std::trunc((scores.size() - 1) * 0.05);
@@ -161,7 +166,6 @@ double Tester::test_frr(const Database &db)
                 FingerprintTemplate fp_template_2 = genuine_templates[j];
                 testeos++;
                 bool aceptado = false;
-                //aceptado = comparator.compare(fp_template_1, fp_template_2);
                 double score = comparator.compare(fp_template_1, fp_template_2,true);
                 scores.push_back(score);
                 aceptado = comparator.match_threshold < score;

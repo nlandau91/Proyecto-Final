@@ -217,6 +217,10 @@ void MainWindow::load_settings()
     comparator.triangle_max_edge = app_settings.triangle_max_edge;
     comparator.triangle_min_edge = app_settings.triangle_min_edge;
     comparator.ransac_threshold = app_settings.ransac_threshold;
+    comparator.median_threshold = 2.5;
+    comparator.ransac_conf = 0.99;
+    comparator.ransac_iter = 2000;
+    comparator.ransac_transform = fp::HOMOGRAPHY;
 
     tester.preprocesser = preprocesser;
     tester.analyzer = analyzer;

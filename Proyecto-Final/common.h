@@ -36,6 +36,9 @@ enum Params
     DELTA,
     WHORL,
     ARCH,
+    HOMOGRAPHY,
+    PARTIALAFFINE,
+    AFFINE,
 
 };
 

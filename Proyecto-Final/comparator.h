@@ -43,6 +43,11 @@ public:
     double triangle_max_edge;
     double triangle_min_edge;
     double ransac_threshold;
+    int ransac_iter;
+    double ransac_conf;
+    int ransac_transform;
+    double median_threshold;
+
 };
 }
 #endif // COMPARATOR_H
