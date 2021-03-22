@@ -260,13 +260,19 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     // y genero un arreglo de frecuencias unicas
     cv::Mat valid_points;
     cv::findNonZero(freq,valid_points);
+    std::vector<int> validr;
+    std::vector<int> validc;
+    std::vector<float> ind;
     std::vector<float> unfreq;
     for(int i = 0; i < valid_points.rows;i++)
     {
-        cv::Point p = valid_points.at<cv::Point>(i);
-        float new_freq = round(100.0*freq.at<float>(p))/100.0;
-        freq.at<float>(p) = new_freq;
-
+        int row = valid_points.at<cv::Point>(i).y;
+        int col = valid_points.at<cv::Point>(i).x;
+        validr.push_back(row);
+        validc.push_back(col);
+        float new_freq = static_cast<float>(round(100.0*freq.at<float>(row,col))/100.0);
+        freq.at<float>(row,col) = new_freq;
+        ind.push_back(new_freq);
         if(std::find(unfreq.begin(),unfreq.end(),new_freq) == unfreq.end())
         {
             unfreq.push_back(new_freq);
@@ -278,16 +284,17 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     // corresponds to
 
     float freqindex[101] = {0};
+    //std::vector<float> freqindex((int)round(unfreq.back()*100.0),0);
     for(size_t i = 0; i < unfreq.size(); i++)
     {
         float f = unfreq[i];
-        int index = (int)round(f*100);
+        int index = (int)round(f*100.0);
         freqindex[index] = i;
     }
     //Generate filters corresponding to these distinct frequencies and
     //orientations in 'angleInc' increments.
     cv::Mat filter[unfreq.size()][180/angleInc];
-    uchar sze[unfreq.size()];
+    int sze[unfreq.size()];
     for(size_t i = 0; i < unfreq.size(); i++)
     {
         float sigmax = (1.0/unfreq[i]) * kx;
@@ -356,52 +363,65 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     }
     //Find indices of matrix points greater than maxsze from the image boundary
     int maxsze = sze[0];
-
+    std::vector<int> finalind;
+    for(long unsigned i = 0; i < validr.size();i++)
+    {
+        if(validr[i] > maxsze && validr[i] < im.rows - maxsze
+                && validc[i] > maxsze && validc[i] < im.cols - maxsze)
+        {
+            finalind.push_back(i);
+        }
+    }
     // Finally do the filtering
     cv::Mat newim = cv::Mat::zeros(im.size(),im.type());
     //std::cout << "debug: " << 1 << std::endl;
-    for(int r = maxsze + 1; r < im.rows - maxsze; r++)
+    for(int r = maxsze + 1; r < im.rows - maxsze - 1; r++)
     {
         //std::cout << "debug: r" << r << std::endl;
-        for(int c = maxsze + 1; c < im.cols - maxsze; c++)
+        for(int c = maxsze + 1; c < im.cols - maxsze - 1; c++)
         {
-            //if(mask.empty() || (!mask.empty() && mask.at<uchar>(r,c) > 0))
-            //{
             //vemos si este punto es valido
             if(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze) > 0)
             {
-                int filterindex = freqindex[(int)trunc(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze)*100)];
+                //int filterindex = freqindex[(int)trunc(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze)*100)];
+                float f = freq.at<float>(r/freq_blk_sze,c/freq_blk_sze);
+
+                int filterindex = freqindex[(int)round(f*100.0)];
+                // std::cout << filterindex << std::endl;
                 int s = sze[filterindex];
-                cv::Rect roi(c-s,r-s,2*s,2*s);
-                cv::Mat subim(im(roi));
-                cv::Mat subFilter = filter[filterindex][orientindex.at<uchar>(trunc(r/orient_blk_sze),trunc(c/orient_blk_sze))];
+                //std::cout << s << std::endl;
+
+
+                int orientind = orientindex.at<uchar>(r/orient_blk_sze,c/orient_blk_sze);
+                //std::cout << orientind << std::endl;
+                cv::Mat subFilter = filter[filterindex][orientind];
+
+                cv::Rect roi(c-s, r-s, subFilter.cols, subFilter.rows);
+
+                cv::Mat subim = im(roi);
+
                 cv::Mat mulResult(subim.size(),subim.type());
+
                 cv::multiply(subim,subFilter,mulResult);
-                //std::cout << "debug: c" << c << std::endl;
+
                 if(cv::sum(mulResult)[0] > 0)
                 {
                     newim.at<float>(r,c) = 255;
                 }
-
             }
-            //}
-            //else
-            // {
-            //     newim.at<float>(r,c) = 255;
-            // }
         }
     }
-
+    //std::cout <<"borde" << std::endl;
     //ponemos un borde
     newim.rowRange(0, im.rows).colRange(0, maxsze + 1).setTo(255);
     newim.rowRange(0, maxsze + 1).colRange(0, im.cols).setTo(255);
     newim.rowRange(im.rows - maxsze, im.rows).colRange(0, im.cols).setTo(255);
-    newim.rowRange(0, im.rows).colRange(im.cols - 2 * (maxsze + 1) - 1, im.cols).setTo(255);
+    newim.rowRange(0, im.rows).colRange(im.cols - 1 * (maxsze + 1) - 1, im.cols).setTo(255);
     //actualizamos la mascara
     mask.rowRange(0, mask.rows).colRange(0, maxsze + 1).setTo(0);
     mask.rowRange(0, maxsze + 1).colRange(0, mask.cols).setTo(0);
     mask.rowRange(mask.rows - maxsze, mask.rows).colRange(0, mask.cols).setTo(0);
-    mask.rowRange(0, mask.rows).colRange(mask.cols - 2 * (maxsze + 1) - 1, mask.cols).setTo(0);
+    mask.rowRange(0, mask.rows).colRange(mask.cols - 1 * (maxsze + 1) - 1, mask.cols).setTo(0);
     return newim;
 }
 

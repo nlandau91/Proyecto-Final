@@ -236,9 +236,9 @@ std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &
     }
     //usamos findHomography o estimateAffine2D? ambos usan ransac
     cv::Mat mask;
-    cv::findHomography(src_points,dst_points,cv::RANSAC, ransac_threshold ,mask, max_iter, conf);
+    //cv::findHomography(src_points,dst_points,cv::RANSAC, ransac_threshold ,mask, max_iter, conf);
     //cv::estimateAffine2D(src_points,dst_points,mask,cv::RANSAC,ransac_threshold,max_iter, conf);
-    //cv::estimateAffinePartial2D(src_points,dst_points,mask,cv::RANSAC,ransac_threshold,max_iter,conf);
+    cv::estimateAffinePartial2D(src_points,dst_points,mask,cv::RANSAC,ransac_threshold,max_iter,conf);
 
     for(int i = 0; i < mask.rows; i++)
     {
