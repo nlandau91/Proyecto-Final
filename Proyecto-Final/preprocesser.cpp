@@ -134,6 +134,7 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY)
  */
 cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orientsmoothsigma = 3, cv::Mat mask = cv::Mat())
 {
+    Q_UNUSED(mask);
     int x = im.cols;
     int y = im.rows;
 
@@ -366,22 +367,27 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     }
     //Find indices of matrix points greater than maxsze from the image boundary
     int maxsze = sze[0];
-    std::vector<int> finalind;
-    for(long unsigned i = 0; i < validr.size();i++)
-    {
-        if(validr[i] > maxsze && validr[i] < im.rows - maxsze
-                && validc[i] > maxsze && validc[i] < im.cols - maxsze)
-        {
-            finalind.push_back(i);
-        }
-    }
+//    std::vector<int> finalind;
+//    for(long unsigned i = 0; i < validr.size();i++)
+//    {
+//        if(validr[i] > maxsze && validr[i] < im.rows - maxsze
+//                && validc[i] > maxsze && validc[i] < im.cols - maxsze)
+//        {
+//            finalind.push_back(i);
+//        }
+//    }
     // Finally do the filtering
     cv::Mat newim = cv::Mat::zeros(im.size(),im.type());
+    //calculamos un padding en caso que el tamaño de la imagen no sea divisible por el tamaño de bloque
     int padding = maxsze > orient_blk_sze ? maxsze : orient_blk_sze;
     padding = padding > freq_blk_sze ? padding : freq_blk_sze;
-    for(int r = maxsze; r < im.rows - padding; r++)
+    int min_r = maxsze;
+    int max_r = im.rows - padding;
+    int min_c = maxsze;
+    int max_c = im.cols - padding;
+    for(int r = min_r; r < max_r; r++)
     {
-        for(int c = maxsze; c < im.cols - padding; c++)
+        for(int c = min_c; c < max_c; c++)
         {
             float f = freq.at<float>(r/freq_blk_sze,c/freq_blk_sze);
             //vemos si este punto es valido
@@ -400,19 +406,24 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
                     newim.at<float>(r,c) = 255;
                 }
             }
+            else
+            {
+                //newim.at<float>(r,c) = 255;
+            }
         }
     }
     //std::cout <<"borde" << std::endl;
     //ponemos un borde
-    newim.rowRange(0, im.rows).colRange(0, maxsze + 1).setTo(255);
-    newim.rowRange(0, maxsze + 1).colRange(0, im.cols).setTo(255);
-    newim.rowRange(im.rows - maxsze, im.rows).colRange(0, im.cols).setTo(255);
-    newim.rowRange(0, im.rows).colRange(im.cols - 1 * (maxsze + 1) - 1, im.cols).setTo(255);
+    newim.rowRange(0, im.rows).colRange(0, min_c).setTo(255);
+    newim.rowRange(0, min_r).colRange(0, im.cols).setTo(255);
+    newim.rowRange(max_r, im.rows).colRange(0, im.cols).setTo(255);
+    newim.rowRange(0, im.rows).colRange(max_c, im.cols).setTo(255);
+
     //actualizamos la mascara
-    mask.rowRange(0, mask.rows).colRange(0, maxsze + 1).setTo(0);
-    mask.rowRange(0, maxsze + 1).colRange(0, mask.cols).setTo(0);
-    mask.rowRange(mask.rows - maxsze, mask.rows).colRange(0, mask.cols).setTo(0);
-    mask.rowRange(0, mask.rows).colRange(mask.cols - 1 * (maxsze + 1) - 1, mask.cols).setTo(0);
+    mask.rowRange(0, mask.rows).colRange(0, min_c).setTo(0);
+    mask.rowRange(0, min_r).colRange(0, mask.cols).setTo(0);
+    mask.rowRange(max_r, mask.rows).colRange(0, mask.cols).setTo(0);
+    mask.rowRange(0, mask.rows).colRange(max_c, mask.cols).setTo(0);
     return newim;
 }
 
