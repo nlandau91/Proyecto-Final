@@ -312,26 +312,63 @@ void MainWindow::on_btn_db_clicked()
     tester.load_database(db);
 }
 
+//realiza el test y guarda los resultados
+void perform_test(fp::Tester &tester, const fp::Database &db, double med_th, int ran_trans, double ran_th, double ran_conf, int ran_iter)
+{
+    tester.comparator.median_threshold = med_th;
+    tester.comparator.ransac_transform = ran_trans;
+    tester.comparator.ransac_conf = ran_th;
+    tester.comparator.ransac_conf = ran_conf;
+    tester.comparator.ransac_iter = ran_iter;
+    std::vector<double> scores_genuine = tester.test_frr(db);
+    double gen_mean = fp::get_mean(scores_genuine,true);
+    double gen_lo = fp::get_low_pcnt(scores_genuine,0.05);
+    std::vector<double> scores_impostor = tester.test_far(db);
+    double imp_mean = fp::get_mean(scores_impostor,true);
+    double imp_hi = fp::get_low_pcnt(scores_impostor,0.05);
+    double eer = fp::get_eer(scores_genuine,scores_impostor);
+
+
+    QString filename = "Data.csv";
+    QFile file(filename);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Append))
+    {
+        QTextStream stream(&file);
+
+        stream << "ransac_trans"<<"\t"
+               << "ransac_thresh"<<"\t"
+               << "ransac_iter"<<"\t"
+               << "ransac_conf"<<"\t"
+               << "median_rat"<<"\t"
+               << "sing_compare"<<"\t"
+               << "gen_mean"<<"\t"
+               << "gen_low"<<"\t"
+               << "imp_mean"<<"\t"
+               << "imp_high"<<"\t"
+               << "eer" << "\n"
+               << ran_trans <<"\t"
+               << ran_th<<"\t"
+               << ran_iter<<"\t"
+               << ran_conf<<"\t"
+               << med_th<<"\t"
+               << true<<"\t"
+               << gen_mean<<"\t"
+               << gen_lo<<"\t"
+               << imp_mean<<"\t"
+               << imp_hi<<"\t"
+               << eer << "\n";
+    }
+}
+
 void MainWindow::on_btn_fullTest_clicked()
 {
 
-    comparator.ransac_threshold = 3.0;
-    comparator.median_threshold = 2.5;
-    comparator.ransac_conf = 0.995;
-    comparator.ransac_iter = 2000;
-    comparator.ransac_transform = fp::HOMOGRAPHY;
-
-
-    std::vector<double> scores_frr = tester.test_frr(db);
-    std::cout << "frr: mean = " << fp::get_mean(scores_frr,true) << std::endl;
-    std::cout << "frr: l 5% = " << fp::get_low_pcnt(scores_frr,0.05) << std::endl;
-    std::cout << "frr: h 5% = " << fp::get_high_pcnt(scores_frr,0.05) << std::endl;
-    std::vector<double> scores_far = tester.test_far(db);
-    std::cout << "far: mean = " << fp::get_mean(scores_far,true) << std::endl;
-    std::cout << "far: l 5% = " << fp::get_low_pcnt(scores_far,0.05) << std::endl;
-    std::cout << "far: h 5% = " << fp::get_high_pcnt(scores_far,0.05) << std::endl;
-
-    std::cout << "eer = " << fp::get_eer(scores_frr,scores_far) << std::endl;
-
+    //    comparator.ransac_threshold = 3.0;
+    //    comparator.median_threshold = 2.5;
+    //    comparator.ransac_conf = 0.995;
+    //    comparator.ransac_iter = 300;
+    //    comparator.ransac_transform = fp::PARTIALAFFINE;
+    //    tester.comparator = comparator;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.995,50);
 
 }

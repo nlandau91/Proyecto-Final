@@ -31,7 +31,7 @@ double get_high_pcnt(std::vector<double> scores, double thresh)
 {
     //calculamos el % alto
     std::sort(scores.begin(),scores.end());
-    int high_pcnt_index = std::trunc((scores.size() - 1) * 1-thresh);
+    int high_pcnt_index = std::trunc((scores.size() - 1) * (1-thresh));
     double high_pcnt = scores[high_pcnt_index];
     return high_pcnt;
 }
