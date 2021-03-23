@@ -100,13 +100,16 @@ void MainWindow::on_btn_verificar_clicked()
                 ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
                 //solo admitimos huellas que sean suficientemente buenas
                 bool verificado = false;
-                if(fp_template.descriptors.rows > 0)
+                if(fp_template.descriptors.rows > 4)
                 {
                     //obtenemos la lista de descriptores de la base de datos
                     QString id = ui->lineEdit->text();
                     std::vector<fp::FingerprintTemplate> train_templates = db.recuperar_template(id);
                     //verificamos
-                    verificado = comparator.compare(fp_template, train_templates);
+                    for(fp::FingerprintTemplate train_template : train_templates)
+                    {
+                        verificado = verificado || comparator.match_threshold <= comparator.compare(fp_template, train_template);
+                    }
                 }
                 if(verificado)
                 {
@@ -151,28 +154,42 @@ void MainWindow::on_btn_identificar_clicked()
                 }
                 ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
                 //solo admitimos huellas que sean suficientemente buenas
-                if(fp_template.descriptors.rows > 0)
+                if(fp_template.descriptors.rows > 4)
                 {
                     //obtenemos una lista con los id de la base de datos
                     std::vector<QString> lista_id;
                     lista_id = db.obtener_lista_id();
-                    //para cada id, realizamos la verificacion
-                    bool verificado = false;
+                    //buscamos el mejor score entre todos los id
+                    double best_score = 0.0;
+                    QString best_id;
                     for(const QString &id : lista_id)
                     {
                         //obtenemos la lista de descriptores de la base de datos
                         std::vector<fp::FingerprintTemplate> train_templates = db.recuperar_template(id);
-                        //verificamos
+                        //buscamos el mejor score entre los templates del id
+                        double id_score = 0.0;
 
                         for(const fp::FingerprintTemplate &fp : train_templates)
                         {
-                            verificado = verificado || comparator.compare(fp_template, fp);
-
+                            double template_score = comparator.compare(fp_template, fp);
+                            if(template_score > id_score)
+                            {
+                                id_score = template_score;
+                            }
                         }
-                        if(verificado)
+                        if(id_score > best_score)
                         {
-                            std::cout << "Match encontrado: " << id.toStdString() << std::endl;
+                            best_score = id_score;
+                            best_id = id;
                         }
+                        if(comparator.match_threshold <= id_score)
+                        {
+                            std::cout << "Posible match id: " << id.toStdString() << " score: " << id_score << std::endl;
+                        }
+                    }
+                    if(comparator.match_threshold <= best_score)
+                    {
+                        std::cout << "Mejor match id: " << best_id.toStdString() << " score: " << best_score << std::endl;
                     }
                 }
                 else

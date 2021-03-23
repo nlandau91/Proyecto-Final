@@ -93,7 +93,7 @@ std::vector<double> Tester::test_far(const Database &db)
                     testeos++;
                     //bool aceptado = false;
                     //aceptado = comparator.compare(genuine_template, impostor_template);
-                    double score = comparator.compare(genuine_template, impostor_template,true);
+                    double score = comparator.compare(genuine_template, impostor_template);
                     scores.push_back(score);
 //                    aceptado = comparator.match_threshold < score;
 //                    if(aceptado)
@@ -139,7 +139,7 @@ std::vector<double> Tester::test_frr(const Database &db)
                 FingerprintTemplate fp_template_2 = genuine_templates[j];
                 testeos++;
                 //bool aceptado = false;
-                double score = comparator.compare(fp_template_1, fp_template_2,true);
+                double score = comparator.compare(fp_template_1, fp_template_2);
                 scores.push_back(score);
 //                aceptado = comparator.match_threshold < score;
 //                if(aceptado)

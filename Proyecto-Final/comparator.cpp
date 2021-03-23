@@ -267,20 +267,13 @@ std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &
     return good_matches;
 }
 
-bool Comparator::compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template)
-{
-
-    double score = compare(query_template, train_template, false);
-    return score > match_threshold;
-}
-
-double Comparator::compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template, bool flag)
+double Comparator::compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template)
 {
     qDebug() << "Comparator: Realizando matches entre keypoints...";
     double score = 0.0;
     //testing: si son distinta singularidad, devolvemos falso de una
     //solo se hace si ambas tienen singularidad
-    if(flag && !compare_singularities(query_template.singularities, train_template.singularities))
+    if(sing_compare && !compare_singularities(query_template.singularities, train_template.singularities))
     {
         return score;
     }
@@ -335,19 +328,3 @@ double Comparator::compare(const FingerprintTemplate &query_template, const Fing
 
     return score;
 }
-
-bool Comparator::compare(const FingerprintTemplate &query_template, const std::vector<FingerprintTemplate> &train_templates)
-{
-    bool comparation = false;
-    //qDebug() << "Comparator: obteniendo matches...";
-    int i = 0;
-    for(const FingerprintTemplate &train_template : train_templates)
-    {
-        comparation = comparation || compare(query_template, train_template);
-        i++;
-    }
-
-    return comparation;
-}
-
-
