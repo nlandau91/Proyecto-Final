@@ -353,7 +353,7 @@ void perform_test(fp::Tester &tester, const fp::Database &db, double med_th, int
     double eer = fp::get_eer(scores_genuine,scores_impostor);
 
 
-    QString filename = "Data.csv";
+    QString filename = "../tests/Data.csv";
     QFile file(filename);
     if (file.open(QIODevice::WriteOnly | QIODevice::Append))
     {
