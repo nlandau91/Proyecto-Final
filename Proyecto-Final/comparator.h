@@ -14,25 +14,20 @@ public:
     Comparator();
 
     /*!
-     * \brief compare compara dos template de huellas dactilares y decide si se corresponden al mismo dedo
+     * \brief compare compara dos template de huellas dactilares y devuelve un score de similitud
      * \param query_template template de consulta
      * \param train_template template de verificacion
-     * \param threshold umbral de decicion. Mientras mas alto, mas estricto. Rango [0,1]
-     * \return true si se considera que los templates corresponden a un mismo dedo
+     * \return score de similitud, entre 0.0 y 1.0
      */
-    bool compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template);
-
-    double compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template, bool flag);
+    double compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template);
 
     /*!
-     * \brief compare compara un template con una lista de templates y decide si se corresponde a alguno de ellos
-     * La idea es que la lista de templates contenga distintos templates del mismo dedo
-     * \param query_template template de consulta
-     * \param train_templates templates de verificacion
-     * \return true si se considera que el template de consulta corresponde a alguno de la lista
+     * \brief compare
+     * \param query_template
+     * \param train_templates
+     * \return
      */
-    bool compare(const FingerprintTemplate &query_template, const std::vector<FingerprintTemplate> &train_templates);
-
+    double compare(const FingerprintTemplate &query_template, const std::vector<FingerprintTemplate> &train_templates);
 
 
     int matcher_method;
@@ -47,6 +42,7 @@ public:
     double ransac_conf;
     int ransac_transform;
     double median_threshold;
+    bool sing_compare;
 
 };
 }
