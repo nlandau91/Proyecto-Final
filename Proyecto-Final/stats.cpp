@@ -45,16 +45,18 @@ double get_eer(std::vector<double> scores1, std::vector<double> scores2)
     double min_dif = 1.0;
     for(int i = 0; i <= 100; i++)
     {
-        double pcnt = (double)i / 100.0;
-        int index1 = std::trunc((scores1.size() -1) * pcnt);
-        int index2 = std::trunc((scores2.size() -1) * pcnt);
+        double frr_pcnt = (double)i / 100.0;
+        double far_pcnt = 1 - frr_pcnt;
+        int index1 = std::trunc((scores1.size() -1) * frr_pcnt);
+        int index2 = std::trunc((scores2.size() -1) * far_pcnt);
         double val1 = scores1[index1];
         double val2 = scores2[index2];
         double dif = std::abs(val1-val2);
         if(dif < min_dif)
         {
             min_dif = dif;
-            eer = pcnt;
+            //double eer_value = (val1+val2)/2.0;
+            eer = frr_pcnt;
         }
     }
     return eer;

@@ -219,9 +219,9 @@ void MainWindow::load_settings()
     comparator.triangle_min_edge = app_settings.triangle_min_edge;
     comparator.ransac_threshold = app_settings.ransac_threshold;
     comparator.median_threshold = 2.5;
-    comparator.ransac_conf = 0.99;
-    comparator.ransac_iter = 2000;
-    comparator.ransac_transform = fp::HOMOGRAPHY;
+    comparator.ransac_conf = 0.995;
+    comparator.ransac_iter = 300;
+    comparator.ransac_transform = fp::PARTIALAFFINE;
 
     tester.preprocesser = preprocesser;
     tester.analyzer = analyzer;
@@ -314,8 +314,24 @@ void MainWindow::on_btn_db_clicked()
 
 void MainWindow::on_btn_fullTest_clicked()
 {
+
+    comparator.ransac_threshold = 3.0;
+    comparator.median_threshold = 2.5;
+    comparator.ransac_conf = 0.995;
+    comparator.ransac_iter = 300;
+    comparator.ransac_transform = fp::HOMOGRAPHY;
+
+
     std::vector<double> scores_frr = tester.test_frr(db);
+    std::cout << "frr: mean = " << fp::get_mean(scores_frr,true) << std::endl;
+    std::cout << "frr: l 5% = " << fp::get_low_pcnt(scores_frr,0.05) << std::endl;
+    std::cout << "frr: h 5% = " << fp::get_high_pcnt(scores_frr,0.05) << std::endl;
     std::vector<double> scores_far = tester.test_far(db);
+    std::cout << "far: mean = " << fp::get_mean(scores_far,true) << std::endl;
+    std::cout << "far: l 5% = " << fp::get_low_pcnt(scores_far,0.05) << std::endl;
+    std::cout << "far: h 5% = " << fp::get_high_pcnt(scores_far,0.05) << std::endl;
+
+    std::cout << "eer = " << fp::get_eer(scores_frr,scores_far) << std::endl;
 
 
 }
