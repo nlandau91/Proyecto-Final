@@ -163,7 +163,7 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orien
     cv::filter2D(Gyy_, Gyy_, -1, kernel, cv::Point(-1, -1), 0,
                  cv::BORDER_DEFAULT);
 
-    cv::Mat result = cv::Mat::zeros(static_cast<int>(trunc(y/W)),static_cast<int>(trunc(x/W)),CV_32FC1);
+    cv::Mat result = cv::Mat::zeros(y/W,x/W,CV_64FC1);
     cv::Mat sines = cv::Mat::zeros(result.size(),CV_64FC1);
     cv::Mat cosines = cv::Mat::zeros(result.size(),CV_64FC1);
     for(int j = 0; j < y - W; j+=W)
@@ -182,17 +182,17 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orien
                 const float *Gxy_l = Gxy_.ptr<float>(l);
                 for(int k = i; k < std::min(i + W, x - 1); k++)
                 {
-                    if(mask.empty() || (!mask.empty() && mask.at<uchar>(l,k) > 0))
-                    {
-                        int Gxx = std::round(Gxx_l[k]);
-                        int Gyy = std::round(Gyy_l[k]);
-                        int Gxy = std::round(Gxy_l[k]);
+                    //if(mask.empty() || (!mask.empty() && mask.at<uchar>(l,k) > 0))
+                    //{
+                    int Gxx = std::round(Gxx_l[k]);
+                    int Gyy = std::round(Gyy_l[k]);
+                    int Gxy = std::round(Gxy_l[k]);
 
-                        int j1 = Gxy;;
-                        nominator += j1;
-                        int j2 = Gxx - Gyy;
-                        denominator += j2;
-                    }
+                    int j1 = Gxy;;
+                    nominator += j1;
+                    int j2 = Gxx - Gyy;
+                    denominator += j2;
+                    //}
                 }
             }
             cv::Point p(i/W,j/W);
@@ -218,12 +218,13 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orien
     {
         const double *sines_i = sines.ptr<double>(i);
         const double *cosines_i = cosines.ptr<double>(i);
-        auto *result_i = result.ptr<float>(i);
+        auto *result_i = result.ptr<double>(i);
         for(int j = 0; j < sines.cols; j++)
         {
-            result_i[j] = static_cast<float>((M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2.0);
+            result_i[j] = (M_PI + std::atan2(sines_i[j], cosines_i[j])) / 2.0;
         }
     }
+    result.convertTo(result,CV_32FC1);
     return result;
 
 }
@@ -343,22 +344,24 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     // Convert orientation matrix values from radians to an index value
     // that corresponds to round(degrees/angleInc)
     int maxOrientIndex = round(180/angleInc);
-    cv::Mat orientindex(orient.size(),CV_8UC1);
+    cv::Mat orientindex = cv::Mat::zeros(orient.size(),CV_8UC1);
     for(int r = 0; r < orientindex.rows; r++)
     {
         for(int c = 0; c < orientindex.cols; c++)
         {
             int orientpix = static_cast<int>(
-                        std::round(orient.at<float>(r,c) / M_PI * 180 / angleInc));
+                        std::round(orient.at<float>(r,c) / M_PI * 180.0 / angleInc));
 
-            if (orientpix < 0) {
+            if (orientpix < 0)
+            {
                 orientpix += maxOrientIndex;
             }
-            if (orientpix >= maxOrientIndex) {
+            if (orientpix >= maxOrientIndex)
+            {
                 orientpix -= maxOrientIndex;
             }
 
-            orientindex.at<uchar>(r,c) = orientpix;
+            orientindex.at<uchar>(r,c) = static_cast<uchar>(orientpix);
         }
     }
     //Find indices of matrix points greater than maxsze from the image boundary
@@ -374,36 +377,24 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     }
     // Finally do the filtering
     cv::Mat newim = cv::Mat::zeros(im.size(),im.type());
-    //std::cout << "debug: " << 1 << std::endl;
-    for(int r = maxsze + 1; r < im.rows - maxsze - 1; r++)
+    int padding = maxsze > orient_blk_sze ? maxsze : orient_blk_sze;
+    padding = padding > freq_blk_sze ? padding : freq_blk_sze;
+    for(int r = maxsze; r < im.rows - padding; r++)
     {
-        //std::cout << "debug: r" << r << std::endl;
-        for(int c = maxsze + 1; c < im.cols - maxsze - 1; c++)
+        for(int c = maxsze; c < im.cols - padding; c++)
         {
+            float f = freq.at<float>(r/freq_blk_sze,c/freq_blk_sze);
             //vemos si este punto es valido
-            if(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze) > 0)
+            if(f > 0)
             {
-                //int filterindex = freqindex[(int)trunc(freq.at<float>(r/freq_blk_sze,c/freq_blk_sze)*100)];
-                float f = freq.at<float>(r/freq_blk_sze,c/freq_blk_sze);
-
                 int filterindex = freqindex[(int)round(f*100.0)];
-                // std::cout << filterindex << std::endl;
                 int s = sze[filterindex];
-                //std::cout << s << std::endl;
-
-
-                int orientind = orientindex.at<uchar>(r/orient_blk_sze,c/orient_blk_sze);
-                //std::cout << orientind << std::endl;
+                unsigned int orientind = orientindex.at<uchar>(r/orient_blk_sze,c/orient_blk_sze);
                 cv::Mat subFilter = filter[filterindex][orientind];
-
                 cv::Rect roi(c-s, r-s, subFilter.cols, subFilter.rows);
-
                 cv::Mat subim = im(roi);
-
                 cv::Mat mulResult(subim.size(),subim.type());
-
                 cv::multiply(subim,subFilter,mulResult);
-
                 if(cv::sum(mulResult)[0] > 0)
                 {
                     newim.at<float>(r,c) = 255;

@@ -318,7 +318,7 @@ void MainWindow::on_btn_fullTest_clicked()
     comparator.ransac_threshold = 3.0;
     comparator.median_threshold = 2.5;
     comparator.ransac_conf = 0.995;
-    comparator.ransac_iter = 300;
+    comparator.ransac_iter = 2000;
     comparator.ransac_transform = fp::HOMOGRAPHY;
 
 
