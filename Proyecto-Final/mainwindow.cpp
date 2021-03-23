@@ -3,6 +3,7 @@
 #include "configdialog.h"
 #include "stats.h"
 #include <QDebug>
+#include <QElapsedTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -320,10 +321,16 @@ void perform_test(fp::Tester &tester, const fp::Database &db, double med_th, int
     tester.comparator.ransac_conf = ran_th;
     tester.comparator.ransac_conf = ran_conf;
     tester.comparator.ransac_iter = ran_iter;
+
+    QElapsedTimer timer;
+    timer.start();
     std::vector<double> scores_genuine = tester.test_frr(db);
+    std::vector<double> scores_impostor = tester.test_far(db);
+    double ms = timer.elapsed();
+
+
     double gen_mean = fp::get_mean(scores_genuine,true);
     double gen_lo = fp::get_low_pcnt(scores_genuine,0.05);
-    std::vector<double> scores_impostor = tester.test_far(db);
     double imp_mean = fp::get_mean(scores_impostor,true);
     double imp_hi = fp::get_low_pcnt(scores_impostor,0.05);
     double eer = fp::get_eer(scores_genuine,scores_impostor);
@@ -345,7 +352,8 @@ void perform_test(fp::Tester &tester, const fp::Database &db, double med_th, int
                << "gen_low"<<"\t"
                << "imp_mean"<<"\t"
                << "imp_high"<<"\t"
-               << "eer" << "\n"
+               << "eer" << "\t"
+               << "time(ms)" << "\n"
                << ran_trans <<"\t"
                << ran_th<<"\t"
                << ran_iter<<"\t"
@@ -356,19 +364,128 @@ void perform_test(fp::Tester &tester, const fp::Database &db, double med_th, int
                << gen_lo<<"\t"
                << imp_mean<<"\t"
                << imp_hi<<"\t"
-               << eer << "\n";
+               << eer << "\t"
+               << ms << "\n";
     }
 }
 
 void MainWindow::on_btn_fullTest_clicked()
 {
 
-    //    comparator.ransac_threshold = 3.0;
-    //    comparator.median_threshold = 2.5;
-    //    comparator.ransac_conf = 0.995;
-    //    comparator.ransac_iter = 300;
-    //    comparator.ransac_transform = fp::PARTIALAFFINE;
-    //    tester.comparator = comparator;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.995,50);
+    //vamos a realizar muchos tests que quedaran guarados en un .csv
+    int test_number = 0;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,2000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,1000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,500);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,250);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,2000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,1000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,500);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,250);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,2000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,1000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,500);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,250);
+
+
+
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,2000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,1000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,500);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,250);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,2000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,1000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,500);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,250);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,2000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,1000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,500);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,250);
+
+
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,2000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,1000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,500);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,250);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,2000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,1000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,500);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,250);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,2000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,1000);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,500);
+    test_number++;
+    std::cout << "Test number: " << test_number << "..." << std::endl;
+    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,250);
+
 
 }
