@@ -74,7 +74,7 @@ std::vector<double> Tester::test_far(const Database &db)
     std::vector<QString> lista_id;
     lista_id = db.obtener_lista_id();
     //para cada id, realizamos la verificacion
-    //int testeos = 0;
+    int testeos = 0;
     //int aceptados = 0;
     //int rechazados = 0;
     std::vector<double> scores = {0};
@@ -90,7 +90,7 @@ std::vector<double> Tester::test_far(const Database &db)
             {
                 for(fp::FingerprintTemplate impostor_template : impostor_templates)
                 {
-                    //testeos++;
+                    testeos++;
                     //bool aceptado = false;
                     //aceptado = comparator.compare(genuine_template, impostor_template);
                     double score = comparator.compare(genuine_template, impostor_template,true);
@@ -106,7 +106,7 @@ std::vector<double> Tester::test_far(const Database &db)
 //                    }
                 }
             }
-            //std::cout << "Test far: " << (double)testeos / (2022.40) << "%" << std::endl;
+            std::cout << "Test far: " << (double)testeos / (2022.40) << "%" << std::endl;
             //std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
         }
     }
@@ -123,7 +123,7 @@ std::vector<double> Tester::test_frr(const Database &db)
     std::vector<QString> lista_id;
     lista_id = db.obtener_lista_id();
     //para cada id, realizamos la verificacion
-//    int testeos = 0;
+   int testeos = 0;
 //    int aceptados = 0;
 //    int rechazados = 0;
 
@@ -137,7 +137,7 @@ std::vector<double> Tester::test_frr(const Database &db)
             for(size_t j = i; j < genuine_templates.size(); j++)
             {
                 FingerprintTemplate fp_template_2 = genuine_templates[j];
-                //testeos++;
+                testeos++;
                 //bool aceptado = false;
                 double score = comparator.compare(fp_template_1, fp_template_2,true);
                 scores.push_back(score);
@@ -152,7 +152,7 @@ std::vector<double> Tester::test_frr(const Database &db)
 //                }
             }           
         }
-        //std::cout << "Test frr: " << (double)testeos / (28.80) << "%" << std::endl;
+        std::cout << "Test frr: " << (double)testeos / (28.80) << "%" << std::endl;
         //std::cout << "Test: " << 100.0*(double)rechazados/(double)testeos << "% frr" << std::endl;
     }
     //frr = (double)aceptados/(double)testeos;
