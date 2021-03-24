@@ -2,6 +2,7 @@
 #include "stats.h"
 
 #include <QDebug>
+#include <QElapsedTimer>
 
 using namespace fp;
 Tester::Tester()
@@ -95,15 +96,15 @@ std::vector<double> Tester::test_far(const Database &db)
                     //aceptado = comparator.compare(genuine_template, impostor_template);
                     double score = comparator.compare(genuine_template, impostor_template);
                     scores.push_back(score);
-//                    aceptado = comparator.match_threshold < score;
-//                    if(aceptado)
-//                    {
-//                        aceptados++;
-//                    }
-//                    else
-//                    {
-//                        rechazados++;
-//                    }
+                    //                    aceptado = comparator.match_threshold < score;
+                    //                    if(aceptado)
+                    //                    {
+                    //                        aceptados++;
+                    //                    }
+                    //                    else
+                    //                    {
+                    //                        rechazados++;
+                    //                    }
                 }
             }
             std::cout << "Test far: " << (double)testeos / (2022.40) << "%" << std::endl;
@@ -123,9 +124,9 @@ std::vector<double> Tester::test_frr(const Database &db)
     std::vector<QString> lista_id;
     lista_id = db.obtener_lista_id();
     //para cada id, realizamos la verificacion
-   int testeos = 0;
-//    int aceptados = 0;
-//    int rechazados = 0;
+    int testeos = 0;
+    //    int aceptados = 0;
+    //    int rechazados = 0;
 
     std::vector<double> scores = {0};
     for(const QString &genuine_id : lista_id)
@@ -141,20 +142,84 @@ std::vector<double> Tester::test_frr(const Database &db)
                 //bool aceptado = false;
                 double score = comparator.compare(fp_template_1, fp_template_2);
                 scores.push_back(score);
-//                aceptado = comparator.match_threshold < score;
-//                if(aceptado)
-//                {
-//                    aceptados++;
-//                }
-//                else
-//                {
-//                    rechazados++;
-//                }
-            }           
+                //                aceptado = comparator.match_threshold < score;
+                //                if(aceptado)
+                //                {
+                //                    aceptados++;
+                //                }
+                //                else
+                //                {
+                //                    rechazados++;
+                //                }
+            }
         }
         std::cout << "Test frr: " << (double)testeos / (28.80) << "%" << std::endl;
         //std::cout << "Test: " << 100.0*(double)rechazados/(double)testeos << "% frr" << std::endl;
     }
     //frr = (double)aceptados/(double)testeos;
     return scores;
+}
+
+void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, Database &db)
+{
+    int test_number = 0;
+    for(const std::vector<double> &params : params_list)
+    {
+        std::cout << "Test number: " << test_number << "..." << std::endl;
+        double med_th = params[0];
+        int ran_trans = (int)params[1];
+        double ran_th = params[2];
+        double ran_conf = params[3];
+        int ran_iter = (int)params[4];;
+        comparator.median_threshold = med_th;
+        comparator.ransac_transform = ran_trans;
+        comparator.ransac_threshold = ran_th;
+        comparator.ransac_conf = ran_conf;
+        comparator.ransac_iter = ran_iter;
+
+        QElapsedTimer timer;
+        timer.start();
+        std::vector<double> scores_genuine = test_frr(db);
+        std::vector<double> scores_impostor = test_far(db);
+        double ms = timer.elapsed();
+
+        double gen_mean = fp::get_mean(scores_genuine,true);
+        double gen_lo = fp::get_low_pcnt(scores_genuine,0.05);
+        double imp_mean = fp::get_mean(scores_impostor,true);
+        double imp_hi = fp::get_low_pcnt(scores_impostor,0.05);
+        double eer = fp::get_eer(scores_genuine,scores_impostor);
+
+        QString filename = "../tests/Data.csv";
+        QFile file(filename);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Append))
+        {
+            QTextStream stream(&file);
+
+            stream << "ransac_trans"<<"\t"
+                   << "ransac_thresh"<<"\t"
+                   << "ransac_iter"<<"\t"
+                   << "ransac_conf"<<"\t"
+                   << "median_rat"<<"\t"
+                   << "sing_compare"<<"\t"
+                   << "gen_mean"<<"\t"
+                   << "gen_low"<<"\t"
+                   << "imp_mean"<<"\t"
+                   << "imp_high"<<"\t"
+                   << "eer" << "\t"
+                   << "time(ms)" << "\n"
+                   << ran_trans <<"\t"
+                   << ran_th<<"\t"
+                   << ran_iter<<"\t"
+                   << ran_conf<<"\t"
+                   << med_th<<"\t"
+                   << true<<"\t"
+                   << gen_mean<<"\t"
+                   << gen_lo<<"\t"
+                   << imp_mean<<"\t"
+                   << imp_hi<<"\t"
+                   << eer << "\t"
+                   << ms << "\n";
+        }
+        test_number++;
+    }
 }

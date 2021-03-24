@@ -36,7 +36,7 @@ public:
 private:
 
     /*!
-     * \brief find_l1_features
+     * \brief find_l1_features encuentra los puntos singulares de una huella
      * \param pre
      * \return
      */

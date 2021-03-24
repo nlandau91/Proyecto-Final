@@ -23,8 +23,18 @@ public:
      */
     void init();
 
+    /*!
+     * \brief ingresar_template ingresa un template a la base de datos
+     * \param fp_template template a ingresar
+     * \param id id asociado al template
+     */
     void ingresar_template(const FingerprintTemplate &fp_template, const QString &id) const;
 
+    /*!
+     * \brief recuperar_template devuelve los templates asociados al id
+     * \param id por el cual se buscaran templates
+     * \return lista de templates asociados al id
+     */
     std::vector<FingerprintTemplate> recuperar_template(const QString &id) const;
 
     /*!

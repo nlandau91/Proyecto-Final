@@ -335,7 +335,7 @@ void perform_test(fp::Tester &tester, const fp::Database &db, double med_th, int
 {
     tester.comparator.median_threshold = med_th;
     tester.comparator.ransac_transform = ran_trans;
-    tester.comparator.ransac_conf = ran_th;
+    tester.comparator.ransac_threshold = ran_th;
     tester.comparator.ransac_conf = ran_conf;
     tester.comparator.ransac_iter = ran_iter;
 
@@ -388,121 +388,169 @@ void perform_test(fp::Tester &tester, const fp::Database &db, double med_th, int
 
 void MainWindow::on_btn_fullTest_clicked()
 {
+    //creamos la lista de parametros
+    std::vector<std::vector<double>> params_list;
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,2000}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,1000}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,500}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,250}));
 
-    //vamos a realizar muchos tests que quedaran guarados en un .csv
-    int test_number = 0;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,2000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,1000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,500);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,250);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,2000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,1000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,500);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,250);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,2000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,1000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,500);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,250);
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,2000}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,1000}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,500}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,250}));
+
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,2000}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,1000}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,500}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,250}));
+
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,2000}));
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,1000}));
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,500}));
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,250}));
+
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,2000}));
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,1000}));
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,500}));
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,250}));
+
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,2000}));
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,1000}));
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,500}));
+    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,250}));
+
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,2000}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,1000}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,500}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,250}));
+
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,2000}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,1000}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,500}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,250}));
+
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,2000}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,1000}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,500}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,250}));
+
+    tester.perform_tests(params_list, db);
+
+//    //vamos a realizar muchos tests que quedaran guarados en un .csv
+//    int test_number = 0;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,2000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,1000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,500);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,3.0,0.99,250);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,2000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,1000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,500);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,2.0,0.99,250);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,2000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,1000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,500);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::HOMOGRAPHY,4.0,0.99,250);
 
 
 
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,2000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,1000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,500);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,250);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,2000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,1000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,500);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,250);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,2000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,1000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,500);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,250);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,2000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,1000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,500);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,3.0,0.99,250);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,2000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,1000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,500);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,2.0,0.99,250);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,2000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,1000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,500);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::AFFINE,4.0,0.99,250);
 
 
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,2000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,1000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,500);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,250);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,2000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,1000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,500);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,250);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,2000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,1000);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,500);
-    test_number++;
-    std::cout << "Test number: " << test_number << "..." << std::endl;
-    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,250);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,2000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,1000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,500);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,3.0,0.99,250);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,2000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,1000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,500);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,2.0,0.99,250);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,2000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,1000);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,500);
+//    test_number++;
+//    std::cout << "Test number: " << test_number << "..." << std::endl;
+//    perform_test(tester,db,2.5,fp::PARTIALAFFINE,4.0,0.99,250);
 
 
 }

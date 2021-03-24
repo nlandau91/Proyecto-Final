@@ -9,7 +9,7 @@ Analyzer::Analyzer()
 
 }
 
-//buscamos los keypoints en una imagen con el detector de esquinas de Harris
+//buscamos los keypoints en una imagen con el detector de keypoints de Harris
 //la imagen ya debe estar preprocesada
 std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_threshold = -1)
 {
@@ -39,6 +39,8 @@ std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_t
     return keypoints;
 }
 
+//buscamos los keypoints en una imagen con el detector de keypoints de Shi Tomasi (GFTT)
+//la imagen ya debe estar preprocesada
 std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src, int keypoint_threshold)
 {
     cv::Mat kp_positions;
@@ -54,6 +56,8 @@ std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src, int keypoint_threshol
     return keypoints;
 }
 
+//buscamos los keypoints en una imagen con el detector de keypoints SIFT
+//la imagen ya debe estar preprocesada
 std::vector<cv::KeyPoint> kp_sift(const cv::Mat &src)
 {
 
@@ -64,6 +68,8 @@ std::vector<cv::KeyPoint> kp_sift(const cv::Mat &src)
     return keypoints;
 }
 
+//buscamos los keypoints en una imagen con el detector de keypoints SURF
+//la imagen ya debe estar preprocesada
 std::vector<cv::KeyPoint> kp_surf(const cv::Mat &src, int hessian_threshold = 20000)
 {
 
@@ -339,6 +345,7 @@ int poincare_index_en(int row, int col, const cv::Mat orient, float tol)
 
 }
 
+//calcula puntos singulares aplicando el metodo de poincare
 std::vector<cv::KeyPoint> poincare(const cv::Mat orient, const cv::Mat mask, float tol)
 {
 

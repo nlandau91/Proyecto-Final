@@ -42,6 +42,7 @@ cv::Mat morphological_thinning(const cv::Mat &src)
 
 }
 
+//normaliza una imagen para que tenga media y var elegidos
 cv::Mat normalize(const cv::Mat &src, float req_mean, float req_var, const cv::Mat &mask = cv::Mat())
 {
     cv::Scalar mean,stddev;
@@ -106,7 +107,7 @@ cv::Mat normalize2(const cv::Mat &src, float m0, float v0, const cv::Mat &mask =
     return normalized_im;
 }
 
-//This is equivalent to Matlab's 'meshgrid' function
+//calcula una grilla, equivalente a meshgrid de matlab
 void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY)
 {
     std::vector<int> t;
@@ -238,7 +239,7 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orien
  * \param mask mascara de la imagen, sera modificada para incluir el borde a partir del procesamiento en bloques
  * \param kx controla el ancho de banda del filtro
  * \param ky controla la selectividad rotacional del filtro
- * \return
+ * \return imagen filtrada
  */
 cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv::Mat &frequency_map, cv::Mat &mask, float kx = 0.5, float ky = 0.5)
 {
