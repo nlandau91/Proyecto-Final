@@ -331,60 +331,60 @@ void MainWindow::on_btn_db_clicked()
 }
 
 //realiza el test y guarda los resultados
-void perform_test(fp::Tester &tester, const fp::Database &db, double med_th, int ran_trans, double ran_th, double ran_conf, int ran_iter)
-{
-    tester.comparator.median_threshold = med_th;
-    tester.comparator.ransac_transform = ran_trans;
-    tester.comparator.ransac_threshold = ran_th;
-    tester.comparator.ransac_conf = ran_conf;
-    tester.comparator.ransac_iter = ran_iter;
+//void perform_test(fp::Tester &tester, const fp::Database &db, double med_th, int ran_trans, double ran_th, double ran_conf, int ran_iter)
+//{
+//    tester.comparator.median_threshold = med_th;
+//    tester.comparator.ransac_transform = ran_trans;
+//    tester.comparator.ransac_threshold = ran_th;
+//    tester.comparator.ransac_conf = ran_conf;
+//    tester.comparator.ransac_iter = ran_iter;
 
-    QElapsedTimer timer;
-    timer.start();
-    std::vector<double> scores_genuine = tester.test_frr(db);
-    std::vector<double> scores_impostor = tester.test_far(db);
-    double ms = timer.elapsed();
-
-
-    double gen_mean = fp::get_mean(scores_genuine,true);
-    double gen_lo = fp::get_low_pcnt(scores_genuine,0.05);
-    double imp_mean = fp::get_mean(scores_impostor,true);
-    double imp_hi = fp::get_low_pcnt(scores_impostor,0.05);
-    double eer = fp::get_eer(scores_genuine,scores_impostor);
+//    QElapsedTimer timer;
+//    timer.start();
+//    std::vector<double> scores_genuine = tester.test_frr(db);
+//    std::vector<double> scores_impostor = tester.test_far(db);
+//    double ms = timer.elapsed();
 
 
-    QString filename = "../tests/Data.csv";
-    QFile file(filename);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Append))
-    {
-        QTextStream stream(&file);
+//    double gen_mean = fp::get_mean(scores_genuine,true);
+//    double gen_lo = fp::get_low_pcnt(scores_genuine,0.05);
+//    double imp_mean = fp::get_mean(scores_impostor,true);
+//    double imp_hi = fp::get_low_pcnt(scores_impostor,0.05);
+//    double eer = fp::get_eer(scores_genuine,scores_impostor);
 
-        stream << "ransac_trans"<<"\t"
-               << "ransac_thresh"<<"\t"
-               << "ransac_iter"<<"\t"
-               << "ransac_conf"<<"\t"
-               << "median_rat"<<"\t"
-               << "sing_compare"<<"\t"
-               << "gen_mean"<<"\t"
-               << "gen_low"<<"\t"
-               << "imp_mean"<<"\t"
-               << "imp_high"<<"\t"
-               << "eer" << "\t"
-               << "time(ms)" << "\n"
-               << ran_trans <<"\t"
-               << ran_th<<"\t"
-               << ran_iter<<"\t"
-               << ran_conf<<"\t"
-               << med_th<<"\t"
-               << true<<"\t"
-               << gen_mean<<"\t"
-               << gen_lo<<"\t"
-               << imp_mean<<"\t"
-               << imp_hi<<"\t"
-               << eer << "\t"
-               << ms << "\n";
-    }
-}
+
+//    QString filename = "../tests/Data.csv";
+//    QFile file(filename);
+//    if (file.open(QIODevice::WriteOnly | QIODevice::Append))
+//    {
+//        QTextStream stream(&file);
+
+//        stream << "ransac_trans"<<"\t"
+//               << "ransac_thresh"<<"\t"
+//               << "ransac_iter"<<"\t"
+//               << "ransac_conf"<<"\t"
+//               << "median_rat"<<"\t"
+//               << "sing_compare"<<"\t"
+//               << "gen_mean"<<"\t"
+//               << "gen_low"<<"\t"
+//               << "imp_mean"<<"\t"
+//               << "imp_high"<<"\t"
+//               << "eer" << "\t"
+//               << "time(ms)" << "\n"
+//               << ran_trans <<"\t"
+//               << ran_th<<"\t"
+//               << ran_iter<<"\t"
+//               << ran_conf<<"\t"
+//               << med_th<<"\t"
+//               << true<<"\t"
+//               << gen_mean<<"\t"
+//               << gen_lo<<"\t"
+//               << imp_mean<<"\t"
+//               << imp_hi<<"\t"
+//               << eer << "\t"
+//               << ms << "\n";
+//    }
+//}
 
 void MainWindow::on_btn_fullTest_clicked()
 {
