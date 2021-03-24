@@ -162,6 +162,27 @@ std::vector<double> Tester::test_frr(const Database &db)
 
 void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, Database &db)
 {
+    QString filename = "../tests/Data.csv";
+    QFile file(filename);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Append))
+    {
+        QTextStream stream(&file);
+
+        stream << "ransac_trans"<<"\t"
+               << "ransac_thresh"<<"\t"
+               << "ransac_iter"<<"\t"
+               << "ransac_conf"<<"\t"
+               << "median_rat"<<"\t"
+               << "sing_compare"<<"\t"
+               << "gen_mean"<<"\t"
+               << "gen_low"<<"\t"
+               << "imp_mean"<<"\t"
+               << "imp_high"<<"\t"
+               << "eer" << "\t"
+               << "time(ms)" << "\n";
+        file.close();
+    }
+
     int test_number = 0;
     for(const std::vector<double> &params : params_list)
     {
@@ -186,28 +207,24 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
         double gen_mean = fp::get_mean(scores_genuine,true);
         double gen_lo = fp::get_low_pcnt(scores_genuine,0.05);
         double imp_mean = fp::get_mean(scores_impostor,true);
-        double imp_hi = fp::get_low_pcnt(scores_impostor,0.05);
+        double imp_hi = fp::get_high_pcnt(scores_impostor,0.05);
         double eer = fp::get_eer(scores_genuine,scores_impostor);
 
-        QString filename = "../tests/Data.csv";
-        QFile file(filename);
+        QString ran_trans_string;
+        if(ran_trans == HOMOGRAPHY)
+            ran_trans_string = "HOMOGRAPHY";
+        if(ran_trans == AFFINE)
+            ran_trans_string = "AFFINE";
+        if(ran_trans == PARTIALAFFINE)
+            ran_trans_string = "PARTIALAFFINE";
+
+        //QString filename = "../tests/Data.csv";
+        //QFile file(filename);
         if (file.open(QIODevice::WriteOnly | QIODevice::Append))
         {
             QTextStream stream(&file);
 
-            stream << "ransac_trans"<<"\t"
-                   << "ransac_thresh"<<"\t"
-                   << "ransac_iter"<<"\t"
-                   << "ransac_conf"<<"\t"
-                   << "median_rat"<<"\t"
-                   << "sing_compare"<<"\t"
-                   << "gen_mean"<<"\t"
-                   << "gen_low"<<"\t"
-                   << "imp_mean"<<"\t"
-                   << "imp_high"<<"\t"
-                   << "eer" << "\t"
-                   << "time(ms)" << "\n"
-                   << ran_trans <<"\t"
+            stream << ran_trans_string <<"\t"
                    << ran_th<<"\t"
                    << ran_iter<<"\t"
                    << ran_conf<<"\t"

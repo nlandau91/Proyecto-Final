@@ -9,6 +9,7 @@
 #include <opencv2/ximgproc.hpp>
 #include <iostream>
 #include <cmath>
+#include <QMetaEnum>
 
 namespace fp
 {
