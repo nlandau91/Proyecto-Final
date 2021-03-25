@@ -178,7 +178,8 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
                << "gen_low"<<"\t"
                << "imp_mean"<<"\t"
                << "imp_high"<<"\t"
-               << "eer" << "\t"
+               << "eer_pcnt" << "\t"
+               << "eer_val" << "\t"
                << "time(ms)" << "\n";
         file.close();
     }
@@ -208,7 +209,9 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
         double gen_lo = fp::get_low_pcnt(scores_genuine,0.05);
         double imp_mean = fp::get_mean(scores_impostor,true);
         double imp_hi = fp::get_high_pcnt(scores_impostor,0.05);
-        double eer = fp::get_eer(scores_genuine,scores_impostor);
+        std::vector<double> eer_res = fp::get_eer(scores_genuine,scores_impostor);
+        double eer_pcnt = eer_res[0];
+        double eer_val = eer_res[1];
 
         QString ran_trans_string;
         if(ran_trans == HOMOGRAPHY)
@@ -218,8 +221,8 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
         if(ran_trans == PARTIALAFFINE)
             ran_trans_string = "PARTIALAFFINE";
 
-        //QString filename = "../tests/Data.csv";
-        //QFile file(filename);
+        QString filename = "../tests/Data.csv";
+        QFile file(filename);
         if (file.open(QIODevice::WriteOnly | QIODevice::Append))
         {
             QTextStream stream(&file);
@@ -234,7 +237,8 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
                    << gen_lo<<"\t"
                    << imp_mean<<"\t"
                    << imp_hi<<"\t"
-                   << eer << "\t"
+                   << eer_pcnt << "\t"
+                   << eer_val << "t"
                    << ms << "\n";
         }
         test_number++;

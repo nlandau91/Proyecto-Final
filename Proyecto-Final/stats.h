@@ -35,9 +35,9 @@ double get_high_pcnt(std::vector<double> scores, double thresh);
  * lo suficiente a los del arreglo 2 avanzando en sentido inverso
  * \param scores1 arreglo de valores 1
  * \param scores2 arreglo de valores 2
- * \return equal error rate calculado
+ * \return vector con el primer valor indicando el eer%, el segundo valor indicando que score se encuentra en ese %
  */
-double get_eer(std::vector<double> scores1, std::vector<double> scores2);
+std::vector<double> get_eer(std::vector<double> scores1, std::vector<double> scores2);
 }
 
 #endif // STATS_H
