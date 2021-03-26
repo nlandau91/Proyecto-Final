@@ -1,6 +1,6 @@
 #include "tester.h"
 #include "stats.h"
-
+#include "omp.h"
 #include <thread>
 #include <QDebug>
 #include <QElapsedTimer>
@@ -74,28 +74,45 @@ std::vector<double> Tester::test_far(const Database &db)
     //obtenemos una lista con los id de la base de datos
     std::vector<QString> lista_id;
     lista_id = db.obtener_lista_id();
+    std::vector<std::vector<fp::FingerprintTemplate>> all_templates;
+    for(const QString &id : lista_id)
+    {
+        std::vector<fp::FingerprintTemplate> templates = db.recuperar_template(id);
+        all_templates.push_back(templates);
+    }
     //para cada id, realizamos la verificacion
     int testeos = 0;
-    std::vector<double> scores = {0};
-    for(size_t i = 0; i < lista_id.size()-1; i++)
+    std::vector<double> scores;
+
+#pragma omp parallel
     {
-        QString genuine_id = lista_id[i];
-        std::vector<fp::FingerprintTemplate> genuine_templates = db.recuperar_template(genuine_id);
-        for(size_t j = i+1; j < lista_id.size(); j++)
+        std::vector<double> scores_private;
+#pragma omp for
+        for(size_t i = 0; i < all_templates.size()-1; i++)
         {
-            QString impostor_id = lista_id[j];
-            std::vector<fp::FingerprintTemplate> impostor_templates = db.recuperar_template(impostor_id);
-            for(fp::FingerprintTemplate genuine_template : genuine_templates)
+            std::vector<fp::FingerprintTemplate> genuine_templates = all_templates[i];
+            for(size_t j = i+1; j < all_templates.size(); j++)
             {
-                for(fp::FingerprintTemplate impostor_template : impostor_templates)
+                int n = 0;
+                std::vector<fp::FingerprintTemplate> impostor_templates = all_templates[j];
+                for(fp::FingerprintTemplate genuine_template : genuine_templates)
                 {
-                    testeos++;
-                    double score = comparator.compare(genuine_template, impostor_template);
-                    scores.push_back(score);
+                    for(fp::FingerprintTemplate impostor_template : impostor_templates)
+                    {
+                        n++;
+                        double score = comparator.compare(genuine_template, impostor_template);
+                        scores_private.push_back(score);
+                    }
+                }
+#pragma omp critical
+                {
+                    testeos += n;
+                    std::cout << "Test far: " << (double)testeos / (2022.40) << "%" << std::endl;
                 }
             }
-            std::cout << "Test far: " << (double)testeos / (2022.40) << "%" << std::endl;
         }
+#pragma omp critical
+        scores.insert(scores.end(),scores_private.begin(),scores_private.end());
     }
     //far = (double)aceptados/(double)testeos;
     return scores;
@@ -111,22 +128,38 @@ std::vector<double> Tester::test_frr(const Database &db)
     //para cada id, realizamos la verificacion
     int testeos = 0;
     std::vector<double> scores = {0};
+    std::vector<std::vector<fp::FingerprintTemplate>> all_templates;
     for(const QString &genuine_id : lista_id)
     {
-        std::vector<fp::FingerprintTemplate> genuine_templates = db.recuperar_template(genuine_id);
-
-        for(size_t i = 0; i < genuine_templates.size(); i++)
+        std::vector<fp::FingerprintTemplate> templates = db.recuperar_template(genuine_id);
+        all_templates.push_back(templates);
+    }
+#pragma omp parallel
+    {
+        std::vector<double> scores_private;
+#pragma omp for
+        for(std::vector<fp::FingerprintTemplate> &genuine_templates : all_templates)
         {
-            FingerprintTemplate fp_template_1 = genuine_templates[i];
-            for(size_t j = i; j < genuine_templates.size(); j++)
+            int n = 0;
+            for(size_t i = 0; i < genuine_templates.size(); i++)
             {
-                FingerprintTemplate fp_template_2 = genuine_templates[j];
-                testeos++;
-                double score = comparator.compare(fp_template_1, fp_template_2);
-                scores.push_back(score);
+                FingerprintTemplate fp_template_1 = genuine_templates[i];
+                for(size_t j = i; j < genuine_templates.size(); j++)
+                {
+                    FingerprintTemplate fp_template_2 = genuine_templates[j];
+                    double score = comparator.compare(fp_template_1, fp_template_2);
+                    scores_private.push_back(score);
+                    n++;
+                }
+            }
+#pragma omp critical
+            {
+                testeos +=n;
+                std::cout << "Test frr: " << (double)testeos / (28.80) << "%" << std::endl;
             }
         }
-        std::cout << "Test frr: " << (double)testeos / (28.80) << "%" << std::endl;
+#pragma omp critical
+        scores.insert(scores.end(),scores_private.begin(),scores_private.end());
     }
     return scores;
 }
