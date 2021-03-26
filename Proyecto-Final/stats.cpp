@@ -38,7 +38,7 @@ double get_high_pcnt(std::vector<double> scores, double thresh)
 
 std::vector<double> get_eer(std::vector<double> scores1, std::vector<double> scores2)
 {
-    std::vector<double> result(2);
+    std::vector<double> result;
     double eer = 1.0;
     //tenemos que ver en que porcentaje de los vectores se cruzan los valores
     std::sort(scores1.begin(),scores1.end());
@@ -61,7 +61,7 @@ std::vector<double> get_eer(std::vector<double> scores1, std::vector<double> sco
         }
     }
     result.push_back(eer);
-    result.push_back(scores1[std::trunc((scores1.size() -1) * eer)]);
+    result.push_back(scores1[(int)std::round((scores1.size() -1) * eer)]);
     return result;
 }
 

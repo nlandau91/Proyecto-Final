@@ -248,9 +248,9 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
                    << imp_mean<<"\t"
                    << imp_hi<<"\t"
                    << eer_pcnt << "\t"
-                   << eer_val << "t"
+                   << eer_val << "\t"
                    << frr << "\t"
-                   << far << "t"
+                   << far << "\t"
                    << ms << "\n";
         }
         test_number++;
