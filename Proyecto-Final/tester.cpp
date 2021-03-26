@@ -1,6 +1,7 @@
 #include "tester.h"
 #include "stats.h"
 
+#include <thread>
 #include <QDebug>
 #include <QElapsedTimer>
 
@@ -70,14 +71,11 @@ void Tester::load_database(fp::Database &db)
 //genuine_id indica el id genuino de la huella, no se testea contra este id
 std::vector<double> Tester::test_far(const Database &db)
 {
-    //double far = 0.0;
     //obtenemos una lista con los id de la base de datos
     std::vector<QString> lista_id;
     lista_id = db.obtener_lista_id();
     //para cada id, realizamos la verificacion
     int testeos = 0;
-    //int aceptados = 0;
-    //int rechazados = 0;
     std::vector<double> scores = {0};
     for(size_t i = 0; i < lista_id.size()-1; i++)
     {
@@ -92,23 +90,11 @@ std::vector<double> Tester::test_far(const Database &db)
                 for(fp::FingerprintTemplate impostor_template : impostor_templates)
                 {
                     testeos++;
-                    //bool aceptado = false;
-                    //aceptado = comparator.compare(genuine_template, impostor_template);
                     double score = comparator.compare(genuine_template, impostor_template);
                     scores.push_back(score);
-                    //                    aceptado = comparator.match_threshold < score;
-                    //                    if(aceptado)
-                    //                    {
-                    //                        aceptados++;
-                    //                    }
-                    //                    else
-                    //                    {
-                    //                        rechazados++;
-                    //                    }
                 }
             }
             std::cout << "Test far: " << (double)testeos / (2022.40) << "%" << std::endl;
-            //std::cout << "Test: " << 100.0*(double)aceptados/(double)testeos << "% far" << std::endl;
         }
     }
     //far = (double)aceptados/(double)testeos;
@@ -119,19 +105,16 @@ std::vector<double> Tester::test_far(const Database &db)
 //genuine_id indica el id genuino de la huella, se testea solo contra este id
 std::vector<double> Tester::test_frr(const Database &db)
 {
-    //double frr = 0.0;
     //obtenemos una lista con los id de la base de datos
     std::vector<QString> lista_id;
     lista_id = db.obtener_lista_id();
     //para cada id, realizamos la verificacion
     int testeos = 0;
-    //    int aceptados = 0;
-    //    int rechazados = 0;
-
     std::vector<double> scores = {0};
     for(const QString &genuine_id : lista_id)
     {
         std::vector<fp::FingerprintTemplate> genuine_templates = db.recuperar_template(genuine_id);
+
         for(size_t i = 0; i < genuine_templates.size(); i++)
         {
             FingerprintTemplate fp_template_1 = genuine_templates[i];
@@ -139,24 +122,12 @@ std::vector<double> Tester::test_frr(const Database &db)
             {
                 FingerprintTemplate fp_template_2 = genuine_templates[j];
                 testeos++;
-                //bool aceptado = false;
                 double score = comparator.compare(fp_template_1, fp_template_2);
                 scores.push_back(score);
-                //                aceptado = comparator.match_threshold < score;
-                //                if(aceptado)
-                //                {
-                //                    aceptados++;
-                //                }
-                //                else
-                //                {
-                //                    rechazados++;
-                //                }
             }
         }
         std::cout << "Test frr: " << (double)testeos / (28.80) << "%" << std::endl;
-        //std::cout << "Test: " << 100.0*(double)rechazados/(double)testeos << "% frr" << std::endl;
     }
-    //frr = (double)aceptados/(double)testeos;
     return scores;
 }
 
@@ -180,6 +151,8 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
                << "imp_high"<<"\t"
                << "eer_pcnt" << "\t"
                << "eer_val" << "\t"
+               << "frr" << "\t"
+               << "far" << "\t"
                << "time(ms)" << "\n";
         file.close();
     }
@@ -192,12 +165,14 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
         int ran_trans = (int)params[1];
         double ran_th = params[2];
         double ran_conf = params[3];
-        int ran_iter = (int)params[4];;
+        int ran_iter = (int)params[4];
+        int match_threshold = params[5];
         comparator.median_threshold = med_th;
         comparator.ransac_transform = ran_trans;
         comparator.ransac_threshold = ran_th;
         comparator.ransac_conf = ran_conf;
         comparator.ransac_iter = ran_iter;
+        comparator.match_threshold = match_threshold;
 
         QElapsedTimer timer;
         timer.start();
@@ -212,6 +187,8 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
         std::vector<double> eer_res = fp::get_eer(scores_genuine,scores_impostor);
         double eer_pcnt = eer_res[0];
         double eer_val = eer_res[1];
+        double frr = get_frr(scores_genuine,match_threshold);
+        double far = get_far(scores_impostor,match_threshold);
 
         QString ran_trans_string;
         if(ran_trans == HOMOGRAPHY)
@@ -239,6 +216,8 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
                    << imp_hi<<"\t"
                    << eer_pcnt << "\t"
                    << eer_val << "t"
+                   << frr << "\t"
+                   << far << "t"
                    << ms << "\n";
         }
         test_number++;

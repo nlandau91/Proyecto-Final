@@ -19,7 +19,7 @@ public:
      * \param train_template template de verificacion
      * \return score de similitud, entre 0.0 y 1.0
      */
-    double compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template);
+    double compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template) const;
 
     /*!
      * \brief compare
@@ -27,7 +27,7 @@ public:
      * \param train_templates
      * \return
      */
-    double compare(const FingerprintTemplate &query_template, const std::vector<FingerprintTemplate> &train_templates);
+    double compare(const FingerprintTemplate &query_template, const std::vector<FingerprintTemplate> &train_templates) const;
 
 
     int matcher_method;

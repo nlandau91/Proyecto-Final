@@ -267,7 +267,7 @@ std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &
     return good_matches;
 }
 
-double Comparator::compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template)
+double Comparator::compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template) const
 {
     qDebug() << "Comparator: Realizando matches entre keypoints...";
     double score = 0.0;

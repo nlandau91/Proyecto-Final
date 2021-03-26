@@ -65,4 +65,23 @@ std::vector<double> get_eer(std::vector<double> scores1, std::vector<double> sco
     return result;
 }
 
+double get_far(const std::vector<double> &scores, double threshold)
+{
+    double far = 1.0;
+    int accepted = 0;
+    for(double score : scores)
+    {
+        if(score>= threshold)
+        {
+            accepted++;
+        }
+    }
+    far = (double)accepted / (double)scores.size();
+    return far;
+}
+
+double get_frr(const std::vector<double> &scores, double threshold)
+{
+    return 1.0 - get_far(scores, threshold);
+}
 }

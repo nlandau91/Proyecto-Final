@@ -38,6 +38,22 @@ double get_high_pcnt(std::vector<double> scores, double thresh);
  * \return vector con el primer valor indicando el eer%, el segundo valor indicando que score se encuentra en ese %
  */
 std::vector<double> get_eer(std::vector<double> scores1, std::vector<double> scores2);
+
+/*!
+ * \brief get_frr calcula la tasa de falsos positivos
+ * \param scores arreglo de valores entre 0 y 1
+ * \param threshold valor minimo que debe tener un score para ser considerado positivo
+ * \return tasa de falsos positivos, entre 0 y 1
+ */
+double get_far(const std::vector<double> &scores, double threshold);
+
+/*!
+ * \brief get_far calcula la tasa de falsos negativos
+ * \param scores arreglo de valores entre 0 y 1
+ * \param threshold valor minimo que debe tener un score para ser considerado positivo
+ * \return tasa de falsos negativos, entre 0 y 1
+ */
+double get_frr(const std::vector<double> &scores, double threshold);
 }
 
 #endif // STATS_H
