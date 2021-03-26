@@ -392,89 +392,88 @@ void MainWindow::on_btn_fullTest_clicked()
     std::vector<std::vector<double>> params_list;
 
     //segundo set de tests
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.90,250,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.90,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.90,1000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.90,500,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.90,250,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.90,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.90,1000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.90,500,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.90,250,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.90,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.90,1000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.90,500,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.90,250,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.90,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.90,1000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.90,500,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.90,250,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.90,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.90,1000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.90,500,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.90,250,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.90,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.90,1000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.90,500,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.90,250,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.90,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.90,1000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.90,500,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.90,250,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.90,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.90,1000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.90,500,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.90,250,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.90,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.90,1000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.90,500,0.11}));
-
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.90,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.90,1000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.90,500,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.90,250,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.90,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.90,1000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.90,500,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.90,250,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.90,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.90,1000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.90,500,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.90,250,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.90,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.90,1000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.90,500,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.90,250,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.90,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.90,1000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.90,500,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.90,250,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.90,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.90,1000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.90,500,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.90,250,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.90,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.90,1000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.90,500,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.90,250,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.90,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.90,1000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.90,500,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.90,250,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.90,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.90,1000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.90,500,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.90,250,0.11}));
 
     //primer set de tests
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,2000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,1000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,500,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,250,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,500,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,250,0.11}));
 
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,2000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,1000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,500,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,250,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,500,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,250,0.11}));
 
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,2000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,1000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,500,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,250,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,500,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,250,0.11}));
 
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,2000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,1000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,500,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,250,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,500,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,250,0.11}));
 
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,2000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,1000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,500,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,250,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,500,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,250,0.11}));
 
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,2000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,1000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,500,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,250,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,500,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,250,0.11}));
 
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,2000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,1000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,500,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,250,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,500,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,250,0.11}));
 
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,2000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,1000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,500,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,250,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,500,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,250,0.11}));
 
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,2000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,1000,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,500,0.11}));
-    //    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,250,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,500,0.11}));
+        params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,250,0.11}));
 
     tester.perform_tests(params_list, db);
 }
