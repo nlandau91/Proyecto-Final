@@ -392,6 +392,42 @@ void MainWindow::on_btn_fullTest_clicked()
     std::vector<std::vector<double>> params_list;
 
     //cuarto set de test
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,3.0,0.995,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,3.0,0.995,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,3.0,0.995,500,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,3.0,0.995,250,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,2.0,0.995,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,2.0,0.995,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,2.0,0.995,500,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,2.0,0.995,250,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,4.0,0.995,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,4.0,0.995,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,4.0,0.995,500,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,4.0,0.995,250,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,3.0,0.995,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,3.0,0.995,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,3.0,0.995,500,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,3.0,0.995,250,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,2.0,0.995,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,2.0,0.995,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,2.0,0.995,500,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,2.0,0.995,250,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,4.0,0.995,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,4.0,0.995,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,4.0,0.995,500,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::AFFINE,4.0,0.995,250,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,3.0,0.995,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,3.0,0.995,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,3.0,0.995,500,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,3.0,0.995,250,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,2.0,0.995,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,2.0,0.995,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,2.0,0.995,500,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,2.0,0.995,250,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,4.0,0.995,2000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,4.0,0.995,1000,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,4.0,0.995,500,0.11}));
+        params_list.push_back(std::vector<double>({2.0,fp::HOMOGRAPHY,4.0,0.995,250,0.11}));
 
     //tercer set de tests
 //    params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,3.0,0.99,2000,0.11}));

@@ -199,7 +199,7 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
         double ran_th = params[2];
         double ran_conf = params[3];
         int ran_iter = (int)params[4];
-        int match_threshold = params[5];
+        double match_threshold = params[5];
         comparator.median_threshold = med_th;
         comparator.ransac_transform = ran_trans;
         comparator.ransac_threshold = ran_th;
