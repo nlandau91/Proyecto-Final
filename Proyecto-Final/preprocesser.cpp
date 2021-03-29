@@ -92,7 +92,6 @@ cv::Mat normalize2(const cv::Mat &src, float m0, float v0, const cv::Mat &mask =
 
     cv::Mat normalized_im(src.size(), CV_32FC1);
     src.convertTo(normalized_im, CV_32FC1);
-
     for(int r = 0; r < normalized_im.rows; r++)
     {
         for(int c = 0; c < normalized_im.cols; c++)
@@ -107,6 +106,62 @@ cv::Mat normalize2(const cv::Mat &src, float m0, float v0, const cv::Mat &mask =
     return normalized_im;
 }
 
+cv::Mat normalize_block(const cv::Mat &src)
+{
+    cv::Mat normalized_im = cv::Mat::zeros(src.size(),src.type());
+    double min_v, max_v;
+    cv::minMaxLoc(src,&min_v,&max_v);
+    if(max_v > min_v)
+    {
+        for(int r = 0; r < src.rows; r++)
+        {
+            for(int c = 0; c < src.cols; c++)
+            {
+                float n_val = 0;
+
+                n_val = (255 * (src.at<float>(r,c) - min_v))/(max_v - min_v);
+
+                normalized_im.at<float>(r,c) = n_val;
+            }
+        }
+    }
+    return normalized_im;
+}
+
+//normaliza la imagen en bloque
+cv::Mat normalize3(const cv::Mat &src, int blk_sze = 8)
+{
+    cv::Mat normalized_im(src.size(), CV_32FC1);
+    src.convertTo(normalized_im, CV_32FC1);
+    for(int r = blk_sze/2; r < src.rows - blk_sze/2; r+=blk_sze)
+    {
+        for(int c = blk_sze/2; c < src.cols - blk_sze/2; c+=blk_sze)
+        {
+            cv::Rect blk(c-blk_sze/2,r-blk_sze/2,blk_sze,blk_sze);
+            cv::Mat normalized_block = normalize_block(src(blk));
+            normalized_block.copyTo(normalized_im(blk));
+        }
+    }
+
+    return normalized_im;
+}
+
+cv::Mat normalize4(const cv::Mat &src, float m0, float v0, int blk_sze = 8)
+{
+    cv::Mat normalized_im(src.size(), CV_32FC1);
+    src.convertTo(normalized_im, CV_32FC1);
+    for(int r = blk_sze/2; r < src.rows - blk_sze/2; r+=blk_sze)
+    {
+        for(int c = blk_sze/2; c < src.cols - blk_sze/2; c+=blk_sze)
+        {
+            cv::Rect blk(c-blk_sze/2,r-blk_sze/2,blk_sze,blk_sze);
+            cv::Mat normalized_block = normalize2(src(blk),m0,v0);
+            normalized_block.copyTo(normalized_im(blk));
+        }
+    }
+
+    return normalized_im;
+}
 //calcula una grilla, equivalente a meshgrid de matlab
 void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY)
 {
@@ -133,7 +188,7 @@ void meshgrid(int kernelSize, cv::Mat &meshX, cv::Mat &meshY)
  * \param smooth decide si se realiza un suavizado a los angulos
  * \return mapa con los angulos de la imagen. Tamaño de im/W
  */
-cv::Mat calculate_angles(const cv::Mat &im, int W, int blocksigma = 3, int orientsmoothsigma = 3, cv::Mat mask = cv::Mat())
+cv::Mat calculate_angles(const cv::Mat &im, int W, double blocksigma = 3, double orientsmoothsigma = 3, cv::Mat mask = cv::Mat())
 {
     Q_UNUSED(mask);
     int x = im.cols;
@@ -368,15 +423,15 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     }
     //Find indices of matrix points greater than maxsze from the image boundary
     int maxsze = sze[0];
-//    std::vector<int> finalind;
-//    for(long unsigned i = 0; i < validr.size();i++)
-//    {
-//        if(validr[i] > maxsze && validr[i] < im.rows - maxsze
-//                && validc[i] > maxsze && validc[i] < im.cols - maxsze)
-//        {
-//            finalind.push_back(i);
-//        }
-//    }
+    //    std::vector<int> finalind;
+    //    for(long unsigned i = 0; i < validr.size();i++)
+    //    {
+    //        if(validr[i] > maxsze && validr[i] < im.rows - maxsze
+    //                && validc[i] > maxsze && validc[i] < im.cols - maxsze)
+    //        {
+    //            finalind.push_back(i);
+    //        }
+    //    }
     // Finally do the filtering
     cv::Mat newim = cv::Mat::zeros(im.size(),im.type());
     //calculamos un padding en caso que el tamaño de la imagen no sea divisible por el tamaño de bloque
@@ -668,7 +723,6 @@ cv::Mat get_roi(const cv::Mat &src,int blk_sze, float threshold_ratio)
 Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 {
     //pipeline de preprocesamiento
-
     //convertimos a 32f
     cv::Mat src_32f;
     src.convertTo(src_32f,CV_32FC1);
@@ -678,6 +732,9 @@ Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 
     //normalizacion para eliminar ruido e imperfecciones
     qDebug() << "Preprocesser: normalizando para mejorar contraste...";
+    //cv::Mat norm_req = normalize3(src_32f);
+    //cv::Mat norm_req = normalize4(src_32f,norm_req_mean,norm_req_var);
+    //norm_req = normalize2(norm_req,norm_req_mean,norm_req_var);
     cv::Mat norm_req = normalize2(src_32f,norm_req_mean,norm_req_var);
     // cv::normalize(norm_req,norm_req,0,255,cv::NORM_MINMAX);
 
@@ -693,7 +750,7 @@ Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
-    cv::Mat angles = calculate_angles(norm_req,blk_orient,1,1,mask);
+    cv::Mat angles = calculate_angles(norm_req,blk_orient,1,1.5,mask);
 
     //todo, mapa de frecuencia
     qDebug() << "Preprocesser: calculando mapa de frecuencias...";
