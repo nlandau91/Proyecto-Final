@@ -92,6 +92,7 @@ cv::Mat normalize2(const cv::Mat &src, float m0, float v0, const cv::Mat &mask =
 
     cv::Mat normalized_im(src.size(), CV_32FC1);
     src.convertTo(normalized_im, CV_32FC1);
+#pragma omp parallel for
     for(int r = 0; r < normalized_im.rows; r++)
     {
         for(int c = 0; c < normalized_im.cols; c++)
@@ -133,6 +134,7 @@ cv::Mat normalize3(const cv::Mat &src, int blk_sze = 8)
 {
     cv::Mat normalized_im(src.size(), CV_32FC1);
     src.convertTo(normalized_im, CV_32FC1);
+#pragma omp parallel for
     for(int r = blk_sze/2; r < src.rows - blk_sze/2; r+=blk_sze)
     {
         for(int c = blk_sze/2; c < src.cols - blk_sze/2; c+=blk_sze)
@@ -150,6 +152,7 @@ cv::Mat normalize4(const cv::Mat &src, float m0, float v0, int blk_sze = 8)
 {
     cv::Mat normalized_im(src.size(), CV_32FC1);
     src.convertTo(normalized_im, CV_32FC1);
+#pragma omp parallel for
     for(int r = blk_sze/2; r < src.rows - blk_sze/2; r+=blk_sze)
     {
         for(int c = blk_sze/2; c < src.cols - blk_sze/2; c+=blk_sze)
@@ -223,6 +226,7 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, double blocksigma = 3, double
     cv::Mat result = cv::Mat::zeros(y/W,x/W,CV_64FC1);
     cv::Mat sines = cv::Mat::zeros(result.size(),CV_64FC1);
     cv::Mat cosines = cv::Mat::zeros(result.size(),CV_64FC1);
+#pragma omp parallel for
     for(int j = 0; j < y - W; j+=W)
     {
         auto *sines_j = sines.ptr<double>(j/W);
@@ -271,6 +275,7 @@ cv::Mat calculate_angles(const cv::Mat &im, int W, double blocksigma = 3, double
     cv::filter2D(sines, sines, -1, kernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
 
     //finalmente armamos el mapa de angulos
+#pragma omp parallel for
     for(int i = 0; i < sines.rows; i++)
     {
         const double *sines_i = sines.ptr<double>(i);
@@ -343,6 +348,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
 
     float freqindex[101] = {0};
     //std::vector<float> freqindex((int)round(unfreq.back()*100.0),0);
+#pragma omp parallel for
     for(size_t i = 0; i < unfreq.size(); i++)
     {
         float f = unfreq[i];
@@ -385,6 +391,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
         // image provides orientation *along* the ridges, hence +90
         // degrees, and imrotate requires angles +ve anticlockwise, hence
         // the minus sign.
+#pragma omp parallel for
         for(int o = 0; o < 180/angleInc; o++)
         {
             //qDebug() << o;
@@ -402,6 +409,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     // that corresponds to round(degrees/angleInc)
     int maxOrientIndex = round(180/angleInc);
     cv::Mat orientindex = cv::Mat::zeros(orient.size(),CV_8UC1);
+#pragma omp parallel for
     for(int r = 0; r < orientindex.rows; r++)
     {
         for(int c = 0; c < orientindex.cols; c++)
@@ -441,6 +449,7 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
     int max_r = im.rows - padding;
     int min_c = maxsze;
     int max_c = im.cols - padding;
+#pragma omp parallel for
     for(int r = min_r; r < max_r; r++)
     {
         for(int c = min_c; c < max_c; c++)
@@ -611,8 +620,8 @@ cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &angles, int f_blk_sze = -1,
     int o_blk_sze = im.rows / angles.rows;
     int w = f_blk_sze == -1 ? o_blk_sze : f_blk_sze;
     int l = w * 2;
-    std::vector<float> frequencies;
     cv::Mat freq = cv::Mat::zeros(im.rows/w,im.cols/w,im.type());
+#pragma omp parallel for
     for(int j = w; j < im.rows - w; j+=w)
     {
         for(int i = w; i < im.cols - w; i+=w)
@@ -630,14 +639,13 @@ cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &angles, int f_blk_sze = -1,
                     if(block_freq > 0)
                     {
                         freq.at<float>(j/w,i/w) = block_freq;
-                        frequencies.push_back(block_freq);
                     }
                 }
             }
         }
     }
-    cv::Mat mean_freqs(frequencies);
-    cv::Scalar mean = cv::mean(mean_freqs, mean_freqs > 0);
+
+    cv::Scalar mean = cv::mean(freq,freq>0);
 
     if(average)
     {
@@ -699,6 +707,7 @@ cv::Mat get_roi(const cv::Mat &src,int blk_sze, float threshold_ratio)
     cv::meanStdDev(src,mean,stddev);
     float threshold = stddev[0] * threshold_ratio;
     cv::Mat image_variance = cv::Mat::zeros(src.size(),CV_32FC1);
+#pragma omp parallel for
     for(int i = 0; i < src.cols; i+=blk_sze)
     {
         for(int j = 0; j < src.rows; j+=blk_sze)

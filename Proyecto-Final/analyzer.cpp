@@ -123,22 +123,29 @@ std::vector<cv::KeyPoint> kp_cn(const cv::Mat &src)
 
     //iteramos en toda la imagen menos un borde de 1 pixel por el kernel de 3x3
     //for(int col = 1; col < bin.cols - 1; col++)
-    for(int col = blk_sze/2; col < bin.cols - blk_sze/2; col++)
+#pragma omp parallel
     {
-        //for(int row = 1; row < bin.rows - 1; row++)
-        for(int row = blk_sze/2; row < bin.rows - blk_sze/2; row++)
+        std::vector<cv::KeyPoint> keypoints_private;
+#pragma omp for nowait
+        for(int col = blk_sze/2; col < bin.cols - blk_sze/2; col++)
         {
-            int cn = crosses(bin, col, row);
-            //1 representa terminacion, 3 representa bifurcacion
-            if(cn == 1 || cn == 3)
+            //for(int row = 1; row < bin.rows - 1; row++)
+            for(int row = blk_sze/2; row < bin.rows - blk_sze/2; row++)
             {
-                //armamos el keypoint
-                int tipo = (cn==1 ? ENDING : BIFURCATION);
-                cv::KeyPoint kp(col,row,1);
-                kp.class_id = tipo;
-                keypoints.push_back(kp);
+                int cn = crosses(bin, col, row);
+                //1 representa terminacion, 3 representa bifurcacion
+                if(cn == 1 || cn == 3)
+                {
+                    //armamos el keypoint
+                    int tipo = (cn==1 ? ENDING : BIFURCATION);
+                    cv::KeyPoint kp(col,row,1);
+                    kp.class_id = tipo;
+                    keypoints_private.push_back(kp);
+                }
             }
         }
+#pragma omp critical
+        keypoints.insert(keypoints.end(), keypoints_private.begin(), keypoints_private.end());
     }
     return keypoints;
 }
@@ -353,23 +360,30 @@ std::vector<cv::KeyPoint> poincare(const cv::Mat orient, const cv::Mat mask, flo
     int W = 16/blk_sze;
     std::vector<cv::KeyPoint> keypoints;
 
-    for(int y = W; y < orient.rows - 1 - W; y++)
+#pragma omp parallel
     {
-        for(int x = W ; x < orient.cols - 1 - W; x++)
+        std::vector<cv::KeyPoint> keypoints_private;
+#pragma omp for nowait
+        for(int y = W; y < orient.rows - 1 - W; y++)
         {
-            cv::Mat roi = mask(cv::Rect((x - W)*blk_sze, (y - W)*blk_sze, 2 * W * blk_sze, 2 * W * blk_sze));
-            int valid_blocks = cv::countNonZero(roi);
-            if(valid_blocks == 4*W*W*blk_sze*blk_sze)
+            for(int x = W ; x < orient.cols - 1 - W; x++)
             {
-                float p_index = poincare_index_en(y,x,orient,tol);
-                if(p_index != -1)
+                cv::Mat roi = mask(cv::Rect((x - W)*blk_sze, (y - W)*blk_sze, 2 * W * blk_sze, 2 * W * blk_sze));
+                int valid_blocks = cv::countNonZero(roi);
+                if(valid_blocks == 4*W*W*blk_sze*blk_sze)
                 {
-                    cv::KeyPoint kp((x*blk_sze)+blk_sze/2, (y*blk_sze)+blk_sze/2, 1);
-                    kp.class_id = p_index;
-                    keypoints.push_back(kp);
+                    float p_index = poincare_index_en(y,x,orient,tol);
+                    if(p_index != -1)
+                    {
+                        cv::KeyPoint kp((x*blk_sze)+blk_sze/2, (y*blk_sze)+blk_sze/2, 1);
+                        kp.class_id = p_index;
+                        keypoints_private.push_back(kp);
+                    }
                 }
             }
         }
+#pragma omp critical
+        keypoints.insert(keypoints.end(), keypoints_private.begin(), keypoints_private.end());
     }
     return keypoints;
 }
@@ -445,7 +459,8 @@ FingerprintTemplate Analyzer::analize(const Preprocessed &preprocessed)
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
     //fp_template.descriptors = calcular_descriptors(preprocessed.grayscale, fp_template.keypoints);
-    fp_template.descriptors = calcular_descriptors(preprocessed.original, fp_template.keypoints);
+    //fp_template.descriptors = calcular_descriptors(preprocessed.original, fp_template.keypoints);
+    fp_template.descriptors = calcular_descriptors(preprocessed.result, fp_template.keypoints);
     qDebug() << "Analizer: listo.";
 
     return fp_template;

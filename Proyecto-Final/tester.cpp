@@ -87,7 +87,7 @@ std::vector<double> Tester::test_far(const Database &db)
 #pragma omp parallel
     {
         std::vector<double> scores_private;
-#pragma omp for
+#pragma omp for nowait
         for(size_t i = 0; i < all_templates.size()-1; i++)
         {
             std::vector<fp::FingerprintTemplate> genuine_templates = all_templates[i];
@@ -137,7 +137,7 @@ std::vector<double> Tester::test_frr(const Database &db)
 #pragma omp parallel
     {
         std::vector<double> scores_private;
-#pragma omp for
+#pragma omp for nowait
         for(std::vector<fp::FingerprintTemplate> &genuine_templates : all_templates)
         {
             int n = 0;
@@ -220,8 +220,10 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
         std::vector<double> eer_res = fp::get_eer(scores_genuine,scores_impostor);
         double eer_pcnt = eer_res[0];
         double eer_val = eer_res[1];
-        double frr = get_frr(scores_genuine,match_threshold);
-        double far = get_far(scores_impostor,match_threshold);
+//        double frr = get_frr(scores_genuine,match_threshold);
+//        double far = get_far(scores_impostor,match_threshold);
+        double frr = get_frr(scores_genuine,eer_val);
+        double far = get_far(scores_impostor,eer_val);
 
         QString ran_trans_string;
         if(ran_trans == HOMOGRAPHY)
