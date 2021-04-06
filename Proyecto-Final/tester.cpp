@@ -184,8 +184,8 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
                << "imp_high"<<"\t"
                << "eer_pcnt" << "\t"
                << "eer_val" << "\t"
-               << "frr" << "\t"
-               << "far" << "\t"
+               << "frr(eer)" << "\t"
+               << "far(eer)" << "\t"
                << "time(ms)" << "\n";
         file.close();
     }

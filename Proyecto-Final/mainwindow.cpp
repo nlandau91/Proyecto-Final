@@ -336,21 +336,42 @@ void MainWindow::on_btn_fullTest_clicked()
     //creamos la lista de parametros
     std::vector<std::vector<double>> params_list;
 
-    //septimo set de tests
-    //estos son a partir de los que dieron menor eer (0.11) en los anteriores
+    //octavo set de tests, solo partialaffine, esta vez con res.grayscale
+    params_list.push_back(std::vector<double>({1.5,fp::PARTIALAFFINE,2.0,0.99,2000,0.11}));
+    params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,2.0,0.99,2000,0.11}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,2000,0.11}));
     params_list.push_back(std::vector<double>({1.5,fp::PARTIALAFFINE,3.0,0.99,2000,0.11}));
     params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,3.0,0.99,2000,0.11}));
     params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,2000,0.11}));
     params_list.push_back(std::vector<double>({1.5,fp::PARTIALAFFINE,4.0,0.99,2000,0.11}));
     params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,4.0,0.99,2000,0.11}));
     params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,2000,0.11}));
+    params_list.push_back(std::vector<double>({1.5,fp::PARTIALAFFINE,2.0,0.99,1000,0.11}));
+    params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,2.0,0.99,1000,0.11}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,1000,0.11}));
+    params_list.push_back(std::vector<double>({1.5,fp::PARTIALAFFINE,3.0,0.99,1000,0.11}));
+    params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,3.0,0.99,1000,0.11}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,1000,0.11}));
+    params_list.push_back(std::vector<double>({1.5,fp::PARTIALAFFINE,4.0,0.99,1000,0.11}));
+    params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,4.0,0.99,1000,0.11}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,1000,0.11}));
 
-    params_list.push_back(std::vector<double>({1.5,fp::AFFINE,3.0,0.99,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.0,fp::AFFINE,3.0,0.99,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,2000,0.11}));
-    params_list.push_back(std::vector<double>({1.5,fp::AFFINE,4.0,0.99,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.0,fp::AFFINE,4.0,0.99,2000,0.11}));
-    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,2000,0.11}));
+
+//    //septimo set de tests
+//    //estos son a partir de los que dieron menor eer (0.11) en los anteriores
+//    params_list.push_back(std::vector<double>({1.5,fp::PARTIALAFFINE,3.0,0.99,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,3.0,0.99,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,2000,0.11}));
+//    params_list.push_back(std::vector<double>({1.5,fp::PARTIALAFFINE,4.0,0.99,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.0,fp::PARTIALAFFINE,4.0,0.99,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,2000,0.11}));
+
+//    params_list.push_back(std::vector<double>({1.5,fp::AFFINE,3.0,0.99,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.0,fp::AFFINE,3.0,0.99,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,2000,0.11}));
+//    params_list.push_back(std::vector<double>({1.5,fp::AFFINE,4.0,0.99,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.0,fp::AFFINE,4.0,0.99,2000,0.11}));
+//    params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,2000,0.11}));
 
 
 //    //sexto set de tests

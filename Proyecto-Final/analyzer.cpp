@@ -458,9 +458,9 @@ FingerprintTemplate Analyzer::analize(const Preprocessed &preprocessed)
     fp_template.minutiaes = get_minutiae(preprocessed);
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
-    //fp_template.descriptors = calcular_descriptors(preprocessed.grayscale, fp_template.keypoints);
+    fp_template.descriptors = calcular_descriptors(preprocessed.grayscale, fp_template.keypoints);
     //fp_template.descriptors = calcular_descriptors(preprocessed.original, fp_template.keypoints);
-    fp_template.descriptors = calcular_descriptors(preprocessed.result, fp_template.keypoints);
+    //fp_template.descriptors = calcular_descriptors(preprocessed.result, fp_template.keypoints);
     qDebug() << "Analizer: listo.";
 
     return fp_template;
