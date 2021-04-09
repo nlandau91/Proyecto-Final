@@ -39,94 +39,6 @@ std::vector<cv::DMatch> find_matches(const cv::Mat &query_descriptors, const cv:
     return good_matches;
 }
 
-//std::vector<Edge> get_edges(const cv::Mat &keypoints, double min_dist = 5.0)
-//{
-//    std::vector<Edge> edges;
-//    for(int i = 0; i < keypoints.rows - 1; i++)
-//    {
-//        //calculamos la raiz
-//        int root_x = keypoints.at<float>(i,0);
-//        int root_y = keypoints.at<float>(i,1);
-//        for(int j = i + 1; j < keypoints.rows; j++)
-//        {
-//            //armamos los arcos
-//            int neighbor_x = keypoints.at<float>(j,0);
-//            int neighbor_y = keypoints.at<float>(j,1);
-//            Edge edge(root_x, root_y, neighbor_x, neighbor_y);
-//            if(min_dist < edge.length && edge.length < min_dist*5)
-//            {
-//                edges.push_back(edge);
-//            }
-//        }
-//    }
-//    return edges;
-//}
-
-//std::vector<Triangle> get_triangles(const cv::Mat &keypoints, double min_dist = 5.0, double max_dist = 50)
-//{
-//    std::vector<Triangle> triangles;
-//    for(int i = 0; i < keypoints.rows - 2; i++)
-//    {
-//        //calculamos la raiz
-//        int x0 = keypoints.at<float>(i,0);
-//        int y0 = keypoints.at<float>(i,1);
-//        for(int j = i + 1; j < keypoints.rows - 1; j++)
-//        {
-//            //armamos el primer arco
-//            int x1 = keypoints.at<float>(j,0);
-//            int y1 = keypoints.at<float>(j,1);
-//            Edge edge1(x0, y0, x1, y1);
-//            if(min_dist < edge1.length && edge1.length < max_dist)
-//            {
-//                for(int k = j + 1; k < keypoints.rows; k++)
-//                {
-//                    //armamos el segundo y tercer arco
-//                    int x2 = keypoints.at<float>(k,0);
-//                    int y2 = keypoints.at<float>(k,1);
-//                    Edge edge2(x0, y0, x2, y2);
-//                    Edge edge3(x1, y1, x2, y2);
-//                    if(min_dist < edge2.length && edge2.length < max_dist
-//                            && min_dist < edge3.length && edge3.length < max_dist)
-//                    {
-//                        triangles.push_back(Triangle(edge1,edge2,edge3));
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    return triangles;
-//}
-
-////metodo de edge matching
-////arma arcos que contienen distancia y angulo de cada nodo(minutiae)
-////en teoria es invariante a traslacion y rotacion, por lo que sirve como metodo de matching
-//int triangle_matching(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template,double triangle_min_edge, double triangle_max_edge,double edge_angle,double edge_dist)
-//{
-//    //armamos los arcos
-//    std::vector<Triangle> query_triangles = get_triangles(query_template.descriptors, triangle_min_edge, triangle_max_edge);
-//    std::vector<Triangle> train_triangles = get_triangles(train_template.descriptors, triangle_min_edge, triangle_max_edge);
-//    qDebug() << "Comparator: query_triangles: " << query_triangles.size();
-
-//    //comparamos los arcos
-//    int positives = 0;
-//    for(const Triangle &t1 : query_triangles)
-//    {
-//        for(const Triangle &t2 : train_triangles)
-//        {
-//            bool comparation = t1.compare(t2,edge_angle,edge_dist);
-//            if(comparation)
-//            {
-//                positives ++;
-//            }
-//            else
-//            {
-//            }
-//        }
-//    }
-//    qDebug() << "Comparator: positives: " << positives;
-//    return positives;
-//}
-
 bool compare_singularities(const std::vector<cv::KeyPoint> &sing1, const std::vector<cv::KeyPoint> &sing2)
 {
     int tipo1 = -1;
@@ -255,8 +167,6 @@ std::vector<cv::DMatch> remove_outliers_ransac(const std::vector<cv::KeyPoint> &
     }
     }
 
-
-
     for(int i = 0; i < mask.rows; i++)
     {
         if(mask.at<uchar>(i,0) > 0)
@@ -314,12 +224,12 @@ double Comparator::compare(const FingerprintTemplate &query_template, const Fing
         if(inliners_median.size() > 4)
         {
             std::vector<cv::DMatch> inliners_ransac;
-            inliners_ransac = remove_outliers_ransac(query_template.keypoints,train_template.keypoints,inliners_median,ransac_transform, ransac_threshold,ransac_iter,ransac_conf);
+            inliners_ransac = remove_outliers_ransac(query_template.keypoints,train_template.keypoints,inliners_median,ransac_model, ransac_threshold,ransac_iter,ransac_conf);
             std::vector<cv::DMatch> good_matches = inliners_ransac;
 
             //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
-            score = (double)good_matches.size()/std::max(query_template.descriptors.rows,train_template.descriptors.rows);
-            //double score2 = (double)good_matches.size()/((query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
+            //score = (double)good_matches.size()/std::max(query_template.descriptors.rows,train_template.descriptors.rows);
+            double score = (double)good_matches.size()/((double)(query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
             qDebug() << "Comparator: score: " << score;
             //qDebug() << "Comparator: score2: " << score2;
         }

@@ -43,12 +43,8 @@ void AppSettings::load_settings()
 
     //comparator
     matcher_threshold = settings.value("match_thresh").toDouble();
-    edge_matching = settings.value("edge_matching").toBool();
-    edge_angle = settings.value("edge_angle").toDouble();
-    edge_dist = settings.value("edge_dist").toDouble();
-    triangle_min_edge = settings.value("triangle_min_edge").toDouble();
-    triangle_max_edge = settings.value("triangle_max_edge").toDouble();
     ransac_threshold = settings.value("ransac_threshold").toDouble();
+    ransac_model = string_to_enum(settings.value("ransac_model").toString());
 
 }
 
@@ -69,6 +65,9 @@ int string_to_enum(const QString arg1)
     if(arg1 == "sift") return SIFT;
     if(arg1 == "cn") return CN;
     if(arg1 == "poincare") return POINCARE;
+    if(arg1 == "similarity") return PARTIALAFFINE;
+    if(arg1 == "affine") return AFFINE;
+    if(arg1 == "projective") return HOMOGRAPHY;
 
     return not_found;
 }

@@ -27,6 +27,11 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->comboBox_feat->addItem("surf");
     ui->comboBox_feat->addItem("sift");
 
+    //matching
+    ui->comboBox_ransacModel->addItem("similarity");
+    ui->comboBox_ransacModel->addItem("affine");
+    ui->comboBox_ransacModel->addItem("projective");
+
     load_settings();
 }
 
@@ -64,12 +69,8 @@ void ConfigDialog::load_settings(bool def)
     ui->checkBox_draw->setChecked(settings.value("draw_features").toBool());
 
     //feature matching
-    ui->lineEdit_match_thresh->setText(settings.value("match_thresh").toString());
-    ui->checkBox_edgeMatching->setChecked(settings.value("edge_matching").toBool());
-    ui->doubleSpinBox_edgeAngle->setValue(settings.value("edge_angle").toDouble());
-    ui->doubleSpinBox_edgeDist->setValue(settings.value("edge_dist").toDouble());
-    ui->doubleSpinBox_maxEdge->setValue(settings.value("triangle_max_edge").toDouble());
-    ui->doubleSpinBox_minEdge->setValue(settings.value("triangle_min_edge").toDouble());
+    ui->doubleSpinBox_matchThresh->setValue(settings.value("match_thresh").toDouble());
+    ui->comboBox_ransacModel->setCurrentText(settings.value("ransac_model").toString());
     ui->doubleSpinBox_ransac->setValue(settings.value("ransac_threshold").toDouble());
 
 
@@ -97,12 +98,8 @@ void ConfigDialog::save_settings()
     settings.setValue("draw_features",ui->checkBox_draw->isChecked());
 
     //feature matching
-    settings.setValue("match_thresh", ui->lineEdit_match_thresh->text());
-    settings.setValue("edge_matching",ui->checkBox_edgeMatching->isChecked());
-    settings.setValue("edge_angle", ui->doubleSpinBox_edgeAngle->value());
-    settings.setValue("edge_dist", ui->doubleSpinBox_edgeDist->value());
-    settings.setValue("triangle_min_edge", ui->doubleSpinBox_minEdge->value());
-    settings.setValue("triangle_max_edge", ui->doubleSpinBox_maxEdge->value());
+    settings.setValue("match_thresh", ui->doubleSpinBox_matchThresh->value());
+    settings.setValue("ransac_model", ui->comboBox_ransacModel->currentText());
     settings.setValue("ransac_threshold", ui->doubleSpinBox_ransac->value());
 }
 
@@ -116,15 +113,3 @@ void ConfigDialog::on_btn_default_clicked()
     load_settings(true);
 }
 
-void ConfigDialog::on_doubleSpinBox_maxEdge_valueChanged(double arg1)
-{
-    ui->doubleSpinBox_minEdge->setMaximum(arg1);
-}
-
-void ConfigDialog::on_doubleSpinBox_minEdge_valueChanged(double arg1)
-{
-    if(arg1 > ui->doubleSpinBox_maxEdge->value())
-    {
-        //ui->doubleSpinBox_minEdge->setValue(ui->doubleSpinBox_maxEdge->value());
-    }
-}

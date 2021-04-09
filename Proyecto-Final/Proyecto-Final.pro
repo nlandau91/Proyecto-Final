@@ -21,7 +21,6 @@ SOURCES += \
     comparator.cpp \
     configdialog.cpp \
     database.cpp \
-    edge.cpp \
     fingerprinttemplate.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -29,7 +28,6 @@ SOURCES += \
     preprocesser.cpp \
     stats.cpp \
     tester.cpp \
-    triangle.cpp \
     utils.cpp
 
 HEADERS += \
@@ -39,14 +37,12 @@ HEADERS += \
     comparator.h \
     configdialog.h \
     database.h \
-    edge.h \
     fingerprinttemplate.h \
     mainwindow.h \
     outputwindow.h \
     preprocesser.h \
     stats.h \
     tester.h \
-    triangle.h \
     utils.h
 
 FORMS += \

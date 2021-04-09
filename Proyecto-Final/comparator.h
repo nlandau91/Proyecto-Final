@@ -2,8 +2,6 @@
 #define COMPARATOR_H
 
 #include "common.h"
-#include "edge.h"
-#include "triangle.h"
 #include "fingerprinttemplate.h"
 
 namespace fp{
@@ -32,15 +30,10 @@ public:
 
     int matcher_method;
     double match_threshold;
-    bool edge_matching;
-    double edge_dist;
-    double edge_angle;
-    double triangle_max_edge;
-    double triangle_min_edge;
     double ransac_threshold;
     int ransac_iter;
     double ransac_conf;
-    int ransac_transform;
+    int ransac_model;
     double median_threshold;
     bool sing_compare;
 

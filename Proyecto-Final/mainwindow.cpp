@@ -230,16 +230,12 @@ void MainWindow::load_settings()
     comparator = fp::Comparator();
     comparator.matcher_method = app_settings.descriptor_method;
     comparator.match_threshold = app_settings.matcher_threshold;
-    comparator.edge_matching = app_settings.edge_matching;
-    comparator.edge_angle = app_settings.edge_angle;
-    comparator.edge_dist = app_settings.edge_dist;
-    comparator.triangle_max_edge = app_settings.triangle_max_edge;
-    comparator.triangle_min_edge = app_settings.triangle_min_edge;
+    comparator.ransac_model = app_settings.ransac_model;
     comparator.ransac_threshold = app_settings.ransac_threshold;
     comparator.median_threshold = 2.5;
     comparator.ransac_conf = 0.995;
     comparator.ransac_iter = 300;
-    comparator.ransac_transform = fp::PARTIALAFFINE;
+    comparator.ransac_model = fp::PARTIALAFFINE;
 
     tester.preprocesser = preprocesser;
     tester.analyzer = analyzer;

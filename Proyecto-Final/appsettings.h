@@ -30,12 +30,8 @@ public:
     //comparator
     int matcher_method;
     double matcher_threshold;
-    bool edge_matching;
-    double edge_dist;
-    double edge_angle;
-    double triangle_min_edge;
-    double triangle_max_edge;
     double ransac_threshold;
+    int ransac_model;
 
     bool draw_over_output;
 
