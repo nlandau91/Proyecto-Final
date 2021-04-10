@@ -334,9 +334,18 @@ void MainWindow::on_btn_fullTest_clicked()
 
     //octavo set de tests, solo partialaffine, esta vez con res.grayscale
 
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,500,0.11}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,2.0,0.99,2000,0.11}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,3.0,0.99,2000,0.11}));
+    params_list.push_back(std::vector<double>({2.5,fp::PARTIALAFFINE,4.0,0.99,2000,0.11}));
+
     params_list.push_back(std::vector<double>({2.5,fp::AFFINE,2.0,0.99,2000,0.11}));
     params_list.push_back(std::vector<double>({2.5,fp::AFFINE,3.0,0.99,2000,0.11}));
     params_list.push_back(std::vector<double>({2.5,fp::AFFINE,4.0,0.99,2000,0.11}));
+
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,2.0,0.99,2000,0.11}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,3.0,0.99,2000,0.11}));
+    params_list.push_back(std::vector<double>({2.5,fp::HOMOGRAPHY,4.0,0.99,2000,0.11}));
 
 
 
