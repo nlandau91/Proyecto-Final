@@ -282,7 +282,7 @@ void MainWindow::on_btn_demo_clicked()
                 enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
             }
             output_window = new OutputWindow();
-            output_window->setup(fp_template, enhanced_marked);
+            output_window->setup(fp_template, pre);
             output_window->show();
 
             ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
