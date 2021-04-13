@@ -62,7 +62,7 @@ void OutputWindow::setup(const fp::FingerprintTemplate &fp_template, const fp::P
     }
     if(cores == 1)
     {
-        type = "Loop";
+        type = "Loop/Tented Arch";
     }
 
     ui->lbl_cores->setText(QString::number(cores));
@@ -82,8 +82,6 @@ void OutputWindow::set_output()
 {
     cv::Mat output;
     selected.convertTo(output,CV_8UC1);
-    std::cout << drawover << std::endl;
-    std::cout << segment << std::endl;
     if(segment)
     {
         output.setTo(255,prep.roi==0);
@@ -114,7 +112,6 @@ void OutputWindow::on_radioButton_thinned_clicked()
 void OutputWindow::on_checkBox_marks_stateChanged(int arg1)
 {
     drawover = arg1 == 2;
-    std::cout << segment << std::endl;
     set_output();
 }
 
@@ -139,6 +136,5 @@ void OutputWindow::on_radioButton_original_clicked()
 void OutputWindow::on_checkBox_segment_stateChanged(int arg1)
 {
     segment = arg1 == 2;
-    std::cout << segment << std::endl;
     set_output();
 }
