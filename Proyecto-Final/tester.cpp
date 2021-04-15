@@ -12,59 +12,43 @@ Tester::Tester()
 }
 
 //arma una base de datos para realizar pruebas a partir de una muestra de huellas
-//se espera que las huellas se encuentren de la siguiente manera
-//en el directorio raiz dos directorios FVC2000 y FVC2002
-//dentro de cada uno de esos directorios, cuatro directorios DB1_B, DB2_B, DB3_B, DB4_B
-//dentro de cada uno de esos directorios, las huellas llamadas A_B.tif, donde A indica un dedo y B una muestra de ese dedo
-//por lo tanto FVC2000->DB1_B->101_1.tif y FVC2000->DB1_B->101_2.tif corresponden a dos muestras del mismo dedo
-void Tester::load_database(fp::Database &db)
+void Tester::load_database(fp::Database &db, const QString &path)
 {
     //cargamos las carpetas que contienen huellas
-    std::vector<QString> paths;
-    paths.push_back("../res/FVC2000/DB1_B");
-    paths.push_back("../res/FVC2000/DB2_B");
-    paths.push_back("../res/FVC2000/DB3_B");
-    paths.push_back("../res/FVC2000/DB4_B");
-    paths.push_back("../res/FVC2002/DB1_B");
-    paths.push_back("../res/FVC2002/DB2_B");
-    paths.push_back("../res/FVC2002/DB3_B");
-    paths.push_back("../res/FVC2002/DB4_B");
-    int id = 0;
-    for(const QString &path : paths)
+    std::cout << path.toStdString() << std::endl;
+    //para cada carpeta, cargamos todas las huellas
+    QDir directory(path);
+    QStringList fileNames = directory.entryList(QStringList() << "*.tif",QDir::Files);
+    for(const QString &fileName : fileNames)
     {
-        std::cout << path.toStdString() << std::endl;
-        //para cada carpeta, cargamos todas las huellas
-        QDir directory(path);
-        QStringList fileNames = directory.entryList(QStringList() << "*.tif",QDir::Files);
-        for(const QString &fileName : fileNames)
+        std::cout << fileName.toStdString() << std::endl;
+        //para cada huella, la procesamos y la ingresamos
+        std::string abs_path = (path+"/"+fileName).toStdString();
+        cv::Mat src = cv::imread(abs_path,cv::IMREAD_GRAYSCALE);
+        if(!src.empty())
         {
-            std::cout << fileName.toStdString() << std::endl;
-            //para cada huella, la procesamos y la ingresamos
-            std::string abs_path = (path+"/"+fileName).toStdString();
-            cv::Mat src = cv::imread(abs_path,cv::IMREAD_GRAYSCALE);
-            if(!src.empty())
+            //preprocesamos la imagen
+            fp::Preprocessed pre = preprocesser.preprocess(src);
+            //obtenemos los descriptores
+            fp::FingerprintTemplate fp_template = analyzer.analize(pre);
+            qDebug() << "Descriptores hallado: " << fp_template.descriptors.rows;
+            //solo admitimos huellas que sean suficientemente buenas
+            if(fp_template.descriptors.rows > 0)
             {
-                //preprocesamos la imagen
-                fp::Preprocessed pre = preprocesser.preprocess(src);
-                //obtenemos los descriptores
-                fp::FingerprintTemplate fp_template = analyzer.analize(pre);
-                qDebug() << "Descriptores hallado: " << fp_template.descriptors.rows;
-                //solo admitimos huellas que sean suficientemente buenas
-                if(fp_template.descriptors.rows > 0)
-                {
-                    //guardamos el descriptor e ingresamos los descriptores a la base de datos
-                    db.ingresar_template(fp_template,QString::number(id/8));
-                    std::cout << "Huella ingresada" << std::endl;
-                }
-                else
-                {
-                    std:: cout << "Huella no ingresada" << std::endl;
-                }
+                //guardamos el descriptor e ingresamos los descriptores a la base de datos
+                int id;
+                id = fileName.split("_").at(0).toInt();
+                db.ingresar_template(fp_template,QString::number(id));
+                std::cout << "Huella ingresada" << std::endl;
             }
-            id++;
+            else
+            {
+                std:: cout << "Huella no ingresada" << std::endl;
+            }
         }
-
     }
+
+
 }
 
 //funcion que calcula el false accept rate
@@ -184,8 +168,8 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
                << "imp_high"<<"\t"
                << "eer_pcnt" << "\t"
                << "eer_val" << "\t"
-               << "frr(eer)" << "\t"
-               << "far(eer)" << "\t"
+               << "frr()" << "\t"
+               << "far()" << "\t"
                << "time(ms)" << "\n";
         file.close();
     }
@@ -193,7 +177,6 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
     int test_number = 0;
     for(const std::vector<double> &params : params_list)
     {
-        std::cout << "Test number: " << test_number << "..." << std::endl;
         double med_th = params[0];
         int ran_trans = (int)params[1];
         double ran_th = params[2];
@@ -220,10 +203,10 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
         std::vector<double> eer_res = fp::get_eer(scores_genuine,scores_impostor);
         double eer_pcnt = eer_res[0];
         double eer_val = eer_res[1];
-//        double frr = get_frr(scores_genuine,match_threshold);
-//        double far = get_far(scores_impostor,match_threshold);
-        double frr = get_frr(scores_genuine,eer_val);
-        double far = get_far(scores_impostor,eer_val);
+        double frr = get_frr(scores_genuine,match_threshold);
+        double far = get_far(scores_impostor,match_threshold);
+        //double frr = get_frr(scores_genuine,eer_val);
+        //double far = get_far(scores_impostor,eer_val);
 
         QString ran_trans_string;
         if(ran_trans == HOMOGRAPHY)

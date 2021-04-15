@@ -20,12 +20,12 @@ public:
      */
     Tester();
     /*!
-     * \brief load_database carga todas las huellas de la base de datos
-     * supone que se cuenta con ambas carpetas FVC2000 y FVC2002 con sus respectivas
-     * subcarpetas
-     * \param db
+     * \brief load_database realiza una carga de la base de datos en lote
+     * las imagenes deben llamarse <id>_*.tif
+     * \param db referencia a la base de datos
+     * \param path directorio donde se encuentran las imagenes
      */
-    void load_database(Database &db);
+    void load_database(Database &db, const QString &path);
     /*!
      * \brief test_far realiza la comparacion de todas las huellas contra todas
      * las que corresponden a un id distinto

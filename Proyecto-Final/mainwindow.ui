@@ -87,6 +87,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="btn_db">
+          <property name="text">
+           <string>Cargar huellas en lote</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="Line" name="line">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -118,13 +125,6 @@
          <widget class="QPushButton" name="btn_fullTest">
           <property name="text">
            <string>Full Test</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btn_db">
-          <property name="text">
-           <string>Reload DB</string>
           </property>
          </widget>
         </item>
