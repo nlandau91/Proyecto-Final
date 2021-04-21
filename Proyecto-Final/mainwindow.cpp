@@ -331,9 +331,12 @@ void MainWindow::on_btn_db_clicked()
     {
         QFileDialog dialog;
         dialog.setFileMode(QFileDialog::DirectoryOnly);
-        dialog.exec();
-        QString path = dialog.directory().absolutePath();
-        tester.load_database(db,path);
+        if(dialog.exec() == QDialog::Accepted)
+        {
+            QString path = dialog.directory().absolutePath();
+            tester.load_database(db,path);
+        }
+
     }
 
 }
