@@ -1,0 +1,136 @@
+\hypertarget{classfp_1_1_fingerprint_template}{}\doxysection{fp\+::Fingerprint\+Template Class Reference}
+\label{classfp_1_1_fingerprint_template}\index{fp::FingerprintTemplate@{fp::FingerprintTemplate}}
+
+
+The \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} class modela la plantilla de una huella dactilar.  
+
+
+
+
+{\ttfamily \#include $<$fingerprinttemplate.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classfp_1_1_fingerprint_template_ab5c8ab90c6da2b1d7a532b5d950c6584}{Fingerprint\+Template}} ()
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} inicializador vacio, es necesario cargar los miembros o utilizar la funcion deserialize. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classfp_1_1_fingerprint_template_aa6877e489459c1e5e1c582657e39ed32}{Fingerprint\+Template}} (const std\+::string \&file)
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} inicializa con la plantilla cargada desde file. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classfp_1_1_fingerprint_template_a7fbb5691bd608691d20efcefc35e4f66}{serialize}} (const std\+::string \&file) const
+\begin{DoxyCompactList}\small\item\em serialize almacena la plantilla en el archivo pasado por parametro \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classfp_1_1_fingerprint_template_a00da6ed1b73341da500728fdaad5a4f0}{deserialize}} (const std\+::string \&file)
+\begin{DoxyCompactList}\small\item\em deserialize carga la plantilla almacenada en el archivo pasado por parametro \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+cv\+::\+Mat \mbox{\hyperlink{classfp_1_1_fingerprint_template_a1a548983a0fedc97dc822e7f46e81d4b}{descriptors}}
+\item 
+std\+::vector$<$ cv\+::\+Key\+Point $>$ \mbox{\hyperlink{classfp_1_1_fingerprint_template_ac67c0bd4dc6674f18fe3e85e5c195f0d}{keypoints}}
+\item 
+std\+::vector$<$ cv\+::\+Key\+Point $>$ \mbox{\hyperlink{classfp_1_1_fingerprint_template_a5f9ab0434f3eb1b32b06973f391bb78b}{singularities}}
+\item 
+std\+::vector$<$ cv\+::\+Key\+Point $>$ \mbox{\hyperlink{classfp_1_1_fingerprint_template_a7ecddf37f814e472f3113481d09416cf}{minutiaes}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} class modela la plantilla de una huella dactilar. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classfp_1_1_fingerprint_template_ab5c8ab90c6da2b1d7a532b5d950c6584}\label{classfp_1_1_fingerprint_template_ab5c8ab90c6da2b1d7a532b5d950c6584}} 
+\index{fp::FingerprintTemplate@{fp::FingerprintTemplate}!FingerprintTemplate@{FingerprintTemplate}}
+\index{FingerprintTemplate@{FingerprintTemplate}!fp::FingerprintTemplate@{fp::FingerprintTemplate}}
+\doxysubsubsection{\texorpdfstring{FingerprintTemplate()}{FingerprintTemplate()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Fingerprint\+Template\+::\+Fingerprint\+Template (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} inicializador vacio, es necesario cargar los miembros o utilizar la funcion deserialize. 
+
+\mbox{\Hypertarget{classfp_1_1_fingerprint_template_aa6877e489459c1e5e1c582657e39ed32}\label{classfp_1_1_fingerprint_template_aa6877e489459c1e5e1c582657e39ed32}} 
+\index{fp::FingerprintTemplate@{fp::FingerprintTemplate}!FingerprintTemplate@{FingerprintTemplate}}
+\index{FingerprintTemplate@{FingerprintTemplate}!fp::FingerprintTemplate@{fp::FingerprintTemplate}}
+\doxysubsubsection{\texorpdfstring{FingerprintTemplate()}{FingerprintTemplate()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Fingerprint\+Template\+::\+Fingerprint\+Template (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{file }\end{DoxyParamCaption})}
+
+
+
+\mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} inicializa con la plantilla cargada desde file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & archivo desde el cual se cargara la plantilla \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classfp_1_1_fingerprint_template_a00da6ed1b73341da500728fdaad5a4f0}\label{classfp_1_1_fingerprint_template_a00da6ed1b73341da500728fdaad5a4f0}} 
+\index{fp::FingerprintTemplate@{fp::FingerprintTemplate}!deserialize@{deserialize}}
+\index{deserialize@{deserialize}!fp::FingerprintTemplate@{fp::FingerprintTemplate}}
+\doxysubsubsection{\texorpdfstring{deserialize()}{deserialize()}}
+{\footnotesize\ttfamily bool Fingerprint\+Template\+::deserialize (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{file }\end{DoxyParamCaption})}
+
+
+
+deserialize carga la plantilla almacenada en el archivo pasado por parametro 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & archivo que contiene la plantilla a cargar \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true si se realizo correctamente, false en caso contraro 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfp_1_1_fingerprint_template_a7fbb5691bd608691d20efcefc35e4f66}\label{classfp_1_1_fingerprint_template_a7fbb5691bd608691d20efcefc35e4f66}} 
+\index{fp::FingerprintTemplate@{fp::FingerprintTemplate}!serialize@{serialize}}
+\index{serialize@{serialize}!fp::FingerprintTemplate@{fp::FingerprintTemplate}}
+\doxysubsubsection{\texorpdfstring{serialize()}{serialize()}}
+{\footnotesize\ttfamily bool Fingerprint\+Template\+::serialize (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{file }\end{DoxyParamCaption}) const}
+
+
+
+serialize almacena la plantilla en el archivo pasado por parametro 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & archivo que contendra la plantilla \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true si se pudo realizar correctamente, false en caso contrario 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classfp_1_1_fingerprint_template_a1a548983a0fedc97dc822e7f46e81d4b}\label{classfp_1_1_fingerprint_template_a1a548983a0fedc97dc822e7f46e81d4b}} 
+\index{fp::FingerprintTemplate@{fp::FingerprintTemplate}!descriptors@{descriptors}}
+\index{descriptors@{descriptors}!fp::FingerprintTemplate@{fp::FingerprintTemplate}}
+\doxysubsubsection{\texorpdfstring{descriptors}{descriptors}}
+{\footnotesize\ttfamily cv\+::\+Mat fp\+::\+Fingerprint\+Template\+::descriptors}
+
+\mbox{\Hypertarget{classfp_1_1_fingerprint_template_ac67c0bd4dc6674f18fe3e85e5c195f0d}\label{classfp_1_1_fingerprint_template_ac67c0bd4dc6674f18fe3e85e5c195f0d}} 
+\index{fp::FingerprintTemplate@{fp::FingerprintTemplate}!keypoints@{keypoints}}
+\index{keypoints@{keypoints}!fp::FingerprintTemplate@{fp::FingerprintTemplate}}
+\doxysubsubsection{\texorpdfstring{keypoints}{keypoints}}
+{\footnotesize\ttfamily std\+::vector$<$cv\+::\+Key\+Point$>$ fp\+::\+Fingerprint\+Template\+::keypoints}
+
+\mbox{\Hypertarget{classfp_1_1_fingerprint_template_a7ecddf37f814e472f3113481d09416cf}\label{classfp_1_1_fingerprint_template_a7ecddf37f814e472f3113481d09416cf}} 
+\index{fp::FingerprintTemplate@{fp::FingerprintTemplate}!minutiaes@{minutiaes}}
+\index{minutiaes@{minutiaes}!fp::FingerprintTemplate@{fp::FingerprintTemplate}}
+\doxysubsubsection{\texorpdfstring{minutiaes}{minutiaes}}
+{\footnotesize\ttfamily std\+::vector$<$cv\+::\+Key\+Point$>$ fp\+::\+Fingerprint\+Template\+::minutiaes}
+
+\mbox{\Hypertarget{classfp_1_1_fingerprint_template_a5f9ab0434f3eb1b32b06973f391bb78b}\label{classfp_1_1_fingerprint_template_a5f9ab0434f3eb1b32b06973f391bb78b}} 
+\index{fp::FingerprintTemplate@{fp::FingerprintTemplate}!singularities@{singularities}}
+\index{singularities@{singularities}!fp::FingerprintTemplate@{fp::FingerprintTemplate}}
+\doxysubsubsection{\texorpdfstring{singularities}{singularities}}
+{\footnotesize\ttfamily std\+::vector$<$cv\+::\+Key\+Point$>$ fp\+::\+Fingerprint\+Template\+::singularities}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{fingerprinttemplate_8h}{fingerprinttemplate.\+h}}\item 
+\mbox{\hyperlink{fingerprinttemplate_8cpp}{fingerprinttemplate.\+cpp}}\end{DoxyCompactItemize}

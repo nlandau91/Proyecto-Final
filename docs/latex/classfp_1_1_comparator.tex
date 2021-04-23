@@ -1,0 +1,143 @@
+\hypertarget{classfp_1_1_comparator}{}\doxysection{fp\+::Comparator Class Reference}
+\label{classfp_1_1_comparator}\index{fp::Comparator@{fp::Comparator}}
+
+
+{\ttfamily \#include $<$comparator.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classfp_1_1_comparator_a02256f0d728aa17d0638502d67b91708}{Comparator}} ()
+\item 
+double \mbox{\hyperlink{classfp_1_1_comparator_a104d748d9f66d957b09ffb80bfb0d763}{compare}} (const \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} \&query\+\_\+template, const \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} \&train\+\_\+template) const
+\begin{DoxyCompactList}\small\item\em compare compara dos template de huellas dactilares y devuelve un score de similitud \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classfp_1_1_comparator_a21253a027b5b9c17e11500a68dd75f0a}{compare}} (const \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} \&query\+\_\+template, const std\+::vector$<$ \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} $>$ \&train\+\_\+templates) const
+\begin{DoxyCompactList}\small\item\em compare \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classfp_1_1_comparator_a0eda684754b95e4cf9443f09d19589c9}{matcher\+\_\+method}}
+\item 
+double \mbox{\hyperlink{classfp_1_1_comparator_adf98186c429ef56f7b924a01897f24b9}{match\+\_\+threshold}}
+\item 
+double \mbox{\hyperlink{classfp_1_1_comparator_ae229db081c07eda36d3d030a2d5f85b5}{ransac\+\_\+threshold}}
+\item 
+int \mbox{\hyperlink{classfp_1_1_comparator_a247ecc3978ea961cbc3e2aaaf767b7d2}{ransac\+\_\+iter}}
+\item 
+double \mbox{\hyperlink{classfp_1_1_comparator_a3087ed745f1309afb852410b09e4a807}{ransac\+\_\+conf}}
+\item 
+int \mbox{\hyperlink{classfp_1_1_comparator_a81a8c61329f9b89d848596c35fc74fe6}{ransac\+\_\+model}}
+\item 
+double \mbox{\hyperlink{classfp_1_1_comparator_a5490cf57ebaa134a0e0851047bb1780a}{median\+\_\+threshold}}
+\item 
+bool \mbox{\hyperlink{classfp_1_1_comparator_a01214758f430f5bee7b388ea381eeee9}{sing\+\_\+compare}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classfp_1_1_comparator_a02256f0d728aa17d0638502d67b91708}\label{classfp_1_1_comparator_a02256f0d728aa17d0638502d67b91708}} 
+\index{fp::Comparator@{fp::Comparator}!Comparator@{Comparator}}
+\index{Comparator@{Comparator}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{Comparator()}{Comparator()}}
+{\footnotesize\ttfamily Comparator\+::\+Comparator (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classfp_1_1_comparator_a104d748d9f66d957b09ffb80bfb0d763}\label{classfp_1_1_comparator_a104d748d9f66d957b09ffb80bfb0d763}} 
+\index{fp::Comparator@{fp::Comparator}!compare@{compare}}
+\index{compare@{compare}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{compare()}{compare()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily double Comparator\+::compare (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} \&}]{query\+\_\+template,  }\item[{const \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} \&}]{train\+\_\+template }\end{DoxyParamCaption}) const}
+
+
+
+compare compara dos template de huellas dactilares y devuelve un score de similitud 
+
+
+\begin{DoxyParams}{Parameters}
+{\em query\+\_\+template} & template de consulta \\
+\hline
+{\em train\+\_\+template} & template de verificacion \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+score de similitud, entre 0.\+0 y 1.\+0 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfp_1_1_comparator_a21253a027b5b9c17e11500a68dd75f0a}\label{classfp_1_1_comparator_a21253a027b5b9c17e11500a68dd75f0a}} 
+\index{fp::Comparator@{fp::Comparator}!compare@{compare}}
+\index{compare@{compare}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{compare()}{compare()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily double fp\+::\+Comparator\+::compare (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} \&}]{query\+\_\+template,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} $>$ \&}]{train\+\_\+templates }\end{DoxyParamCaption}) const}
+
+
+
+compare 
+
+
+\begin{DoxyParams}{Parameters}
+{\em query\+\_\+template} & \\
+\hline
+{\em train\+\_\+templates} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classfp_1_1_comparator_adf98186c429ef56f7b924a01897f24b9}\label{classfp_1_1_comparator_adf98186c429ef56f7b924a01897f24b9}} 
+\index{fp::Comparator@{fp::Comparator}!match\_threshold@{match\_threshold}}
+\index{match\_threshold@{match\_threshold}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{match\_threshold}{match\_threshold}}
+{\footnotesize\ttfamily double fp\+::\+Comparator\+::match\+\_\+threshold}
+
+\mbox{\Hypertarget{classfp_1_1_comparator_a0eda684754b95e4cf9443f09d19589c9}\label{classfp_1_1_comparator_a0eda684754b95e4cf9443f09d19589c9}} 
+\index{fp::Comparator@{fp::Comparator}!matcher\_method@{matcher\_method}}
+\index{matcher\_method@{matcher\_method}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{matcher\_method}{matcher\_method}}
+{\footnotesize\ttfamily int fp\+::\+Comparator\+::matcher\+\_\+method}
+
+\mbox{\Hypertarget{classfp_1_1_comparator_a5490cf57ebaa134a0e0851047bb1780a}\label{classfp_1_1_comparator_a5490cf57ebaa134a0e0851047bb1780a}} 
+\index{fp::Comparator@{fp::Comparator}!median\_threshold@{median\_threshold}}
+\index{median\_threshold@{median\_threshold}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{median\_threshold}{median\_threshold}}
+{\footnotesize\ttfamily double fp\+::\+Comparator\+::median\+\_\+threshold}
+
+\mbox{\Hypertarget{classfp_1_1_comparator_a3087ed745f1309afb852410b09e4a807}\label{classfp_1_1_comparator_a3087ed745f1309afb852410b09e4a807}} 
+\index{fp::Comparator@{fp::Comparator}!ransac\_conf@{ransac\_conf}}
+\index{ransac\_conf@{ransac\_conf}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{ransac\_conf}{ransac\_conf}}
+{\footnotesize\ttfamily double fp\+::\+Comparator\+::ransac\+\_\+conf}
+
+\mbox{\Hypertarget{classfp_1_1_comparator_a247ecc3978ea961cbc3e2aaaf767b7d2}\label{classfp_1_1_comparator_a247ecc3978ea961cbc3e2aaaf767b7d2}} 
+\index{fp::Comparator@{fp::Comparator}!ransac\_iter@{ransac\_iter}}
+\index{ransac\_iter@{ransac\_iter}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{ransac\_iter}{ransac\_iter}}
+{\footnotesize\ttfamily int fp\+::\+Comparator\+::ransac\+\_\+iter}
+
+\mbox{\Hypertarget{classfp_1_1_comparator_a81a8c61329f9b89d848596c35fc74fe6}\label{classfp_1_1_comparator_a81a8c61329f9b89d848596c35fc74fe6}} 
+\index{fp::Comparator@{fp::Comparator}!ransac\_model@{ransac\_model}}
+\index{ransac\_model@{ransac\_model}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{ransac\_model}{ransac\_model}}
+{\footnotesize\ttfamily int fp\+::\+Comparator\+::ransac\+\_\+model}
+
+\mbox{\Hypertarget{classfp_1_1_comparator_ae229db081c07eda36d3d030a2d5f85b5}\label{classfp_1_1_comparator_ae229db081c07eda36d3d030a2d5f85b5}} 
+\index{fp::Comparator@{fp::Comparator}!ransac\_threshold@{ransac\_threshold}}
+\index{ransac\_threshold@{ransac\_threshold}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{ransac\_threshold}{ransac\_threshold}}
+{\footnotesize\ttfamily double fp\+::\+Comparator\+::ransac\+\_\+threshold}
+
+\mbox{\Hypertarget{classfp_1_1_comparator_a01214758f430f5bee7b388ea381eeee9}\label{classfp_1_1_comparator_a01214758f430f5bee7b388ea381eeee9}} 
+\index{fp::Comparator@{fp::Comparator}!sing\_compare@{sing\_compare}}
+\index{sing\_compare@{sing\_compare}!fp::Comparator@{fp::Comparator}}
+\doxysubsubsection{\texorpdfstring{sing\_compare}{sing\_compare}}
+{\footnotesize\ttfamily bool fp\+::\+Comparator\+::sing\+\_\+compare}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{comparator_8h}{comparator.\+h}}\item 
+\mbox{\hyperlink{comparator_8cpp}{comparator.\+cpp}}\end{DoxyCompactItemize}

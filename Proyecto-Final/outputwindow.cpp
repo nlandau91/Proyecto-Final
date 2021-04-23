@@ -1,6 +1,8 @@
 #include "outputwindow.h"
 #include "ui_outputwindow.h"
 
+#include <QFileDialog>
+
 OutputWindow::OutputWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::OutputWindow)
@@ -72,7 +74,7 @@ void OutputWindow::setup(const fp::FingerprintTemplate &fp_template, const fp::P
     ui->lbl_bif->setText(QString::number(bifurcaciones));
     ui->lbl_des->setText(QString::number(descriptores));
 
-    selected = prep.result;
+    selected = prep.thinned;
     drawover = true;
     segment = true;
     set_output();
@@ -137,4 +139,12 @@ void OutputWindow::on_checkBox_segment_stateChanged(int arg1)
 {
     segment = arg1 == 2;
     set_output();
+}
+
+void OutputWindow::on_pushButton_guardar_clicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                               "",
+                               tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
+    ui->lbl_output->pixmap()->save(fileName);
 }

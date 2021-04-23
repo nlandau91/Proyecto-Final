@@ -1,0 +1,148 @@
+\hypertarget{classfp_1_1_tester}{}\doxysection{fp\+::Tester Class Reference}
+\label{classfp_1_1_tester}\index{fp::Tester@{fp::Tester}}
+
+
+The \mbox{\hyperlink{classfp_1_1_tester}{Tester}} class implementa algunos test a medida.  
+
+
+
+
+{\ttfamily \#include $<$tester.\+h$>$}
+
+
+
+Collaboration diagram for fp\+::Tester\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classfp_1_1_tester__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classfp_1_1_tester_ad70b2b2bbf6c564e710680ec1e0ae2d6}{Tester}} ()
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classfp_1_1_tester}{Tester}} inicializador vacio, es necesario setear el preprocesador, analizado y comparador, y tener cargada la db. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classfp_1_1_tester_aa1e3de75c6f055e8ad5be0107062e3d1}{load\+\_\+database}} (\mbox{\hyperlink{classfp_1_1_database}{Database}} \&db, const Q\+String \&path)
+\begin{DoxyCompactList}\small\item\em load\+\_\+database realiza una carga de la base de datos en lote las imagenes deben llamarse $<$id$>$\+\_\+$\ast$.tif \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classfp_1_1_tester_a87b7ec0238e78e033ef03c33492c037a}{test\+\_\+far}} (const \mbox{\hyperlink{classfp_1_1_database}{Database}} \&db)
+\begin{DoxyCompactList}\small\item\em test\+\_\+far realiza la comparacion de todas las huellas contra todas las que corresponden a un id distinto \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classfp_1_1_tester_a0fa342516e61aff6b35286234094337d}{test\+\_\+frr}} (const \mbox{\hyperlink{classfp_1_1_database}{Database}} \&db)
+\begin{DoxyCompactList}\small\item\em test\+\_\+frr realiza la comparacion de todas las huellas contra todas las que corresponden al mismo id \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classfp_1_1_tester_a0e63316c42ea903cc24a8ad8697fa96e}{perform\+\_\+tests}} (const std\+::vector$<$ std\+::vector$<$ double $>$$>$ \&params\+\_\+list, \mbox{\hyperlink{classfp_1_1_database}{Database}} \&db)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classfp_1_1_preprocesser}{Preprocesser}} \mbox{\hyperlink{classfp_1_1_tester_a993ef0cae9bca7415d9d2e9b3aa6f131}{preprocesser}}
+\item 
+\mbox{\hyperlink{classfp_1_1_analyzer}{Analyzer}} \mbox{\hyperlink{classfp_1_1_tester_af3cf2d1530a97e3402455e13d8af97ad}{analyzer}}
+\item 
+\mbox{\hyperlink{classfp_1_1_comparator}{Comparator}} \mbox{\hyperlink{classfp_1_1_tester_acfd51763b23e9e47b1ac2037c824684c}{comparator}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The \mbox{\hyperlink{classfp_1_1_tester}{Tester}} class implementa algunos test a medida. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classfp_1_1_tester_ad70b2b2bbf6c564e710680ec1e0ae2d6}\label{classfp_1_1_tester_ad70b2b2bbf6c564e710680ec1e0ae2d6}} 
+\index{fp::Tester@{fp::Tester}!Tester@{Tester}}
+\index{Tester@{Tester}!fp::Tester@{fp::Tester}}
+\doxysubsubsection{\texorpdfstring{Tester()}{Tester()}}
+{\footnotesize\ttfamily Tester\+::\+Tester (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\mbox{\hyperlink{classfp_1_1_tester}{Tester}} inicializador vacio, es necesario setear el preprocesador, analizado y comparador, y tener cargada la db. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classfp_1_1_tester_aa1e3de75c6f055e8ad5be0107062e3d1}\label{classfp_1_1_tester_aa1e3de75c6f055e8ad5be0107062e3d1}} 
+\index{fp::Tester@{fp::Tester}!load\_database@{load\_database}}
+\index{load\_database@{load\_database}!fp::Tester@{fp::Tester}}
+\doxysubsubsection{\texorpdfstring{load\_database()}{load\_database()}}
+{\footnotesize\ttfamily void Tester\+::load\+\_\+database (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classfp_1_1_database}{fp\+::\+Database}} \&}]{db,  }\item[{const Q\+String \&}]{path }\end{DoxyParamCaption})}
+
+
+
+load\+\_\+database realiza una carga de la base de datos en lote las imagenes deben llamarse $<$id$>$\+\_\+$\ast$.tif 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db} & referencia a la base de datos \\
+\hline
+{\em path} & directorio donde se encuentran las imagenes \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classfp_1_1_tester_a0e63316c42ea903cc24a8ad8697fa96e}\label{classfp_1_1_tester_a0e63316c42ea903cc24a8ad8697fa96e}} 
+\index{fp::Tester@{fp::Tester}!perform\_tests@{perform\_tests}}
+\index{perform\_tests@{perform\_tests}!fp::Tester@{fp::Tester}}
+\doxysubsubsection{\texorpdfstring{perform\_tests()}{perform\_tests()}}
+{\footnotesize\ttfamily void Tester\+::perform\+\_\+tests (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::vector$<$ double $>$$>$ \&}]{params\+\_\+list,  }\item[{\mbox{\hyperlink{classfp_1_1_database}{Database}} \&}]{db }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classfp_1_1_tester_a87b7ec0238e78e033ef03c33492c037a}\label{classfp_1_1_tester_a87b7ec0238e78e033ef03c33492c037a}} 
+\index{fp::Tester@{fp::Tester}!test\_far@{test\_far}}
+\index{test\_far@{test\_far}!fp::Tester@{fp::Tester}}
+\doxysubsubsection{\texorpdfstring{test\_far()}{test\_far()}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ Tester\+::test\+\_\+far (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classfp_1_1_database}{Database}} \&}]{db }\end{DoxyParamCaption})}
+
+
+
+test\+\_\+far realiza la comparacion de todas las huellas contra todas las que corresponden a un id distinto 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+devuelve arreglo con todos los scores 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfp_1_1_tester_a0fa342516e61aff6b35286234094337d}\label{classfp_1_1_tester_a0fa342516e61aff6b35286234094337d}} 
+\index{fp::Tester@{fp::Tester}!test\_frr@{test\_frr}}
+\index{test\_frr@{test\_frr}!fp::Tester@{fp::Tester}}
+\doxysubsubsection{\texorpdfstring{test\_frr()}{test\_frr()}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ Tester\+::test\+\_\+frr (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classfp_1_1_database}{Database}} \&}]{db }\end{DoxyParamCaption})}
+
+
+
+test\+\_\+frr realiza la comparacion de todas las huellas contra todas las que corresponden al mismo id 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+devuelve arreglo con todos los scores 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classfp_1_1_tester_af3cf2d1530a97e3402455e13d8af97ad}\label{classfp_1_1_tester_af3cf2d1530a97e3402455e13d8af97ad}} 
+\index{fp::Tester@{fp::Tester}!analyzer@{analyzer}}
+\index{analyzer@{analyzer}!fp::Tester@{fp::Tester}}
+\doxysubsubsection{\texorpdfstring{analyzer}{analyzer}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classfp_1_1_analyzer}{Analyzer}} fp\+::\+Tester\+::analyzer}
+
+\mbox{\Hypertarget{classfp_1_1_tester_acfd51763b23e9e47b1ac2037c824684c}\label{classfp_1_1_tester_acfd51763b23e9e47b1ac2037c824684c}} 
+\index{fp::Tester@{fp::Tester}!comparator@{comparator}}
+\index{comparator@{comparator}!fp::Tester@{fp::Tester}}
+\doxysubsubsection{\texorpdfstring{comparator}{comparator}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classfp_1_1_comparator}{Comparator}} fp\+::\+Tester\+::comparator}
+
+\mbox{\Hypertarget{classfp_1_1_tester_a993ef0cae9bca7415d9d2e9b3aa6f131}\label{classfp_1_1_tester_a993ef0cae9bca7415d9d2e9b3aa6f131}} 
+\index{fp::Tester@{fp::Tester}!preprocesser@{preprocesser}}
+\index{preprocesser@{preprocesser}!fp::Tester@{fp::Tester}}
+\doxysubsubsection{\texorpdfstring{preprocesser}{preprocesser}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classfp_1_1_preprocesser}{Preprocesser}} fp\+::\+Tester\+::preprocesser}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{tester_8h}{tester.\+h}}\item 
+\mbox{\hyperlink{tester_8cpp}{tester.\+cpp}}\end{DoxyCompactItemize}

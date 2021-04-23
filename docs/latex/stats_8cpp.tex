@@ -1,0 +1,31 @@
+\hypertarget{stats_8cpp}{}\doxysection{stats.\+cpp File Reference}
+\label{stats_8cpp}\index{stats.cpp@{stats.cpp}}
+{\ttfamily \#include \char`\"{}stats.\+h\char`\"{}}\newline
+Include dependency graph for stats.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{stats_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespacefp}{fp}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{namespacefp_a909b74f4bfa9dcc62d856eedfa3a73f2}{fp\+::get\+\_\+mean}} (const std\+::vector$<$ double $>$ \&scores, bool ignore\+\_\+extremes=true)
+\begin{DoxyCompactList}\small\item\em get\+\_\+mean devuelve la media de un arreglo de valores entre 0 y 1 \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{namespacefp_a832e7ca5381ce51f946043c356d30c6b}{fp\+::get\+\_\+low\+\_\+pcnt}} (std\+::vector$<$ double $>$ scores, double thresh)
+\begin{DoxyCompactList}\small\item\em get\+\_\+low\+\_\+pcnt devuelve el mayor valor encontrado dentro de la porcion inferior del arreglo indicado \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{namespacefp_a5c680decfcc600dba32a7ce7e79c6764}{fp\+::get\+\_\+high\+\_\+pcnt}} (std\+::vector$<$ double $>$ scores, double thresh)
+\begin{DoxyCompactList}\small\item\em get\+\_\+high\+\_\+pcnt devuelve el menor valor encontrado dentro de la porcion superior del arreglo indicada \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{namespacefp_af0dd3aa16917ca6201457dc548d2f80c}{fp\+::get\+\_\+eer}} (std\+::vector$<$ double $>$ scores1, std\+::vector$<$ double $>$ scores2)
+\begin{DoxyCompactList}\small\item\em get\+\_\+eer calcula el eer de los arreglos de scores //el mismo indica en que porcentaje de los arreglos los valores del primer arreglo se asemejan lo suficiente a los del arreglo 2 avanzando en sentido inverso \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{namespacefp_a0a481056753d78ee3507eda2c4b61fba}{fp\+::get\+\_\+far}} (const std\+::vector$<$ double $>$ \&scores, double threshold)
+\begin{DoxyCompactList}\small\item\em get\+\_\+frr calcula la tasa de falsos positivos \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{namespacefp_a1a8fe7931e020d2b7f2fa084b53b1500}{fp\+::get\+\_\+frr}} (const std\+::vector$<$ double $>$ \&scores, double threshold)
+\begin{DoxyCompactList}\small\item\em get\+\_\+far calcula la tasa de falsos negativos \end{DoxyCompactList}\end{DoxyCompactItemize}

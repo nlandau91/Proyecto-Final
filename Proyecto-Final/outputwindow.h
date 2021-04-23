@@ -39,6 +39,8 @@ private slots:
 
     void on_checkBox_segment_stateChanged(int arg1);
 
+    void on_pushButton_guardar_clicked();
+
 private:
     Ui::OutputWindow *ui;
     fp::FingerprintTemplate fp_template;

@@ -1,0 +1,123 @@
+\hypertarget{classfp_1_1_analyzer}{}\doxysection{fp\+::Analyzer Class Reference}
+\label{classfp_1_1_analyzer}\index{fp::Analyzer@{fp::Analyzer}}
+
+
+La clase \mbox{\hyperlink{classfp_1_1_analyzer}{Analyzer}} se encarga de realizar el analisis y extraccion de caracteristicas de una huella dactilar.  
+
+
+
+
+{\ttfamily \#include $<$analyzer.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classfp_1_1_analyzer_a1be2ff17bba265bdef6e1b44748eaf96}{Analyzer}} ()
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classfp_1_1_analyzer}{Analyzer}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} \mbox{\hyperlink{classfp_1_1_analyzer_a1141dfb1186e26dbde5811b4f931bab4}{analize}} (const \mbox{\hyperlink{structfp_1_1_preprocessed}{Preprocessed}} \&preprocessed)
+\begin{DoxyCompactList}\small\item\em analize analiza la huella dactilar preprocesada \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classfp_1_1_analyzer_ab32601f52d9a47ef39479daeb0bc8d5b}{keypoint\+\_\+method}}
+\item 
+int \mbox{\hyperlink{classfp_1_1_analyzer_a9af412ca499f40118a7b97ae2e72a0c6}{keypoint\+\_\+threshold}}
+\item 
+int \mbox{\hyperlink{classfp_1_1_analyzer_aefbcbf2056dc84aa9cfde534bcc33ab9}{descriptor\+\_\+method}}
+\item 
+int \mbox{\hyperlink{classfp_1_1_analyzer_ae981d7a09fd06e360c115b0c80cee6e4}{max\+\_\+match\+\_\+dist}}
+\item 
+int \mbox{\hyperlink{classfp_1_1_analyzer_a36149b99cf68b4ec3c2a274cf42440c5}{l1\+\_\+features\+\_\+method}}
+\item 
+float \mbox{\hyperlink{classfp_1_1_analyzer_a7a2ab7b30b215cb53a77d89bd8174341}{poincare\+\_\+tol}}
+\item 
+int \mbox{\hyperlink{classfp_1_1_analyzer_a3689ed9c1abb45b1acaf8d852dc6ba2b}{blk\+\_\+sze}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+La clase \mbox{\hyperlink{classfp_1_1_analyzer}{Analyzer}} se encarga de realizar el analisis y extraccion de caracteristicas de una huella dactilar. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classfp_1_1_analyzer_a1be2ff17bba265bdef6e1b44748eaf96}\label{classfp_1_1_analyzer_a1be2ff17bba265bdef6e1b44748eaf96}} 
+\index{fp::Analyzer@{fp::Analyzer}!Analyzer@{Analyzer}}
+\index{Analyzer@{Analyzer}!fp::Analyzer@{fp::Analyzer}}
+\doxysubsubsection{\texorpdfstring{Analyzer()}{Analyzer()}}
+{\footnotesize\ttfamily Analyzer\+::\+Analyzer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\mbox{\hyperlink{classfp_1_1_analyzer}{Analyzer}}. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classfp_1_1_analyzer_a1141dfb1186e26dbde5811b4f931bab4}\label{classfp_1_1_analyzer_a1141dfb1186e26dbde5811b4f931bab4}} 
+\index{fp::Analyzer@{fp::Analyzer}!analize@{analize}}
+\index{analize@{analize}!fp::Analyzer@{fp::Analyzer}}
+\doxysubsubsection{\texorpdfstring{analize()}{analize()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classfp_1_1_fingerprint_template}{Fingerprint\+Template}} Analyzer\+::analize (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structfp_1_1_preprocessed}{Preprocessed}} \&}]{preprocessed }\end{DoxyParamCaption})}
+
+
+
+analize analiza la huella dactilar preprocesada 
+
+
+\begin{DoxyParams}{Parameters}
+{\em preprocessed} & estructura que contiene el preprocesamiento hecho a la huella dactilar \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+devuelve una estructura que contiene el analisis hecho 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classfp_1_1_analyzer_a3689ed9c1abb45b1acaf8d852dc6ba2b}\label{classfp_1_1_analyzer_a3689ed9c1abb45b1acaf8d852dc6ba2b}} 
+\index{fp::Analyzer@{fp::Analyzer}!blk\_sze@{blk\_sze}}
+\index{blk\_sze@{blk\_sze}!fp::Analyzer@{fp::Analyzer}}
+\doxysubsubsection{\texorpdfstring{blk\_sze}{blk\_sze}}
+{\footnotesize\ttfamily int fp\+::\+Analyzer\+::blk\+\_\+sze}
+
+\mbox{\Hypertarget{classfp_1_1_analyzer_aefbcbf2056dc84aa9cfde534bcc33ab9}\label{classfp_1_1_analyzer_aefbcbf2056dc84aa9cfde534bcc33ab9}} 
+\index{fp::Analyzer@{fp::Analyzer}!descriptor\_method@{descriptor\_method}}
+\index{descriptor\_method@{descriptor\_method}!fp::Analyzer@{fp::Analyzer}}
+\doxysubsubsection{\texorpdfstring{descriptor\_method}{descriptor\_method}}
+{\footnotesize\ttfamily int fp\+::\+Analyzer\+::descriptor\+\_\+method}
+
+\mbox{\Hypertarget{classfp_1_1_analyzer_ab32601f52d9a47ef39479daeb0bc8d5b}\label{classfp_1_1_analyzer_ab32601f52d9a47ef39479daeb0bc8d5b}} 
+\index{fp::Analyzer@{fp::Analyzer}!keypoint\_method@{keypoint\_method}}
+\index{keypoint\_method@{keypoint\_method}!fp::Analyzer@{fp::Analyzer}}
+\doxysubsubsection{\texorpdfstring{keypoint\_method}{keypoint\_method}}
+{\footnotesize\ttfamily int fp\+::\+Analyzer\+::keypoint\+\_\+method}
+
+\mbox{\Hypertarget{classfp_1_1_analyzer_a9af412ca499f40118a7b97ae2e72a0c6}\label{classfp_1_1_analyzer_a9af412ca499f40118a7b97ae2e72a0c6}} 
+\index{fp::Analyzer@{fp::Analyzer}!keypoint\_threshold@{keypoint\_threshold}}
+\index{keypoint\_threshold@{keypoint\_threshold}!fp::Analyzer@{fp::Analyzer}}
+\doxysubsubsection{\texorpdfstring{keypoint\_threshold}{keypoint\_threshold}}
+{\footnotesize\ttfamily int fp\+::\+Analyzer\+::keypoint\+\_\+threshold}
+
+\mbox{\Hypertarget{classfp_1_1_analyzer_a36149b99cf68b4ec3c2a274cf42440c5}\label{classfp_1_1_analyzer_a36149b99cf68b4ec3c2a274cf42440c5}} 
+\index{fp::Analyzer@{fp::Analyzer}!l1\_features\_method@{l1\_features\_method}}
+\index{l1\_features\_method@{l1\_features\_method}!fp::Analyzer@{fp::Analyzer}}
+\doxysubsubsection{\texorpdfstring{l1\_features\_method}{l1\_features\_method}}
+{\footnotesize\ttfamily int fp\+::\+Analyzer\+::l1\+\_\+features\+\_\+method}
+
+\mbox{\Hypertarget{classfp_1_1_analyzer_ae981d7a09fd06e360c115b0c80cee6e4}\label{classfp_1_1_analyzer_ae981d7a09fd06e360c115b0c80cee6e4}} 
+\index{fp::Analyzer@{fp::Analyzer}!max\_match\_dist@{max\_match\_dist}}
+\index{max\_match\_dist@{max\_match\_dist}!fp::Analyzer@{fp::Analyzer}}
+\doxysubsubsection{\texorpdfstring{max\_match\_dist}{max\_match\_dist}}
+{\footnotesize\ttfamily int fp\+::\+Analyzer\+::max\+\_\+match\+\_\+dist}
+
+\mbox{\Hypertarget{classfp_1_1_analyzer_a7a2ab7b30b215cb53a77d89bd8174341}\label{classfp_1_1_analyzer_a7a2ab7b30b215cb53a77d89bd8174341}} 
+\index{fp::Analyzer@{fp::Analyzer}!poincare\_tol@{poincare\_tol}}
+\index{poincare\_tol@{poincare\_tol}!fp::Analyzer@{fp::Analyzer}}
+\doxysubsubsection{\texorpdfstring{poincare\_tol}{poincare\_tol}}
+{\footnotesize\ttfamily float fp\+::\+Analyzer\+::poincare\+\_\+tol}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{analyzer_8h}{analyzer.\+h}}\item 
+\mbox{\hyperlink{analyzer_8cpp}{analyzer.\+cpp}}\end{DoxyCompactItemize}

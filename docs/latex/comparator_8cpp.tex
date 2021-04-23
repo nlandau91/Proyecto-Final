@@ -1,0 +1,59 @@
+\hypertarget{comparator_8cpp}{}\doxysection{comparator.\+cpp File Reference}
+\label{comparator_8cpp}\index{comparator.cpp@{comparator.cpp}}
+{\ttfamily \#include \char`\"{}comparator.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$Q\+Debug$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+Include dependency graph for comparator.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{comparator_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ cv\+::\+D\+Match $>$ \mbox{\hyperlink{comparator_8cpp_aee4c3cc732cfff4d056294377ddaf186}{find\+\_\+matches}} (const cv\+::\+Mat \&query\+\_\+descriptors, const cv\+::\+Mat \&train\+\_\+descriptors, int norm\+\_\+type)
+\item 
+std\+::vector$<$ cv\+::\+D\+Match $>$ \mbox{\hyperlink{comparator_8cpp_a5a1b9148aff3e77344a2e0983087d560}{find\+\_\+matches}} (const cv\+::\+Mat \&query\+\_\+descriptors, const cv\+::\+Mat \&train\+\_\+descriptors, int norm\+\_\+type, float lowe\+\_\+ratio)
+\item 
+bool \mbox{\hyperlink{comparator_8cpp_abfe6ce8277516569d134936484d9485e}{compare\+\_\+singularities}} (const std\+::vector$<$ cv\+::\+Key\+Point $>$ \&sing1, const std\+::vector$<$ cv\+::\+Key\+Point $>$ \&sing2)
+\item 
+std\+::vector$<$ cv\+::\+D\+Match $>$ \mbox{\hyperlink{comparator_8cpp_a05ac2d0218512b14c1696959bf9a47bf}{remove\+\_\+outliers\+\_\+median}} (const std\+::vector$<$ cv\+::\+D\+Match $>$ \&matches, double ratio=2.\+0)
+\item 
+std\+::vector$<$ cv\+::\+D\+Match $>$ \mbox{\hyperlink{comparator_8cpp_adf6642037128a1d4b5375a569d13e4c7}{remove\+\_\+outliers\+\_\+ransac}} (const std\+::vector$<$ cv\+::\+Key\+Point $>$ \&query\+\_\+keypoints, const std\+::vector$<$ cv\+::\+Key\+Point $>$ \&train\+\_\+keypoints, const std\+::vector$<$ cv\+::\+D\+Match $>$ \&matches, int transform=H\+O\+M\+O\+G\+R\+A\+P\+HY, double ransac\+\_\+threshold=3.\+0, int max\+\_\+iter=2000, double conf=0.\+995)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{comparator_8cpp_abfe6ce8277516569d134936484d9485e}\label{comparator_8cpp_abfe6ce8277516569d134936484d9485e}} 
+\index{comparator.cpp@{comparator.cpp}!compare\_singularities@{compare\_singularities}}
+\index{compare\_singularities@{compare\_singularities}!comparator.cpp@{comparator.cpp}}
+\doxysubsubsection{\texorpdfstring{compare\_singularities()}{compare\_singularities()}}
+{\footnotesize\ttfamily bool compare\+\_\+singularities (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Key\+Point $>$ \&}]{sing1,  }\item[{const std\+::vector$<$ cv\+::\+Key\+Point $>$ \&}]{sing2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{comparator_8cpp_aee4c3cc732cfff4d056294377ddaf186}\label{comparator_8cpp_aee4c3cc732cfff4d056294377ddaf186}} 
+\index{comparator.cpp@{comparator.cpp}!find\_matches@{find\_matches}}
+\index{find\_matches@{find\_matches}!comparator.cpp@{comparator.cpp}}
+\doxysubsubsection{\texorpdfstring{find\_matches()}{find\_matches()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::vector$<$cv\+::\+D\+Match$>$ find\+\_\+matches (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{query\+\_\+descriptors,  }\item[{const cv\+::\+Mat \&}]{train\+\_\+descriptors,  }\item[{int}]{norm\+\_\+type }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{comparator_8cpp_a5a1b9148aff3e77344a2e0983087d560}\label{comparator_8cpp_a5a1b9148aff3e77344a2e0983087d560}} 
+\index{comparator.cpp@{comparator.cpp}!find\_matches@{find\_matches}}
+\index{find\_matches@{find\_matches}!comparator.cpp@{comparator.cpp}}
+\doxysubsubsection{\texorpdfstring{find\_matches()}{find\_matches()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::vector$<$cv\+::\+D\+Match$>$ find\+\_\+matches (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{query\+\_\+descriptors,  }\item[{const cv\+::\+Mat \&}]{train\+\_\+descriptors,  }\item[{int}]{norm\+\_\+type,  }\item[{float}]{lowe\+\_\+ratio }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{comparator_8cpp_a05ac2d0218512b14c1696959bf9a47bf}\label{comparator_8cpp_a05ac2d0218512b14c1696959bf9a47bf}} 
+\index{comparator.cpp@{comparator.cpp}!remove\_outliers\_median@{remove\_outliers\_median}}
+\index{remove\_outliers\_median@{remove\_outliers\_median}!comparator.cpp@{comparator.cpp}}
+\doxysubsubsection{\texorpdfstring{remove\_outliers\_median()}{remove\_outliers\_median()}}
+{\footnotesize\ttfamily std\+::vector$<$cv\+::\+D\+Match$>$ remove\+\_\+outliers\+\_\+median (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+D\+Match $>$ \&}]{matches,  }\item[{double}]{ratio = {\ttfamily 2.0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{comparator_8cpp_adf6642037128a1d4b5375a569d13e4c7}\label{comparator_8cpp_adf6642037128a1d4b5375a569d13e4c7}} 
+\index{comparator.cpp@{comparator.cpp}!remove\_outliers\_ransac@{remove\_outliers\_ransac}}
+\index{remove\_outliers\_ransac@{remove\_outliers\_ransac}!comparator.cpp@{comparator.cpp}}
+\doxysubsubsection{\texorpdfstring{remove\_outliers\_ransac()}{remove\_outliers\_ransac()}}
+{\footnotesize\ttfamily std\+::vector$<$cv\+::\+D\+Match$>$ remove\+\_\+outliers\+\_\+ransac (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Key\+Point $>$ \&}]{query\+\_\+keypoints,  }\item[{const std\+::vector$<$ cv\+::\+Key\+Point $>$ \&}]{train\+\_\+keypoints,  }\item[{const std\+::vector$<$ cv\+::\+D\+Match $>$ \&}]{matches,  }\item[{int}]{transform = {\ttfamily HOMOGRAPHY},  }\item[{double}]{ransac\+\_\+threshold = {\ttfamily 3.0},  }\item[{int}]{max\+\_\+iter = {\ttfamily 2000},  }\item[{double}]{conf = {\ttfamily 0.995} }\end{DoxyParamCaption})}
+
