@@ -11,7 +11,7 @@ class ConfigDialog;
 }
 
 /*!
- * \brief La clase ConfigDialog es la que controla la ventana de configuracion del programa
+ * La clase ConfigDialog es la que controla la ventana de configuracion del programa
  */
 class ConfigDialog : public QDialog
 {

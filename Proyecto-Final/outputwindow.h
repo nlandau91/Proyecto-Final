@@ -11,7 +11,7 @@ class OutputWindow;
 }
 
 /*!
- * \brief La clase OutputWindow se encarga de mostrar en una ventana la informacion
+ * La clase OutputWindow se encarga de mostrar en una ventana la informacion
  * de una huella dactilar preprocesada y analizada
  */
 

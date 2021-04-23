@@ -8,7 +8,7 @@
 namespace fp
 {
 /*!
- * \brief La clase Analyzer se encarga de extraer las caracteristicas de una
+ * La clase Analyzer se encarga de extraer las caracteristicas de una
  * imagen de huella dactilar y armar el template a partir de las mismas
  */
 class Analyzer

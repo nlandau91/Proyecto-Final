@@ -1,4 +1,6 @@
 #include "stats.h"
+#include <algorithm>
+#include <cmath>
 namespace fp{
 
 double get_mean(const std::vector<double> &scores, bool ignore_extremes)

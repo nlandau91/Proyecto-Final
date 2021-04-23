@@ -4,7 +4,7 @@
 
 namespace fp{
 /*!
- * \brief El enum Params define las opciones de configuracion disponibles
+ * El enum Params define las opciones de configuracion disponibles
  * para los metodos configurables del programa
  */
 enum Params
@@ -36,7 +36,7 @@ enum Params
 
 };
 /*!
- * \brief La clase AppSettings se encarga de almacenar la configuracion de cargar y almacenar
+ * La clase AppSettings se encarga de almacenar la configuracion de cargar y almacenar
  * la configuracion externa del programa.
  */
 class AppSettings

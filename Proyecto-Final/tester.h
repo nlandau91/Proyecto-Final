@@ -9,7 +9,7 @@
 namespace fp
 {
 /*!
- * \brief La clase Tester implementa funciones para poder testear el programa
+ * La clase Tester implementa funciones para poder testear el programa
  */
 class Tester
 {

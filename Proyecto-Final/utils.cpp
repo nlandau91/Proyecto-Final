@@ -1,6 +1,10 @@
 #include "utils.h"
 #include "appsettings.h"
 #include <opencv2/imgproc.hpp>
+/*!
+ * El namespace fp contiene todas las clases, structs, enums y funciones
+ * que necesita el programa para manejar las huellas dactilares
+ */
 namespace fp{
 
 QImage cvMatToQImage(const cv::Mat &inMat)

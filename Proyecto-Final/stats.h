@@ -1,7 +1,7 @@
 #ifndef STATS_H
 #define STATS_H
 
-#include "utils.h"
+#include <vector>
 
 namespace fp{
 

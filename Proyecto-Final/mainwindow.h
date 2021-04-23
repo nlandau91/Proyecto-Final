@@ -20,7 +20,7 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 /*!
- * \brief La clase MainWindow maneja la ventana principal del programa
+ * La clase MainWindow maneja la ventana principal del programa
  */
 class MainWindow : public QMainWindow
 {

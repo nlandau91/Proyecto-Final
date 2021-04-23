@@ -9,7 +9,7 @@ namespace fp
 {
 
 /*!
- * \brief La clase Preprocesser realiza el adecuamiento de la imagen de una huella
+ * La clase Preprocesser realiza el adecuamiento de la imagen de una huella
  * dactilar para poder ser analizada posteriormente
  */
 class Preprocesser

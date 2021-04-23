@@ -13,7 +13,7 @@
 namespace fp
 {
 /*!
- * \brief La clase Database maneja el acceso a la base de datos del programa
+ * La clase Database maneja el acceso a la base de datos del programa
  */
 class Database
 {

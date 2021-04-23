@@ -7,7 +7,7 @@
 namespace fp{
 
 /*!
- * \brief La clase Comparator se encarga de realizar la comparacion entre
+ * La clase Comparator se encarga de realizar la comparacion entre
  * dos templates de huellas dactilares.
  */
 class Comparator

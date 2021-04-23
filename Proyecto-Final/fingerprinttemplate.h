@@ -7,7 +7,7 @@
 namespace fp
 {
 /*!
- * \brief The FingerprintTemplate class modela la plantilla de una huella dactilar
+ * The FingerprintTemplate class modela la plantilla de una huella dactilar
  */
 class FingerprintTemplate
 {
