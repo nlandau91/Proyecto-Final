@@ -10,12 +10,8 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->setupUi(this);
 
     //preprocessing
-
-    ui->comboBox_thi->addItem("none");
     ui->comboBox_thi->addItem("zhangsuen");
     ui->comboBox_thi->addItem("guohall");
-    //ui->comboBox_thi->addItem("morph");
-
 
     //analizing
     ui->comboBox_kp->addItem("harris");

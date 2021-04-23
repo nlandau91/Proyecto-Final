@@ -1,5 +1,7 @@
 #include "analyzer.h"
-#include <opencv2/xfeatures2d/nonfree.hpp>
+#include "appsettings.h"
+#include <opencv2/imgproc.hpp>
+#include <opencv2/xfeatures2d.hpp>
 #include <QDebug>
 
 using namespace fp;

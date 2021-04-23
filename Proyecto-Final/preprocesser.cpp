@@ -1,4 +1,7 @@
 #include "preprocesser.h"
+#include "appsettings.h"
+#include <opencv2/imgproc.hpp>
+#include <opencv2/ximgproc.hpp>
 #include <QDebug>
 
 using namespace fp;
@@ -670,11 +673,6 @@ cv::Mat thin(const cv::Mat &src, int thinning_method)
     cv::Mat thinned = cv::Mat::zeros(binary.size(),binary.type());
     switch(thinning_method)
     {
-    case NONE:
-    {
-        thinned = src.clone();
-        break;
-    }
     case ZHANGSUEN:
     {
         //zhangsuen_thinning(thinned);

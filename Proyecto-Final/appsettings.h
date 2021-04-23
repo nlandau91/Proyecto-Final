@@ -1,13 +1,55 @@
 #ifndef APPSETTINGS_H
 #define APPSETTINGS_H
 
-#include "common.h"
 
 namespace fp{
+/*!
+ * \brief El enum Params define las opciones de configuracion disponibles
+ * para los metodos configurables del programa
+ */
+enum Params
+{
+    GABOR,
+    ZHANGSUEN,
+    MORPH,
+    GUOHALL,
+    HARRIS,
+    SHITOMASI,
+    SURF,
+    ORB,
+    CUSTOM,
+    SIFT,
+    BRIEF,
+    BRUTEFORCE,
+    FLANN,
+    CN,
+    ENDING,
+    BIFURCATION,
+    POINCARE,
+    LOOP,
+    DELTA,
+    WHORL,
+    ARCH,
+    HOMOGRAPHY,
+    PARTIALAFFINE,
+    AFFINE,
+
+};
+/*!
+ * \brief La clase AppSettings se encarga de almacenar la configuracion de cargar y almacenar
+ * la configuracion externa del programa.
+ */
 class AppSettings
 {
 public:
+    /*!
+     * \brief AppSettings constructor
+     */
     AppSettings();
+
+    /*!
+     * \brief load_settings carga la configuracion del archivo de configuracion
+     */
     void load_settings();
 
     //preprocess

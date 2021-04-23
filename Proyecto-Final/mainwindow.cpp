@@ -2,6 +2,9 @@
 #include "ui_mainwindow.h"
 #include "configdialog.h"
 #include "stats.h"
+#include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
+
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QMessageBox>
@@ -302,17 +305,13 @@ void MainWindow::on_btn_demo_clicked()
 void MainWindow::on_btn_far_clicked()
 {
     std::vector<double> scores = tester.test_far(db);
-    std::cout << "Score stats: mean    = " << fp::get_mean(scores,true) << std::endl;
-    std::cout << "Score stats: low 5%  = " << fp::get_low_pcnt(scores,0.05) << std::endl;
-    std::cout << "Score stats: high 5%  = " << fp::get_high_pcnt(scores,0.05) << std::endl;
+    //todo: output
 }
 
 void MainWindow::on_btn_frr_clicked()
 {
     std::vector<double> scores = tester.test_frr(db);
-    std::cout << "Score stats: mean    = " << fp::get_mean(scores,true) << std::endl;
-    std::cout << "Score stats: low 5%  = " << fp::get_low_pcnt(scores,0.05) << std::endl;
-    std::cout << "Score stats: high 5%  = " << fp::get_high_pcnt(scores,0.05) << std::endl;
+    //todo: output
 }
 
 void MainWindow::on_btn_db_clicked()
@@ -336,9 +335,16 @@ void MainWindow::on_btn_db_clicked()
 void MainWindow::on_btn_fullTest_clicked()
 {
     //creamos la lista de parametros
-    std::vector<std::vector<double>> params_list;
+    std::vector<fp::Tester::TesterParameters> params_list;
 
-    params_list.push_back(std::vector<double>({2.5,static_cast<double>(app_settings.ransac_model),app_settings.ransac_threshold,0.99,2000,app_settings.matcher_threshold}));
+    fp::Tester::TesterParameters tester_parameters;
+    tester_parameters.med_th=2.5;
+    tester_parameters.ran_trans=app_settings.ransac_model;
+    tester_parameters.ran_th=app_settings.ransac_threshold;
+    tester_parameters.ran_conf=app_settings.ransac_threshold;
+    tester_parameters.ran_iter=2000;
+    tester_parameters.match_threshold=0.99;
+    params_list.push_back(tester_parameters);
 
     tester.perform_tests(params_list, db);
     load_settings();

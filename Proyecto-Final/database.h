@@ -1,7 +1,7 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include "common.h"
+
 #include "utils.h"
 #include "fingerprinttemplate.h"
 
@@ -12,7 +12,9 @@
 #include <QDir>
 namespace fp
 {
-
+/*!
+ * \brief La clase Database maneja el acceso a la base de datos del programa
+ */
 class Database
 {
 public:

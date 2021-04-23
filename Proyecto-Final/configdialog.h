@@ -1,7 +1,7 @@
 #ifndef CONFIGDIALOG_H
 #define CONFIGDIALOG_H
 
-#include "common.h"
+
 
 #include <QDialog>
 #include <QSettings>
@@ -10,6 +10,9 @@ namespace Ui {
 class ConfigDialog;
 }
 
+/*!
+ * \brief La clase ConfigDialog es la que controla la ventana de configuracion del programa
+ */
 class ConfigDialog : public QDialog
 {
     Q_OBJECT

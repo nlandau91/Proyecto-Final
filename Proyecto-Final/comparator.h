@@ -1,32 +1,30 @@
 #ifndef COMPARATOR_H
 #define COMPARATOR_H
 
-#include "common.h"
+
 #include "fingerprinttemplate.h"
 
 namespace fp{
 
+/*!
+ * \brief La clase Comparator se encarga de realizar la comparacion entre
+ * dos templates de huellas dactilares.
+ */
 class Comparator
 {
 public:
+    /*!
+     * \brief Comparator constructor
+     */
     Comparator();
 
     /*!
-     * \brief compare compara dos template de huellas dactilares y devuelve un score de similitud
+     * \brief compare compara dos templates de huellas dactilares y devuelve un score de similitud
      * \param query_template template de consulta
      * \param train_template template de verificacion
      * \return score de similitud, entre 0.0 y 1.0
      */
     double compare(const FingerprintTemplate &query_template, const FingerprintTemplate &train_template) const;
-
-    /*!
-     * \brief compare
-     * \param query_template
-     * \param train_templates
-     * \return
-     */
-    double compare(const FingerprintTemplate &query_template, const std::vector<FingerprintTemplate> &train_templates) const;
-
 
     int matcher_method;
     double match_threshold;

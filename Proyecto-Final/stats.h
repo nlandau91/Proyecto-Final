@@ -1,6 +1,6 @@
 #ifndef STATS_H
 #define STATS_H
-#include "common.h"
+
 #include "utils.h"
 
 namespace fp{

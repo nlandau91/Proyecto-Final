@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "common.h"
+
 #include "database.h"
 #include "appsettings.h"
 #include "preprocesser.h"
@@ -19,6 +19,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+/*!
+ * \brief La clase MainWindow maneja la ventana principal del programa
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

@@ -1,7 +1,8 @@
 #ifndef FINGERPRINTTEMPLATE_H
 #define FINGERPRINTTEMPLATE_H
 
-#include "common.h"
+#include <opencv2/core.hpp>
+#include <string>
 
 namespace fp
 {

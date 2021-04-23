@@ -9,11 +9,23 @@
 namespace fp
 {
 /*!
- * \brief The Tester class implementa algunos test a medida
+ * \brief La clase Tester implementa funciones para poder testear el programa
  */
 class Tester
 {
 public:
+    /*!
+     * \brief El struct TesterParameters contiene los parametros que utiliza el test
+     */
+    struct TesterParameters
+    {
+        double med_th;
+        int ran_trans;
+        double ran_th;
+        double ran_conf;
+        int ran_iter;
+        double match_threshold;
+    };
     /*!
      * \brief Tester inicializador vacio, es necesario setear
      * el preprocesador, analizado y comparador, y tener cargada la db
@@ -41,7 +53,13 @@ public:
      */
     std::vector<double> test_frr(const Database &db);
 
-    void perform_tests(const std::vector<std::vector<double>> &params_list, Database &db);
+    /*!
+     * \brief perform_tests realiza una serie de test, uno para cada entrada en la
+     * lista de parametros pasada por parametros
+     * \param params_list lista de parametros para realizar testeos
+     * \param db base de datos cargada
+     */
+    void perform_tests(const std::vector<TesterParameters> &params_list, Database &db);
 
     Preprocesser preprocesser;
     Analyzer analyzer;

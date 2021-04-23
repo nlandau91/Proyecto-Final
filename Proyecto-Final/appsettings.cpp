@@ -53,7 +53,6 @@ int string_to_enum(const QString arg1)
     int not_found = -1;
 
     if(arg1 == "gabor") return GABOR;
-    if(arg1 == "none") return NONE;
     if(arg1 == "guohall") return GUOHALL;
     if(arg1 == "zhangsuen") return ZHANGSUEN;
     if(arg1 == "morph") return MORPH;

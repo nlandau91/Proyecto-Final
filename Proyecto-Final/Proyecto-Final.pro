@@ -33,13 +33,13 @@ SOURCES += \
 HEADERS += \
     analyzer.h \
     appsettings.h \
-    common.h \
     comparator.h \
     configdialog.h \
     database.h \
     fingerprinttemplate.h \
     mainwindow.h \
     outputwindow.h \
+    preprocessed.h \
     preprocesser.h \
     stats.h \
     tester.h \

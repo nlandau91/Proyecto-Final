@@ -55,7 +55,6 @@ void Database::ingresar_template(const FingerprintTemplate &fp_template, const Q
     }
     //guardamos el archivo en disco armando el nombre
     template_path = template_path + "/" + QString::number(sample);
-    serialize_mat(template_path.toStdString(),fp_template.descriptors);
     fp_template.serialize(template_path.toStdString());
 
     //ingresamos los descriptores a la base de datos

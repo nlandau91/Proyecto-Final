@@ -1,7 +1,7 @@
 #ifndef OUTPUTWINDOW_H
 #define OUTPUTWINDOW_H
 
-#include "common.h"
+#include "preprocessed.h"
 #include "utils.h"
 #include "fingerprinttemplate.h"
 
@@ -9,6 +9,11 @@
 namespace Ui {
 class OutputWindow;
 }
+
+/*!
+ * \brief La clase OutputWindow se encarga de mostrar en una ventana la informacion
+ * de una huella dactilar preprocesada y analizada
+ */
 
 class OutputWindow : public QWidget
 {
@@ -18,9 +23,9 @@ public:
     explicit OutputWindow(QWidget *parent = nullptr);
     ~OutputWindow();
     /*!
-     * \brief setup arma el panel de salida a partir de los parametros pasados
-     * \param analisis resultado del analisis de la huella
-     * \param output imagen a mostrar en el panel
+     * \brief setup arma el panel de salida a partir del preprocesad y template de una huella dactilar
+     * \param fp_template template de la huella dactilar
+     * \param prep preprocesado de la huella dactilar
      */
     void setup(const fp::FingerprintTemplate &fp_template, const fp::Preprocessed &prep);
 

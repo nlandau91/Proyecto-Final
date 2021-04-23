@@ -1,9 +1,8 @@
 #include "utils.h"
-#include <QDebug>
-
+#include "appsettings.h"
+#include <opencv2/imgproc.hpp>
 namespace fp{
 
-//convierte una imagen de tipo cv::Mat a una de tipo QImage
 QImage cvMatToQImage(const cv::Mat &inMat)
 {
     switch ( inMat.type() )
@@ -45,7 +44,6 @@ QImage cvMatToQImage(const cv::Mat &inMat)
     return QImage();
 }
 
-//convierte una imagen de tipo cv::Mat a una de tipo QPixmap
 QPixmap cvMatToQPixmap( const cv::Mat &inMat )
 {
     return QPixmap::fromImage( cvMatToQImage( inMat ) );
@@ -112,57 +110,6 @@ cv::Mat mat_cos( const cv::Mat &src)
     }
     return cos_mat;
 }
-cv::Mat mat_sin( const cv::Mat &src)
-{
-    cv::Mat sin_mat = cv::Mat::zeros(src.size(),CV_32FC1);
-    for(int r = 0; r < src.rows; r++)
-    {
-        for(int c = 0; c < src.cols; c++)
-        {
-            sin_mat.at<float>(r,c) = sin(src.at<float>(r,c));
-        }
-    }
-    return sin_mat;
-}
-cv::Mat mat_atan2( const cv::Mat &src1, const cv::Mat &src2)
-{
-    cv::Mat atan2_mat = cv::Mat::zeros(src1.size(),CV_32FC1);
-    for(int r = 0; r < src1.rows; r++)
-    {
-        for(int c = 0; c < src1.cols; c++)
-        {
-            atan2_mat.at<float>(r,c) = atan2(src1.at<float>(r,c),src2.at<float>(r,c));
-        }
-    }
-    return atan2_mat;
-}
-
-std::vector<float> unique(const cv::Mat& input, bool sort)
-{
-    if (input.channels() > 1 || input.type() != CV_32F)
-    {
-        qDebug() << "unique !!! Only works with CV_32F 1-channel Mat";
-        return std::vector<float>();
-    }
-
-    std::vector<float> out;
-    for(int y = 0; y < input.rows; ++y)
-    {
-        const float* row_ptr = input.ptr<float>(y);
-        for(int x = 0; x < input.cols; ++x)
-        {
-            float value = row_ptr[x];
-
-            if ( std::find(out.begin(), out.end(), value) == out.end() )
-                out.push_back(value);
-        }
-    }
-
-    if (sort)
-        std::sort(out.begin(), out.end());
-
-    return out;
-}
 
 cv::Mat visualize_angles( const cv::Mat &im, const cv::Mat &angles)
 {
@@ -194,40 +141,6 @@ cv::Mat visualize_angles( const cv::Mat &im, const cv::Mat &angles)
     return result;
 }
 
-cv::Mat apply_mask(const cv::Mat &src, const cv::Mat &mask)
-{
-    cv::Mat masked = cv::Mat::zeros(src.size(),src.type());
-    bitwise_and(src,src,masked,mask);
-    return masked;
-}
 
-cv::Mat translate_mat(const cv::Mat &img, int offsetx, int offsety)
-{
-    cv::Mat translated = cv::Mat::zeros(img.size(),img.type());
-    cv::Mat trans_mat = (cv::Mat_<double>(2,3) << 1, 0, offsetx, 0, 1, offsety);
-    cv::warpAffine(img,translated,trans_mat,img.size());
-    return translated;
-}
 
-bool serialize_mat(const std::string& file, const cv::Mat& mat, const std::string &name)
-{
-    cv::FileStorage fs( file, cv::FileStorage::WRITE );
-    if( fs.isOpened() )
-    {
-        fs << name << mat;
-        return true;
-    }
-    return false;
-}
-
-bool read_serialized_mat(const std::string& file, cv::Mat& mat, const std::string &name)
-{
-    cv::FileStorage fs( file, cv::FileStorage::READ );
-    if( fs.isOpened() )
-    {
-        fs[name] >> mat;
-        return true;
-    }
-    return false;
-}
 }

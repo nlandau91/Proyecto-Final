@@ -1,8 +1,12 @@
 #include "tester.h"
 #include "stats.h"
+#include "appsettings.h"
 #include "omp.h"
-#include <thread>
-#include <QDebug>
+
+#include <opencv2/imgcodecs.hpp>
+
+#include <iostream>
+#include <QTextStream>
 #include <QElapsedTimer>
 
 using namespace fp;
@@ -31,7 +35,6 @@ void Tester::load_database(fp::Database &db, const QString &path)
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
             fp::FingerprintTemplate fp_template = analyzer.analize(pre);
-            qDebug() << "Descriptores hallado: " << fp_template.descriptors.rows;
             //solo admitimos huellas que sean suficientemente buenas
             if(fp_template.descriptors.rows > 0)
             {
@@ -148,7 +151,7 @@ std::vector<double> Tester::test_frr(const Database &db)
     return scores;
 }
 
-void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, Database &db)
+void Tester::perform_tests(const std::vector<TesterParameters> &params_list, Database &db)
 {
     QString filename = "../tests/Data.csv";
     QFile file(filename);
@@ -175,14 +178,14 @@ void Tester::perform_tests(const std::vector<std::vector<double>> &params_list, 
     }
 
     int test_number = 0;
-    for(const std::vector<double> &params : params_list)
+    for(const TesterParameters &params : params_list)
     {
-        double med_th = params[0];
-        int ran_trans = (int)params[1];
-        double ran_th = params[2];
-        double ran_conf = params[3];
-        int ran_iter = (int)params[4];
-        double match_threshold = params[5];
+        double med_th = params.med_th;
+        int ran_trans = params.ran_trans;
+        double ran_th = params.ran_th;
+        double ran_conf = params.ran_conf;
+        int ran_iter = params.ran_iter;
+        double match_threshold = params.match_threshold;
         comparator.median_threshold = med_th;
         comparator.ransac_model = ran_trans;
         comparator.ransac_threshold = ran_th;

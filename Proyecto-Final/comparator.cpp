@@ -1,6 +1,7 @@
 #include "comparator.h"
+#include "appsettings.h"
+#include <opencv2/calib3d.hpp>
 #include <QDebug>
-#include <iostream>
 
 using namespace fp;
 Comparator::Comparator()

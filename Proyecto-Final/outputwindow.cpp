@@ -1,5 +1,7 @@
 #include "outputwindow.h"
 #include "ui_outputwindow.h"
+#include "appsettings.h"
+#include <opencv2/imgproc.hpp>
 
 #include <QFileDialog>
 
