@@ -19,13 +19,13 @@ Tester::Tester()
 void Tester::load_database(fp::Database &db, const QString &path)
 {
     //cargamos las carpetas que contienen huellas
-    std::cout << path.toStdString() << std::endl;
+    //std::cout << path.toStdString() << std::endl;
     //para cada carpeta, cargamos todas las huellas
     QDir directory(path);
     QStringList fileNames = directory.entryList(QStringList() << "*.tif",QDir::Files);
     for(const QString &fileName : fileNames)
     {
-        std::cout << fileName.toStdString() << std::endl;
+        //std::cout << fileName.toStdString() << std::endl;
         //para cada huella, la procesamos y la ingresamos
         std::string abs_path = (path+"/"+fileName).toStdString();
         cv::Mat src = cv::imread(abs_path,cv::IMREAD_GRAYSCALE);
@@ -42,7 +42,7 @@ void Tester::load_database(fp::Database &db, const QString &path)
                 int id;
                 id = fileName.split("_").at(0).toInt();
                 db.ingresar_template(fp_template,QString::number(id));
-                std::cout << "Huella ingresada" << std::endl;
+                //std::cout << "Huella ingresada" << std::endl;
             }
             else
             {
@@ -94,7 +94,7 @@ std::vector<double> Tester::test_far(const Database &db)
 #pragma omp critical
                 {
                     testeos += n;
-                    std::cout << "Test far: " << (double)testeos / (2022.40) << "%" << std::endl;
+                    //std::cout << "Test far: " << (double)testeos / (2022.40) << "%" << std::endl;
                 }
             }
         }
@@ -142,7 +142,7 @@ std::vector<double> Tester::test_frr(const Database &db)
 #pragma omp critical
             {
                 testeos +=n;
-                std::cout << "Test frr: " << (double)testeos / (28.80) << "%" << std::endl;
+                //std::cout << "Test frr: " << (double)testeos / (28.80) << "%" << std::endl;
             }
         }
 #pragma omp critical

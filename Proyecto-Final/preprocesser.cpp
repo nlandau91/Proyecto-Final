@@ -480,7 +480,6 @@ cv::Mat filter_ridge(const cv::Mat &src,const cv::Mat &orientation_map,const cv:
             }
         }
     }
-    //std::cout <<"borde" << std::endl;
     //ponemos un borde
     newim.rowRange(0, im.rows).colRange(0, min_c).setTo(255);
     newim.rowRange(0, min_r).colRange(0, im.cols).setTo(255);

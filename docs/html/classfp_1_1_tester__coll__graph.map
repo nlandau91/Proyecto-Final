@@ -1,6 +1,0 @@
-<map id="fp::Tester" name="fp::Tester">
-<area shape="rect" id="node1" title="The Tester class implementa algunos test a medida." alt="" coords="159,95,241,121"/>
-<area shape="rect" id="node2" href="$classfp_1_1_comparator.html" title=" " alt="" coords="5,5,125,32"/>
-<area shape="rect" id="node3" href="$classfp_1_1_analyzer.html" title="La clase Analyzer se encarga de realizar el analisis y extraccion de caracteristicas de una huella da..." alt="" coords="150,5,250,32"/>
-<area shape="rect" id="node4" href="$classfp_1_1_preprocesser.html" title="The Preprocesser class realiza el adecuamiento de la imagen de una huella dactilar para poder ser ana..." alt="" coords="274,5,401,32"/>
-</map>
