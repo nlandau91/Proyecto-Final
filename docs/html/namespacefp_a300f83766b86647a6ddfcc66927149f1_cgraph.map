@@ -1,0 +1,4 @@
+<map id="fp::cvMatToQPixmap" name="fp::cvMatToQPixmap">
+<area shape="rect" id="node1" title="cvMatToQPixmap convierte una imagen de tipo cv::Mat a una de tipo QPixmap" alt="" coords="5,5,161,32"/>
+<area shape="rect" id="node2" href="$namespacefp.html#ab4232a95baa75c6df7ebe2f47ed153cc" title="cvMatToQImage convierte una imagen de tipo cv::Mat a una de tipo QImage" alt="" coords="209,5,357,32"/>
+</map>

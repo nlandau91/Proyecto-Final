@@ -1,0 +1,41 @@
+<map id="MainWindow::on_btn_ingresar_clicked" name="MainWindow::on_btn_ingresar_clicked">
+<area shape="rect" id="node1" title=" " alt="" coords="5,699,163,740"/>
+<area shape="rect" id="node2" href="$classfp_1_1_analyzer.html#a1141dfb1186e26dbde5811b4f931bab4" title="analize analiza la huella dactilar preprocesada" alt="" coords="237,137,391,163"/>
+<area shape="rect" id="node18" href="$namespacefp.html#a300f83766b86647a6ddfcc66927149f1" title="cvMatToQPixmap convierte una imagen de tipo cv::Mat a una de tipo QPixmap" alt="" coords="236,681,392,707"/>
+<area shape="rect" id="node20" href="$namespacefp.html#a35e3115437a84e7ef71c9720fa223180" title="draw_keypoints dibuja sobre la imagen los keypoints pasadas por parametro" alt="" coords="241,731,387,758"/>
+<area shape="rect" id="node21" href="$namespacefp.html#aba41fe5777b362f4eab556d3394a0307" title="draw_singularities dibuja sobre la imagen las singularidades pasadas por parametro" alt="" coords="233,782,395,809"/>
+<area shape="rect" id="node22" href="$classfp_1_1_database.html#a5045fc1e095605dc82e1b108c679c2fa" title="ingresar_template ingresa un template a la base de datos" alt="" coords="231,859,397,900"/>
+<area shape="rect" id="node24" href="$classfp_1_1_preprocesser.html#a12d52d4e722cda5ef4bcc310842f1b9e" title="preprocess realiza el preprocesamiento de la imagen para adecuarla al analisis" alt="" coords="211,618,417,645"/>
+<area shape="rect" id="node3" href="$classfp_1_1_analyzer.html#a592e94d3d860667efcbdeadb586621c1" title="calcular_descriptors calcula los decriptores para los puntos claves" alt="" coords="485,5,644,47"/>
+<area shape="rect" id="node4" href="$classfp_1_1_analyzer.html#a9b329b39ee510d6e9c0f0c86df78c427" title="find_l1_features encuentra los puntos singulares de una huella" alt="" coords="499,71,631,112"/>
+<area shape="rect" id="node7" href="$classfp_1_1_analyzer.html#a5f2282292fd96064a52c9c4a642b4aed" title="get_keypoints encuentra puntos de interes en la huella dactilar" alt="" coords="465,213,664,239"/>
+<area shape="rect" id="node16" href="$analyzer_8cpp.html#aabdcc8fba0b676f5ae9bcb3aaeb5e277" title=" " alt="" coords="511,137,619,163"/>
+<area shape="rect" id="node5" href="$analyzer_8cpp.html#a9cbd4719e1fe01ec875bce12a0a48ac8" title=" " alt="" coords="760,10,839,37"/>
+<area shape="rect" id="node6" href="$analyzer_8cpp.html#a7265b7a1c10888e43b86e2fbf8e738ec" title=" " alt="" coords="935,10,1079,37"/>
+<area shape="rect" id="node8" href="$analyzer_8cpp.html#abb34d1f1514600047024c5b143511c18" title="clean_keypoints limpia minutiaes falsas Por el momento solo limpia las minutia que estan en los borde..." alt="" coords="736,162,863,189"/>
+<area shape="rect" id="node9" href="$analyzer_8cpp.html#a8cf1a3b33402343bdc4f964244415498" title=" " alt="" coords="769,111,829,138"/>
+<area shape="rect" id="node11" href="$analyzer_8cpp.html#a5a10c421af1766d23164e1d6d2a158b9" title=" " alt="" coords="758,365,841,391"/>
+<area shape="rect" id="node13" href="$analyzer_8cpp.html#a4c546894dda3a61a27248311375f80be" title=" " alt="" coords="745,263,854,290"/>
+<area shape="rect" id="node14" href="$analyzer_8cpp.html#aaa190ebc9afe7b50d54a07455ccfbe13" title=" " alt="" coords="767,314,832,341"/>
+<area shape="rect" id="node15" href="$analyzer_8cpp.html#a49704f16c11b7ab7f6f9fec21536dc1e" title=" " alt="" coords="764,213,835,239"/>
+<area shape="rect" id="node10" href="$analyzer_8cpp.html#ad4c4951dfc5c9659eb9e52c841ff8476" title="crosses calcula si el el pixel corresponde a una minucia" alt="" coords="971,111,1042,138"/>
+<area shape="rect" id="node12" href="$preprocesser_8cpp.html#a84a42f9741837da22801747342902760" title=" " alt="" coords="963,390,1050,417"/>
+<area shape="rect" id="node17" href="$analyzer_8cpp.html#ae70b6ed1048ddc8e624691683d41c040" title="minutiae_angle calcula el angulo de una minucia a partir de su orientacion" alt="" coords="738,61,861,87"/>
+<area shape="rect" id="node19" href="$namespacefp.html#ab4232a95baa75c6df7ebe2f47ed153cc" title="cvMatToQImage convierte una imagen de tipo cv::Mat a una de tipo QImage" alt="" coords="491,821,639,847"/>
+<area shape="rect" id="node23" href="$classfp_1_1_fingerprint_template.html#a7fbb5691bd608691d20efcefc35e4f66" title="serialize almacena la plantilla en el archivo pasado por parametro" alt="" coords="478,872,651,913"/>
+<area shape="rect" id="node25" href="$preprocesser_8cpp.html#a0ac5d575f0609a28cd01eba8760658ca" title="calculate_angles calcula el mapa de orientacion de la imagen" alt="" coords="499,669,630,695"/>
+<area shape="rect" id="node26" href="$preprocesser_8cpp.html#a2482c9fe127f028eda0e11b229ea1d76" title="filter_ridge aplica filtro orientados de gabor a una imagen" alt="" coords="519,719,611,746"/>
+<area shape="rect" id="node29" href="$preprocesser_8cpp.html#a7412b22499f328c2f72fc2e2f5bb434f" title=" " alt="" coords="531,770,598,797"/>
+<area shape="rect" id="node30" href="$preprocesser_8cpp.html#a4918afb4803a39865066dd16a76bf5d0" title="normalize2 normaliza una imagne para que tenga la madia y varianza indicadas implementa el metodo de ..." alt="" coords="517,466,612,493"/>
+<area shape="rect" id="node32" href="$preprocesser_8cpp.html#aa15ccc53a7fba86ae5f4d1eb0b2e2501" title="ridge_freq calcula el mapa de frecuencias de una imagen de huella dactilar. Implementa el algoritmo d..." alt="" coords="521,567,609,594"/>
+<area shape="rect" id="node37" href="$preprocesser_8cpp.html#aa82ac56960360e698ba2acdfcd8f3f7b" title=" " alt="" coords="517,517,612,543"/>
+<area shape="rect" id="node38" href="$preprocesser_8cpp.html#a79c58cbbe307e92ea43e184ae652a440" title=" " alt="" coords="541,618,588,645"/>
+<area shape="rect" id="node27" href="$namespacefp.html#a3dd6b91a318007ab60caa787633f2b43" title="mat_cos calcula el coseno de cada pixel de la imagen" alt="" coords="750,745,849,771"/>
+<area shape="rect" id="node28" href="$preprocesser_8cpp.html#aca97675d06d461a2f7ae6f4f216f2f50" title=" " alt="" coords="758,694,841,721"/>
+<area shape="rect" id="node31" href="$preprocesser_8cpp.html#ac3cde2fd29fb0b59c970459288445b57" title=" " alt="" coords="737,466,862,493"/>
+<area shape="rect" id="node33" href="$preprocesser_8cpp.html#a0643616c20c2648ac1c6d8224f5aab6b" title="get_block_freq calcula la frecuencia de un bloque. Se supone que esta orientado" alt="" coords="740,517,859,543"/>
+<area shape="rect" id="node36" href="$preprocesser_8cpp.html#a0b6a329812694df20c5896fa0fbbf834" title="get_oriented_window devuelve una ventana orientada" alt="" coords="719,567,880,594"/>
+<area shape="rect" id="node34" href="$preprocesser_8cpp.html#a0989ac1b04ba6eab4380a4c2857708fb" title="calc_freq calcula la frecuencia de un arreglo de valores representando una senial cuasi sinuoidal" alt="" coords="966,491,1047,518"/>
+<area shape="rect" id="node35" href="$preprocesser_8cpp.html#aa573fc7046d72ec69fe395346a4443a8" title="sig_smooth suavia y elimina ruido de un arreglo de una senial seno." alt="" coords="958,542,1055,569"/>
+<area shape="rect" id="node39" href="$preprocesser_8cpp.html#a0fbb7a40187c2f435ef2aaecbb3ce9ba" title=" " alt="" coords="712,618,887,645"/>
+</map>

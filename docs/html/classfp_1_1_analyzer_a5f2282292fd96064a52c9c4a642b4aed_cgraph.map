@@ -1,0 +1,11 @@
+<map id="fp::Analyzer::get_keypoints" name="fp::Analyzer::get_keypoints">
+<area shape="rect" id="node1" title="get_keypoints encuentra puntos de interes en la huella dactilar" alt="" coords="5,132,204,159"/>
+<area shape="rect" id="node2" href="$analyzer_8cpp.html#abb34d1f1514600047024c5b143511c18" title="clean_keypoints limpia minutiaes falsas Por el momento solo limpia las minutia que estan en los borde..." alt="" coords="252,5,379,32"/>
+<area shape="rect" id="node3" href="$analyzer_8cpp.html#a8cf1a3b33402343bdc4f964244415498" title=" " alt="" coords="285,56,345,83"/>
+<area shape="rect" id="node5" href="$analyzer_8cpp.html#a5a10c421af1766d23164e1d6d2a158b9" title=" " alt="" coords="274,107,357,133"/>
+<area shape="rect" id="node7" href="$analyzer_8cpp.html#a4c546894dda3a61a27248311375f80be" title=" " alt="" coords="261,157,370,184"/>
+<area shape="rect" id="node8" href="$analyzer_8cpp.html#aaa190ebc9afe7b50d54a07455ccfbe13" title=" " alt="" coords="283,208,348,235"/>
+<area shape="rect" id="node9" href="$analyzer_8cpp.html#a49704f16c11b7ab7f6f9fec21536dc1e" title=" " alt="" coords="280,259,351,285"/>
+<area shape="rect" id="node4" href="$analyzer_8cpp.html#ad4c4951dfc5c9659eb9e52c841ff8476" title="crosses calcula si el el pixel corresponde a una minucia" alt="" coords="435,56,505,83"/>
+<area shape="rect" id="node6" href="$preprocesser_8cpp.html#a84a42f9741837da22801747342902760" title=" " alt="" coords="427,107,513,133"/>
+</map>

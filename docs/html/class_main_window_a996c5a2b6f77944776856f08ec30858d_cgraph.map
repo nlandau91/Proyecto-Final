@@ -1,0 +1,7 @@
+<map id="MainWindow::MainWindow" name="MainWindow::MainWindow">
+<area shape="rect" id="node1" title=" " alt="" coords="5,31,203,57"/>
+<area shape="rect" id="node2" href="$classfp_1_1_database.html#a6a73637867ee3a2fc733ba13ad8ff7c2" title="init inicializa la base de datos" alt="" coords="283,5,418,32"/>
+<area shape="rect" id="node3" href="$class_main_window.html#aaa36eedf3fb8a68f7419d162338ed6c7" title=" " alt="" coords="251,56,451,83"/>
+<area shape="rect" id="node4" href="$classfp_1_1_app_settings.html#ab606c719bc69b0db97474b42040fb6f9" title="load_settings carga la configuracion del archivo de configuracion" alt="" coords="499,49,656,90"/>
+<area shape="rect" id="node5" href="$appsettings_8cpp.html#af8ed93a55b9113f2333b53f46574758f" title=" " alt="" coords="704,56,827,83"/>
+</map>

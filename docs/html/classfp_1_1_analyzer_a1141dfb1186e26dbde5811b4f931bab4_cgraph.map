@@ -1,0 +1,18 @@
+<map id="fp::Analyzer::analize" name="fp::Analyzer::analize">
+<area shape="rect" id="node1" title="analize analiza la huella dactilar preprocesada" alt="" coords="5,107,160,134"/>
+<area shape="rect" id="node2" href="$classfp_1_1_analyzer.html#a592e94d3d860667efcbdeadb586621c1" title="calcular_descriptors calcula los decriptores para los puntos claves" alt="" coords="228,5,387,47"/>
+<area shape="rect" id="node3" href="$classfp_1_1_analyzer.html#a9b329b39ee510d6e9c0f0c86df78c427" title="find_l1_features encuentra los puntos singulares de una huella" alt="" coords="241,71,373,112"/>
+<area shape="rect" id="node6" href="$classfp_1_1_analyzer.html#a5f2282292fd96064a52c9c4a642b4aed" title="get_keypoints encuentra puntos de interes en la huella dactilar" alt="" coords="208,238,407,265"/>
+<area shape="rect" id="node15" href="$analyzer_8cpp.html#aabdcc8fba0b676f5ae9bcb3aaeb5e277" title=" " alt="" coords="253,137,361,163"/>
+<area shape="rect" id="node4" href="$analyzer_8cpp.html#a9cbd4719e1fe01ec875bce12a0a48ac8" title=" " alt="" coords="479,35,557,62"/>
+<area shape="rect" id="node5" href="$analyzer_8cpp.html#a7265b7a1c10888e43b86e2fbf8e738ec" title=" " alt="" coords="629,35,773,62"/>
+<area shape="rect" id="node7" href="$analyzer_8cpp.html#abb34d1f1514600047024c5b143511c18" title="clean_keypoints limpia minutiaes falsas Por el momento solo limpia las minutia que estan en los borde..." alt="" coords="455,137,581,163"/>
+<area shape="rect" id="node8" href="$analyzer_8cpp.html#a8cf1a3b33402343bdc4f964244415498" title=" " alt="" coords="488,187,548,214"/>
+<area shape="rect" id="node10" href="$analyzer_8cpp.html#a5a10c421af1766d23164e1d6d2a158b9" title=" " alt="" coords="477,238,559,265"/>
+<area shape="rect" id="node12" href="$analyzer_8cpp.html#a4c546894dda3a61a27248311375f80be" title=" " alt="" coords="463,289,573,315"/>
+<area shape="rect" id="node13" href="$analyzer_8cpp.html#aaa190ebc9afe7b50d54a07455ccfbe13" title=" " alt="" coords="485,339,551,366"/>
+<area shape="rect" id="node14" href="$analyzer_8cpp.html#a49704f16c11b7ab7f6f9fec21536dc1e" title=" " alt="" coords="483,390,553,417"/>
+<area shape="rect" id="node9" href="$analyzer_8cpp.html#ad4c4951dfc5c9659eb9e52c841ff8476" title="crosses calcula si el el pixel corresponde a una minucia" alt="" coords="666,187,737,214"/>
+<area shape="rect" id="node11" href="$preprocesser_8cpp.html#a84a42f9741837da22801747342902760" title=" " alt="" coords="658,238,745,265"/>
+<area shape="rect" id="node16" href="$analyzer_8cpp.html#ae70b6ed1048ddc8e624691683d41c040" title="minutiae_angle calcula el angulo de una minucia a partir de su orientacion" alt="" coords="457,86,579,113"/>
+</map>

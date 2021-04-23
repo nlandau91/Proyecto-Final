@@ -1,0 +1,4 @@
+<map id="fp::Database::ingresar_template" name="fp::Database::ingresar_template">
+<area shape="rect" id="node1" title="ingresar_template ingresa un template a la base de datos" alt="" coords="5,5,172,47"/>
+<area shape="rect" id="node2" href="$classfp_1_1_fingerprint_template.html#a7fbb5691bd608691d20efcefc35e4f66" title="serialize almacena la plantilla en el archivo pasado por parametro" alt="" coords="220,5,393,47"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="fp::get_frr" name="fp::get_frr">
+<area shape="rect" id="node1" title="get_far calcula la tasa de falsos negativos" alt="" coords="5,5,92,32"/>
+<area shape="rect" id="node2" href="$namespacefp.html#a0a481056753d78ee3507eda2c4b61fba" title="get_frr calcula la tasa de falsos positivos" alt="" coords="140,5,229,32"/>
+</map>

@@ -1,0 +1,18 @@
+<map id="fp::Tester::perform_tests" name="fp::Tester::perform_tests">
+<area shape="rect" id="node1" title="perform_tests realiza una serie de test, uno para cada entrada en la lista de parametros pasada por p..." alt="" coords="5,175,148,217"/>
+<area shape="rect" id="node2" href="$namespacefp.html#af0dd3aa16917ca6201457dc548d2f80c" title="get_eer calcula el eer de los arreglos de scores //el mismo indica en que porcentaje de los arreglos ..." alt="" coords="220,5,312,32"/>
+<area shape="rect" id="node3" href="$namespacefp.html#a0a481056753d78ee3507eda2c4b61fba" title="get_frr calcula la tasa de falsos positivos" alt="" coords="432,81,521,108"/>
+<area shape="rect" id="node4" href="$namespacefp.html#a1a8fe7931e020d2b7f2fa084b53b1500" title="get_far calcula la tasa de falsos negativos" alt="" coords="223,107,309,133"/>
+<area shape="rect" id="node5" href="$namespacefp.html#a5c680decfcc600dba32a7ce7e79c6764" title="get_high_pcnt devuelve el menor valor encontrado dentro de la porcion superior del arreglo indicada" alt="" coords="199,157,333,184"/>
+<area shape="rect" id="node6" href="$namespacefp.html#a832e7ca5381ce51f946043c356d30c6b" title="get_low_pcnt devuelve el mayor valor encontrado dentro de la porcion inferior del arreglo indicado" alt="" coords="201,208,331,235"/>
+<area shape="rect" id="node7" href="$namespacefp.html#a909b74f4bfa9dcc62d856eedfa3a73f2" title="get_mean devuelve la media de un arreglo de valores entre 0 y 1" alt="" coords="212,259,320,285"/>
+<area shape="rect" id="node8" href="$classfp_1_1_tester.html#a87b7ec0238e78e033ef03c33492c037a" title="test_far realiza la comparacion de todas las huellas contra todas las que corresponden a un id distin..." alt="" coords="196,309,336,336"/>
+<area shape="rect" id="node16" href="$classfp_1_1_tester.html#a0fa342516e61aff6b35286234094337d" title="test_frr realiza la comparacion de todas las huellas contra todas las que corresponden al mismo id" alt="" coords="197,360,335,387"/>
+<area shape="rect" id="node9" href="$classfp_1_1_comparator.html#a104d748d9f66d957b09ffb80bfb0d763" title="compare compara dos templates de huellas dactilares y devuelve un score de similitud" alt="" coords="384,276,569,303"/>
+<area shape="rect" id="node14" href="$classfp_1_1_database.html#a28466a6b7e72ef5e9237341d18b08f96" title="obtener_lista_id devuelve una lista con los id dentro de la base de datos" alt="" coords="395,327,558,369"/>
+<area shape="rect" id="node15" href="$classfp_1_1_database.html#a305711c568077101aea20aabbc695eaf" title="recuperar_template devuelve los templates asociados al id" alt="" coords="389,393,564,434"/>
+<area shape="rect" id="node10" href="$comparator_8cpp.html#abfe6ce8277516569d134936484d9485e" title=" " alt="" coords="626,200,793,227"/>
+<area shape="rect" id="node11" href="$comparator_8cpp.html#aee4c3cc732cfff4d056294377ddaf186" title=" " alt="" coords="655,251,764,277"/>
+<area shape="rect" id="node12" href="$comparator_8cpp.html#a05ac2d0218512b14c1696959bf9a47bf" title=" " alt="" coords="617,301,801,328"/>
+<area shape="rect" id="node13" href="$comparator_8cpp.html#adf6642037128a1d4b5375a569d13e4c7" title=" " alt="" coords="620,352,799,379"/>
+</map>

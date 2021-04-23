@@ -1,0 +1,11 @@
+<map id="fp::Database::recuperar_template" name="fp::Database::recuperar_template">
+<area shape="rect" id="node1" title="recuperar_template devuelve los templates asociados al id" alt="" coords="621,100,796,141"/>
+<area shape="rect" id="node2" href="$class_main_window.html#a9cd7bc6e5f2429ed13337ca459fc9f3d" title=" " alt="" coords="416,5,573,47"/>
+<area shape="rect" id="node3" href="$class_main_window.html#a55215cbe07f73e59b3371a0b9c652a1e" title=" " alt="" coords="416,71,573,112"/>
+<area shape="rect" id="node4" href="$classfp_1_1_tester.html#a87b7ec0238e78e033ef03c33492c037a" title="test_far realiza la comparacion de todas las huellas contra todas las que corresponden a un id distin..." alt="" coords="425,137,565,163"/>
+<area shape="rect" id="node8" href="$classfp_1_1_tester.html#a0fa342516e61aff6b35286234094337d" title="test_frr realiza la comparacion de todas las huellas contra todas las que corresponden al mismo id" alt="" coords="426,187,563,214"/>
+<area shape="rect" id="node5" href="$class_main_window.html#a89fced0350c4a1a5b77bd787e0a73f9b" title=" " alt="" coords="211,89,368,131"/>
+<area shape="rect" id="node6" href="$classfp_1_1_tester.html#a39f53ff858894b3cd7d081b093358e47" title="perform_tests realiza una serie de test, uno para cada entrada en la lista de parametros pasada por p..." alt="" coords="218,155,361,196"/>
+<area shape="rect" id="node7" href="$class_main_window.html#a2410c4d6c039499aff662c163a9cab08" title=" " alt="" coords="5,155,163,196"/>
+<area shape="rect" id="node9" href="$class_main_window.html#a9c6c165d066c591a3b86c43b8fe0910f" title=" " alt="" coords="211,220,368,261"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="MainWindow::on_btn_far_clicked" name="MainWindow::on_btn_far_clicked">
+<area shape="rect" id="node1" title=" " alt="" coords="5,107,163,149"/>
+<area shape="rect" id="node2" href="$namespacefp.html#a0a481056753d78ee3507eda2c4b61fba" title="get_frr calcula la tasa de falsos positivos" alt="" coords="236,89,325,116"/>
+<area shape="rect" id="node3" href="$classfp_1_1_tester.html#a87b7ec0238e78e033ef03c33492c037a" title="test_far realiza la comparacion de todas las huellas contra todas las que corresponden a un id distin..." alt="" coords="211,140,351,167"/>
+<area shape="rect" id="node4" href="$classfp_1_1_comparator.html#a104d748d9f66d957b09ffb80bfb0d763" title="compare compara dos templates de huellas dactilares y devuelve un score de similitud" alt="" coords="399,81,584,108"/>
+<area shape="rect" id="node9" href="$classfp_1_1_database.html#a28466a6b7e72ef5e9237341d18b08f96" title="obtener_lista_id devuelve una lista con los id dentro de la base de datos" alt="" coords="410,133,573,174"/>
+<area shape="rect" id="node10" href="$classfp_1_1_database.html#a305711c568077101aea20aabbc695eaf" title="recuperar_template devuelve los templates asociados al id" alt="" coords="404,198,579,239"/>
+<area shape="rect" id="node5" href="$comparator_8cpp.html#abfe6ce8277516569d134936484d9485e" title=" " alt="" coords="641,5,807,32"/>
+<area shape="rect" id="node6" href="$comparator_8cpp.html#aee4c3cc732cfff4d056294377ddaf186" title=" " alt="" coords="669,56,779,83"/>
+<area shape="rect" id="node7" href="$comparator_8cpp.html#a05ac2d0218512b14c1696959bf9a47bf" title=" " alt="" coords="632,107,816,133"/>
+<area shape="rect" id="node8" href="$comparator_8cpp.html#adf6642037128a1d4b5375a569d13e4c7" title=" " alt="" coords="635,157,813,184"/>
+</map>

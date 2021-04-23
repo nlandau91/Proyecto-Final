@@ -1,0 +1,4 @@
+<map id="fp::FingerprintTemplate::FingerprintTemplate" name="fp::FingerprintTemplate::FingerprintTemplate">
+<area shape="rect" id="node1" title="FingerprintTemplate inicializa con la plantilla cargada desde file." alt="" coords="5,5,179,47"/>
+<area shape="rect" id="node2" href="$classfp_1_1_fingerprint_template.html#a00da6ed1b73341da500728fdaad5a4f0" title="deserialize carga la plantilla almacenada en el archivo pasado por parametro" alt="" coords="227,5,400,47"/>
+</map>

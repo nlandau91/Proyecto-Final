@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['main_94',['main',['../main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main.cpp']]],
+  ['main_2ecpp_95',['main.cpp',['../main_8cpp.html',1,'']]],
+  ['mainwindow_96',['MainWindow',['../class_main_window.html',1,'MainWindow'],['../class_main_window.html#a996c5a2b6f77944776856f08ec30858d',1,'MainWindow::MainWindow()']]],
+  ['mainwindow_2ecpp_97',['mainwindow.cpp',['../mainwindow_8cpp.html',1,'']]],
+  ['mainwindow_2eh_98',['mainwindow.h',['../mainwindow_8h.html',1,'']]],
+  ['mat_5fcos_99',['mat_cos',['../namespacefp.html#a3dd6b91a318007ab60caa787633f2b43',1,'fp']]],
+  ['match_5fthreshold_100',['match_threshold',['../classfp_1_1_comparator.html#adf98186c429ef56f7b924a01897f24b9',1,'fp::Comparator::match_threshold()'],['../structfp_1_1_tester_1_1_tester_parameters.html#a58b3ab180d652070d7a9f14468821f41',1,'fp::Tester::TesterParameters::match_threshold()']]],
+  ['matcher_5fmethod_101',['matcher_method',['../classfp_1_1_app_settings.html#a2cb34a74e0daf9cfc82f94c4c02b8e7e',1,'fp::AppSettings::matcher_method()'],['../classfp_1_1_comparator.html#a0eda684754b95e4cf9443f09d19589c9',1,'fp::Comparator::matcher_method()']]],
+  ['matcher_5fthreshold_102',['matcher_threshold',['../classfp_1_1_app_settings.html#aaecef6555280982bfa06636d40e366b9',1,'fp::AppSettings']]],
+  ['max_5fmatch_5fdist_103',['max_match_dist',['../classfp_1_1_analyzer.html#ae981d7a09fd06e360c115b0c80cee6e4',1,'fp::Analyzer']]],
+  ['med_5fth_104',['med_th',['../structfp_1_1_tester_1_1_tester_parameters.html#a34e7810985fef8d7471f0f5452af2065',1,'fp::Tester::TesterParameters']]],
+  ['median_5fthreshold_105',['median_threshold',['../classfp_1_1_comparator.html#a5490cf57ebaa134a0e0851047bb1780a',1,'fp::Comparator']]],
+  ['meshgrid_106',['meshgrid',['../preprocesser_8cpp.html#aca97675d06d461a2f7ae6f4f216f2f50',1,'preprocesser.cpp']]],
+  ['minutiae_5fangle_107',['minutiae_angle',['../analyzer_8cpp.html#ae70b6ed1048ddc8e624691683d41c040',1,'analyzer.cpp']]],
+  ['minutiaes_108',['minutiaes',['../classfp_1_1_fingerprint_template.html#a7ecddf37f814e472f3113481d09416cf',1,'fp::FingerprintTemplate']]],
+  ['morph_109',['MORPH',['../namespacefp.html#a48f86e49f594c11b6386e00603563533a383bc2a2c9927f9046a45723062c783c',1,'fp']]],
+  ['morphological_5fthinning_110',['morphological_thinning',['../preprocesser_8cpp.html#a0fbb7a40187c2f435ef2aaecbb3ce9ba',1,'preprocesser.cpp']]]
+];

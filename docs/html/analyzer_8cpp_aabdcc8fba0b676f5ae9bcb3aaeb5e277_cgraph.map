@@ -1,0 +1,7 @@
+<map id="get_minutiae" name="get_minutiae">
+<area shape="rect" id="node1" title=" " alt="" coords="5,56,113,83"/>
+<area shape="rect" id="node2" href="$analyzer_8cpp.html#abb34d1f1514600047024c5b143511c18" title="clean_keypoints limpia minutiaes falsas Por el momento solo limpia las minutia que estan en los borde..." alt="" coords="161,5,288,32"/>
+<area shape="rect" id="node3" href="$analyzer_8cpp.html#a8cf1a3b33402343bdc4f964244415498" title=" " alt="" coords="195,56,255,83"/>
+<area shape="rect" id="node5" href="$analyzer_8cpp.html#ae70b6ed1048ddc8e624691683d41c040" title="minutiae_angle calcula el angulo de una minucia a partir de su orientacion" alt="" coords="163,107,286,133"/>
+<area shape="rect" id="node4" href="$analyzer_8cpp.html#ad4c4951dfc5c9659eb9e52c841ff8476" title="crosses calcula si el el pixel corresponde a una minucia" alt="" coords="336,56,407,83"/>
+</map>

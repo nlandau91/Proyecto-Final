@@ -1,0 +1,7 @@
+<map id="fp::FingerprintTemplate::serialize" name="fp::FingerprintTemplate::serialize">
+<area shape="rect" id="node1" title="serialize almacena la plantilla en el archivo pasado por parametro" alt="" coords="659,35,832,76"/>
+<area shape="rect" id="node2" href="$classfp_1_1_database.html#a5045fc1e095605dc82e1b108c679c2fa" title="ingresar_template ingresa un template a la base de datos" alt="" coords="444,35,611,76"/>
+<area shape="rect" id="node3" href="$classfp_1_1_tester.html#aa1e3de75c6f055e8ad5be0107062e3d1" title="load_database realiza una carga de la base de datos en lote las imagenes deben llamarse &lt;id&gt;_*...." alt="" coords="211,13,396,39"/>
+<area shape="rect" id="node5" href="$class_main_window.html#a366f87424d3f0f73daf8e9fa8aa63f23" title=" " alt="" coords="225,64,382,105"/>
+<area shape="rect" id="node4" href="$class_main_window.html#ad680358c581089472c5810d50d9127a4" title=" " alt="" coords="5,5,163,47"/>
+</map>

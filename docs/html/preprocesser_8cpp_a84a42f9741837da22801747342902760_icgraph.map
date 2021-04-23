@@ -1,0 +1,13 @@
+<map id="normalize" name="normalize">
+<area shape="rect" id="node1" title=" " alt="" coords="1076,130,1163,157"/>
+<area shape="rect" id="node2" href="$analyzer_8cpp.html#a5a10c421af1766d23164e1d6d2a158b9" title=" " alt="" coords="945,105,1028,131"/>
+<area shape="rect" id="node11" href="$classfp_1_1_preprocesser.html#a12d52d4e722cda5ef4bcc310842f1b9e" title="preprocess realiza el preprocesamiento de la imagen para adecuarla al analisis" alt="" coords="444,155,651,182"/>
+<area shape="rect" id="node3" href="$classfp_1_1_analyzer.html#a5f2282292fd96064a52c9c4a642b4aed" title="get_keypoints encuentra puntos de interes en la huella dactilar" alt="" coords="699,105,897,131"/>
+<area shape="rect" id="node4" href="$classfp_1_1_analyzer.html#a1141dfb1186e26dbde5811b4f931bab4" title="analize analiza la huella dactilar preprocesada" alt="" coords="470,105,625,131"/>
+<area shape="rect" id="node5" href="$classfp_1_1_tester.html#aa1e3de75c6f055e8ad5be0107062e3d1" title="load_database realiza una carga de la base de datos en lote las imagenes deben llamarse &lt;id&gt;_*...." alt="" coords="211,71,396,98"/>
+<area shape="rect" id="node7" href="$class_main_window.html#ae8706e39b2852d8533a80d578d650bbc" title=" " alt="" coords="225,123,382,164"/>
+<area shape="rect" id="node8" href="$class_main_window.html#a9cd7bc6e5f2429ed13337ca459fc9f3d" title=" " alt="" coords="225,188,382,229"/>
+<area shape="rect" id="node9" href="$class_main_window.html#a366f87424d3f0f73daf8e9fa8aa63f23" title=" " alt="" coords="225,253,382,295"/>
+<area shape="rect" id="node10" href="$class_main_window.html#a55215cbe07f73e59b3371a0b9c652a1e" title=" " alt="" coords="225,5,382,47"/>
+<area shape="rect" id="node6" href="$class_main_window.html#ad680358c581089472c5810d50d9127a4" title=" " alt="" coords="5,64,163,105"/>
+</map>

@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['save_5fsettings_176',['save_settings',['../class_config_dialog.html#a1c82abd8c4c7df7384cf3da400293858',1,'ConfigDialog']]],
+  ['segment_177',['segment',['../classfp_1_1_app_settings.html#a9f3256e3ca805aa0b381201b60391dcc',1,'fp::AppSettings::segment()'],['../class_output_window.html#a506f0d5d8658aca4f087494218ab7d8b',1,'OutputWindow::segment()'],['../classfp_1_1_preprocesser.html#a9179d9b55a17bbca66ff6ed7a3ad0295',1,'fp::Preprocesser::segment()']]],
+  ['selected_178',['selected',['../class_output_window.html#a206dd843665447019c3609f93f1864af',1,'OutputWindow']]],
+  ['serialize_179',['serialize',['../classfp_1_1_fingerprint_template.html#a7fbb5691bd608691d20efcefc35e4f66',1,'fp::FingerprintTemplate']]],
+  ['set_5foutput_180',['set_output',['../class_output_window.html#a7a67813eca10ce9eaa8c1f1b50b307c8',1,'OutputWindow']]],
+  ['setup_181',['setup',['../class_output_window.html#a32baca922743956e48599dafe0b07d6c',1,'OutputWindow']]],
+  ['sharpening_182',['sharpening',['../preprocesser_8cpp.html#aa82ac56960360e698ba2acdfcd8f3f7b',1,'preprocesser.cpp']]],
+  ['shitomasi_183',['SHITOMASI',['../namespacefp.html#a48f86e49f594c11b6386e00603563533ac685c62f2bcd1d6764b4f5ef39d61a5d',1,'fp']]],
+  ['sift_184',['SIFT',['../namespacefp.html#a48f86e49f594c11b6386e00603563533acb14fdbfb0be92dbb2452553a7a4f53f',1,'fp']]],
+  ['sig_5fsmooth_185',['sig_smooth',['../preprocesser_8cpp.html#aa573fc7046d72ec69fe395346a4443a8',1,'preprocesser.cpp']]],
+  ['sing_5fcompare_186',['sing_compare',['../classfp_1_1_comparator.html#a01214758f430f5bee7b388ea381eeee9',1,'fp::Comparator']]],
+  ['singularities_187',['singularities',['../classfp_1_1_fingerprint_template.html#a5f9ab0434f3eb1b32b06973f391bb78b',1,'fp::FingerprintTemplate']]],
+  ['stats_2ecpp_188',['stats.cpp',['../stats_8cpp.html',1,'']]],
+  ['stats_2eh_189',['stats.h',['../stats_8h.html',1,'']]],
+  ['string_5fto_5fenum_190',['string_to_enum',['../appsettings_8cpp.html#af8ed93a55b9113f2333b53f46574758f',1,'appsettings.cpp']]],
+  ['surf_191',['SURF',['../namespacefp.html#a48f86e49f594c11b6386e00603563533a26e690cb1069fd6010ff48f9505a1d88',1,'fp']]]
+];

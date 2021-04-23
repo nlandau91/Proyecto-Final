@@ -1,0 +1,16 @@
+<map id="fp::draw_singularities" name="fp::draw_singularities">
+<area shape="rect" id="node1" title="draw_singularities dibuja sobre la imagen las singularidades pasadas por parametro" alt="" coords="725,159,888,185"/>
+<area shape="rect" id="node2" href="$class_main_window.html#ae8706e39b2852d8533a80d578d650bbc" title=" " alt="" coords="5,279,163,321"/>
+<area shape="rect" id="node3" href="$class_main_window.html#a9cd7bc6e5f2429ed13337ca459fc9f3d" title=" " alt="" coords="501,86,659,127"/>
+<area shape="rect" id="node4" href="$class_main_window.html#a366f87424d3f0f73daf8e9fa8aa63f23" title=" " alt="" coords="501,151,659,193"/>
+<area shape="rect" id="node5" href="$class_main_window.html#a55215cbe07f73e59b3371a0b9c652a1e" title=" " alt="" coords="501,217,659,258"/>
+<area shape="rect" id="node6" href="$class_output_window.html#a7a67813eca10ce9eaa8c1f1b50b307c8" title=" " alt="" coords="483,287,677,313"/>
+<area shape="rect" id="node7" href="$class_output_window.html#a0d787c39b87b17922751fb3ca210c48b" title=" " alt="" coords="217,83,428,125"/>
+<area shape="rect" id="node8" href="$class_output_window.html#a480a6f719b71b2b63e130e8b8568fcd1" title=" " alt="" coords="217,149,428,190"/>
+<area shape="rect" id="node9" href="$class_output_window.html#a6625eba01f9cb3c6f198b913ead0ee28" title=" " alt="" coords="211,214,435,255"/>
+<area shape="rect" id="node10" href="$class_output_window.html#a9643bcae27ccb2e0a26a8605c006a96f" title=" " alt="" coords="211,279,435,321"/>
+<area shape="rect" id="node11" href="$class_output_window.html#a3f21569bd0138e8f1d56ca5e633f0cfd" title=" " alt="" coords="211,345,435,386"/>
+<area shape="rect" id="node12" href="$class_output_window.html#af8b5219c0d6928473867fd33f9125381" title=" " alt="" coords="211,410,435,451"/>
+<area shape="rect" id="node13" href="$class_output_window.html#abe27c401147ed4b70560ffa4e2db9168" title=" " alt="" coords="211,475,435,517"/>
+<area shape="rect" id="node14" href="$class_output_window.html#a32baca922743956e48599dafe0b07d6c" title="setup arma el panel de salida a partir del preprocesad y template de una huella dactilar" alt="" coords="242,541,403,568"/>
+</map>

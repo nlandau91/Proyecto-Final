@@ -1,0 +1,7 @@
+<map id="ridge_freq" name="ridge_freq">
+<area shape="rect" id="node1" title="ridge_freq calcula el mapa de frecuencias de una imagen de huella dactilar. Implementa el algoritmo d..." alt="" coords="5,56,93,83"/>
+<area shape="rect" id="node2" href="$preprocesser_8cpp.html#a0643616c20c2648ac1c6d8224f5aab6b" title="get_block_freq calcula la frecuencia de un bloque. Se supone que esta orientado" alt="" coords="163,31,281,57"/>
+<area shape="rect" id="node5" href="$preprocesser_8cpp.html#a0b6a329812694df20c5896fa0fbbf834" title="get_oriented_window devuelve una ventana orientada" alt="" coords="141,81,303,108"/>
+<area shape="rect" id="node3" href="$preprocesser_8cpp.html#a0989ac1b04ba6eab4380a4c2857708fb" title="calc_freq calcula la frecuencia de un arreglo de valores representando una senial cuasi sinuoidal" alt="" coords="359,5,440,32"/>
+<area shape="rect" id="node4" href="$preprocesser_8cpp.html#aa573fc7046d72ec69fe395346a4443a8" title="sig_smooth suavia y elimina ruido de un arreglo de una senial seno." alt="" coords="351,56,448,83"/>
+</map>

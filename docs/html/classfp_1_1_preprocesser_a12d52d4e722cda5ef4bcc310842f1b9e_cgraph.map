@@ -1,0 +1,19 @@
+<map id="fp::Preprocesser::preprocess" name="fp::Preprocesser::preprocess">
+<area shape="rect" id="node1" title="preprocess realiza el preprocesamiento de la imagen para adecuarla al analisis" alt="" coords="5,183,212,209"/>
+<area shape="rect" id="node2" href="$preprocesser_8cpp.html#a0ac5d575f0609a28cd01eba8760658ca" title="calculate_angles calcula el mapa de orientacion de la imagen" alt="" coords="260,5,391,32"/>
+<area shape="rect" id="node3" href="$preprocesser_8cpp.html#a2482c9fe127f028eda0e11b229ea1d76" title="filter_ridge aplica filtro orientados de gabor a una imagen" alt="" coords="279,56,371,83"/>
+<area shape="rect" id="node6" href="$preprocesser_8cpp.html#a7412b22499f328c2f72fc2e2f5bb434f" title=" " alt="" coords="292,107,359,133"/>
+<area shape="rect" id="node7" href="$preprocesser_8cpp.html#a84a42f9741837da22801747342902760" title=" " alt="" coords="282,157,369,184"/>
+<area shape="rect" id="node8" href="$preprocesser_8cpp.html#a4918afb4803a39865066dd16a76bf5d0" title="normalize2 normaliza una imagne para que tenga la madia y varianza indicadas implementa el metodo de ..." alt="" coords="278,208,373,235"/>
+<area shape="rect" id="node10" href="$preprocesser_8cpp.html#aa15ccc53a7fba86ae5f4d1eb0b2e2501" title="ridge_freq calcula el mapa de frecuencias de una imagen de huella dactilar. Implementa el algoritmo d..." alt="" coords="281,259,369,285"/>
+<area shape="rect" id="node15" href="$preprocesser_8cpp.html#aa82ac56960360e698ba2acdfcd8f3f7b" title=" " alt="" coords="278,309,373,336"/>
+<area shape="rect" id="node16" href="$preprocesser_8cpp.html#a79c58cbbe307e92ea43e184ae652a440" title=" " alt="" coords="302,360,349,387"/>
+<area shape="rect" id="node4" href="$namespacefp.html#a3dd6b91a318007ab60caa787633f2b43" title="mat_cos calcula el coseno de cada pixel de la imagen" alt="" coords="477,31,575,57"/>
+<area shape="rect" id="node5" href="$preprocesser_8cpp.html#aca97675d06d461a2f7ae6f4f216f2f50" title=" " alt="" coords="485,81,567,108"/>
+<area shape="rect" id="node9" href="$preprocesser_8cpp.html#ac3cde2fd29fb0b59c970459288445b57" title=" " alt="" coords="463,208,589,235"/>
+<area shape="rect" id="node11" href="$preprocesser_8cpp.html#a0643616c20c2648ac1c6d8224f5aab6b" title="get_block_freq calcula la frecuencia de un bloque. Se supone que esta orientado" alt="" coords="467,259,585,285"/>
+<area shape="rect" id="node14" href="$preprocesser_8cpp.html#a0b6a329812694df20c5896fa0fbbf834" title="get_oriented_window devuelve una ventana orientada" alt="" coords="445,309,607,336"/>
+<area shape="rect" id="node12" href="$preprocesser_8cpp.html#a0989ac1b04ba6eab4380a4c2857708fb" title="calc_freq calcula la frecuencia de un arreglo de valores representando una senial cuasi sinuoidal" alt="" coords="669,233,751,260"/>
+<area shape="rect" id="node13" href="$preprocesser_8cpp.html#aa573fc7046d72ec69fe395346a4443a8" title="sig_smooth suavia y elimina ruido de un arreglo de una senial seno." alt="" coords="661,284,759,311"/>
+<area shape="rect" id="node17" href="$preprocesser_8cpp.html#a0fbb7a40187c2f435ef2aaecbb3ce9ba" title=" " alt="" coords="439,360,613,387"/>
+</map>
