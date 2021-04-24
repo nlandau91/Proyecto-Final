@@ -255,7 +255,7 @@ void MainWindow::on_btn_demo_clicked()
                                                     tr("Open Image"), "../res/",
                                                     tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
     setEnabled(false);
-    ui->lbl_fp_output->setPixmap(QPixmap());
+    //ui->lbl_fp_output->clear();
     if(!fileName.isEmpty())
     {
         //leemos la imagen en escala de gris
@@ -278,7 +278,7 @@ void MainWindow::on_btn_demo_clicked()
                 enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.keypoints);
                 enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
             }
-            //            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
+            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
             output_window = new OutputWindow();
             output_window->setup(fp_template, pre);
             output_window->show();
@@ -295,9 +295,9 @@ void MainWindow::on_btn_demo_clicked()
             cv::imwrite("output/preprocessed.jpg",pre.result);
             cv::imwrite("output/output_marked.jpg",enhanced_marked);
             cv::imwrite("output/sharpened.jpg",pre.grayscale);
-            setEnabled(true);
         }
     }
+    setEnabled(true);
 }
 
 
