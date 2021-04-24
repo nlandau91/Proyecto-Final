@@ -72,7 +72,7 @@ void MainWindow::on_btn_ingresar_clicked()
             }
         }
     }
-    ui->lbl_state->setText("Huellas ingresadas: "+QString::number(accepted_samples)+" de "+QString::number(total_samples));
+    ui->textBrowser_output->setText("Huellas ingresadas: "+QString::number(accepted_samples)+" de "+QString::number(total_samples));
     setEnabled(true);
 }
 
@@ -119,7 +119,7 @@ void MainWindow::on_btn_verificar_clicked()
 
         }
     }
-    ui->lbl_state->setText("Verificacion: "+QVariant(verificado).toString());
+    ui->textBrowser_output->setText("Verificacion: "+QVariant(verificado).toString());
     setEnabled(true);
 }
 
@@ -193,7 +193,7 @@ void MainWindow::on_btn_identificar_clicked()
             }
         }
     }
-    ui->lbl_state->setText("Identificacion: " + best_id);
+    ui->textBrowser_output->setText("Identificacion: " + best_id);
     setEnabled(true);
 }
 
@@ -304,18 +304,18 @@ void MainWindow::on_btn_demo_clicked()
 
 void MainWindow::on_btn_far_clicked()
 {
-    ui->lbl_state->setText("Testeando FAR, esto puede tardar varios minutos...");
+    ui->textBrowser_output->setText("Testeando FAR, esto puede tardar varios minutos...");
     std::vector<double> scores = tester.test_far(db);
     double far = 100 * fp::get_far(scores,app_settings.matcher_threshold);
-    ui->lbl_state->setText("Resultado Test FAR: " + QString::number(far,'f',2) + "%");
+    ui->textBrowser_output->setText("Resultado Test FAR: " + QString::number(far,'f',2) + "%");
 }
 
 void MainWindow::on_btn_frr_clicked()
 {
-    ui->lbl_state->setText("Testeando FRR, esto puede tardar varios minutos...");
+    ui->textBrowser_output->setText("Testeando FRR, esto puede tardar varios minutos...");
     std::vector<double> scores = tester.test_frr(db);
     double frr = 100 * fp::get_frr(scores,app_settings.matcher_threshold);
-    ui->lbl_state->setText("Resultado Test FRR: " + QString::number(frr,'f',2) + "%");
+    ui->textBrowser_output->setText("Resultado Test FRR: " + QString::number(frr,'f',2) + "%");
 }
 
 void MainWindow::on_btn_db_clicked()
@@ -328,10 +328,10 @@ void MainWindow::on_btn_db_clicked()
         dialog.setFileMode(QFileDialog::DirectoryOnly);
         if(dialog.exec() == QDialog::Accepted)
         {
-            ui->lbl_state->setText("Cargando DB por lotes, esto puede tardar varios minutos...");
+            ui->textBrowser_output->setText("Cargando DB por lotes, esto puede tardar varios minutos...");
             QString path = dialog.directory().absolutePath();
             tester.load_database(db,path);
-            ui->lbl_state->setText("Carga DB por lotes completa!");
+            ui->textBrowser_output->setText("Carga DB por lotes completa!");
         }
 
     }
@@ -340,7 +340,7 @@ void MainWindow::on_btn_db_clicked()
 
 void MainWindow::on_btn_fullTest_clicked()
 {
-    ui->lbl_state->setText("Testeando FAR y FRR, esto puede tardar varios minutos...");
+    ui->textBrowser_output->setText("Testeando FAR y FRR, esto puede tardar varios minutos...");
     //creamos la lista de parametros
     std::vector<fp::Tester::TesterParameters> params_list;
 
@@ -354,6 +354,6 @@ void MainWindow::on_btn_fullTest_clicked()
     params_list.push_back(tester_parameters);
 
     tester.perform_tests(params_list, db);
-    ui->lbl_state->setText("Test completo, resultados guardados.");
+    ui->textBrowser_output->setText("Test completo, resultados guardados.");
     load_settings();
 }
