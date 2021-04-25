@@ -171,8 +171,8 @@ void Tester::perform_tests(const std::vector<TesterParameters> &params_list, Dat
                << "imp_high"<<"\t"
                << "eer_pcnt" << "\t"
                << "eer_val" << "\t"
-               << "frr()" << "\t"
-               << "far()" << "\t"
+               << "frr" << "\t"
+               << "far" << "\t"
                << "time(ms)" << "\n";
         file.close();
     }

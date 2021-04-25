@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>621</width>
-    <height>442</height>
+    <height>618</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -50,6 +50,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Numero de ID del usuario.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
               <property name="text">
                <string>20021101</string>
               </property>
@@ -62,6 +65,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_ingresar">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ingresar una huella al sistema.&lt;/p&gt;&lt;p&gt;La huella estara asociada al numero ingresado en el campo ID.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Ingresar huella</string>
             </property>
@@ -69,6 +75,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_verificar">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Verifica si la huella dactilar corresponde&lt;/p&gt;&lt;p&gt;al numero ingresado en el cambo ID.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Verificar huella</string>
             </property>
@@ -76,6 +85,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_identificar">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Devuelve el numero de ID que se corresponde&lt;/p&gt;&lt;p&gt;a la huella ingresada o falso si no encuentra&lt;/p&gt;&lt;p&gt;un buen match.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Identificar huella</string>
             </property>
@@ -83,6 +95,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_demo">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Realiza el analisis de una huella sin ingresarla al sistema.&lt;/p&gt;&lt;p&gt;Se mostrara una ventana con informacion adicional.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Analizar huella</string>
             </property>
@@ -90,6 +105,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_db">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Carga todas las huellas dactilares dentro de una carpeta.&lt;/p&gt;&lt;p&gt;Las huellas &lt;span style=&quot; text-decoration: underline;&quot;&gt;DEBEN&lt;/span&gt; estar nombradas de la siguiente manera:&lt;/p&gt;&lt;p&gt;&amp;lt;ID&amp;gt;_*.tif&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Cargar huellas en lote</string>
             </property>
@@ -111,6 +129,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_far">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Realiza un test de falsos positivos sobre la base de datos actual.&lt;/p&gt;&lt;p&gt;Puede demorar varios minutos, dependiendo de la cantidad&lt;/p&gt;&lt;p&gt;de muestras en la base de datos.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Test FAR</string>
             </property>
@@ -118,6 +139,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_frr">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Realiza un test de falsos negativos sobre la base de datos actual.&lt;/p&gt;&lt;p&gt;Puede demorar varios minutos, dependiendo de la cantidad&lt;/p&gt;&lt;p&gt;de muestras en la base de datos.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Test FRR</string>
             </property>
@@ -125,6 +149,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_fullTest">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Realiza un test de FAR y FRR sobre la base de datos actual.&lt;/p&gt;&lt;p&gt;El resultado del test es guardado en /tests/Data.csv&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Full Test</string>
             </property>

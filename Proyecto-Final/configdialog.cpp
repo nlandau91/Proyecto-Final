@@ -61,7 +61,7 @@ void ConfigDialog::load_settings(bool def)
     //feature extraction
     ui->comboBox_kp->setCurrentText(settings.value("keypoint_detector").toString());
     ui->comboBox_feat->setCurrentText(settings.value("feature_extractor").toString());
-    ui->lineEdit_thresh->setText(settings.value("keypoint_threshold").toString());
+    ui->spinBox_kpThresh->setValue(settings.value("keypoint_threshold").toInt());
     ui->checkBox_draw->setChecked(settings.value("draw_features").toBool());
 
     //feature matching
@@ -90,7 +90,7 @@ void ConfigDialog::save_settings()
     //feature extraction
     settings.setValue("keypoint_detector", ui->comboBox_kp->currentText());
     settings.setValue("feature_extractor", ui->comboBox_feat->currentText());
-    settings.setValue("keypoint_threshold", ui->lineEdit_thresh->text());
+    settings.setValue("keypoint_threshold", ui->spinBox_kpThresh->value());
     settings.setValue("draw_features",ui->checkBox_draw->isChecked());
 
     //feature matching

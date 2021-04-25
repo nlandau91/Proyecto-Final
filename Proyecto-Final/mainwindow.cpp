@@ -5,6 +5,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
 
+#include <QIntValidator>
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QMessageBox>
@@ -15,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     qDebug("Setting up UI...");
     ui->setupUi(this);
+    ui->lineEdit->setValidator(new QIntValidator(0, INT_MAX, this));
     qDebug("Initializing db...");
     db.init();
     qDebug("Loading settings...");
@@ -348,9 +350,9 @@ void MainWindow::on_btn_fullTest_clicked()
     tester_parameters.med_th=2.5;
     tester_parameters.ran_trans=app_settings.ransac_model;
     tester_parameters.ran_th=app_settings.ransac_threshold;
-    tester_parameters.ran_conf=app_settings.ransac_threshold;
+    tester_parameters.ran_conf=0.99;
     tester_parameters.ran_iter=2000;
-    tester_parameters.match_threshold=0.99;
+    tester_parameters.match_threshold=app_settings.matcher_threshold;
     params_list.push_back(tester_parameters);
 
     tester.perform_tests(params_list, db);
