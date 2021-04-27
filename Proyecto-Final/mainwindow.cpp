@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QMessageBox>
+#include <QThread>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -35,6 +36,7 @@ void MainWindow::on_btn_ingresar_clicked()
                                                           tr("Open Image"), "../res/",
                                                           tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
     setEnabled(false);
+    output_text("Ingresando huellas...");
     int total_samples = fileNames.length();
     int accepted_samples = 0;
     for(const QString &fileName : fileNames)
@@ -43,6 +45,9 @@ void MainWindow::on_btn_ingresar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
+            //maximo altura 300px
+            double scalefactor = (double)400.0/src.rows;
+            cv::resize(src,src,cv::Size(),scalefactor,scalefactor,cv::INTER_CUBIC);
             ui->lbl_fp_input->setPixmap(fp::cv_mat_to_qpixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
@@ -65,8 +70,15 @@ void MainWindow::on_btn_ingresar_clicked()
                 //guardamos el descriptor e ingresamos los descriptores a la base de datos
                 QString id = ui->lineEdit_id->text();
                 //db.ingresar_descriptores(analysis.descriptors,id);
-                db.ingresar_template(fp_template,id);
-                accepted_samples++;
+                if(db.ingresar_template(fp_template,id))
+                {
+                    accepted_samples++;
+                }
+                else
+                {
+                    output_text("No se puedo ingresar la huella a la base de datos.");
+                }
+
                 //std::cout << "Huella ingresada" << std::endl;
             }
             else
@@ -75,7 +87,7 @@ void MainWindow::on_btn_ingresar_clicked()
             }
         }
     }
-    ui->lineEdit_output->setText("Huellas ingresadas: "+QString::number(accepted_samples)+" de "+QString::number(total_samples));
+    output_text("Huellas ingresadas: "+QString::number(accepted_samples)+" de "+QString::number(total_samples));
     setEnabled(true);
 }
 
@@ -85,6 +97,7 @@ void MainWindow::on_btn_verificar_clicked()
                                                     tr("Open Image"), "../res/",
                                                     tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
     setEnabled(false);
+    output_text("Verificando...");
     bool verificado = false;
     if(!fileName.isEmpty())
     {
@@ -92,6 +105,9 @@ void MainWindow::on_btn_verificar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
+            //maximo altura 300px
+            double scalefactor = (double)400.0/src.rows;
+            cv::resize(src,src,cv::Size(),scalefactor,scalefactor,cv::INTER_CUBIC);
             ui->lbl_fp_input->setPixmap(fp::cv_mat_to_qpixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
@@ -122,7 +138,7 @@ void MainWindow::on_btn_verificar_clicked()
 
         }
     }
-    ui->lineEdit_output->setText("Verificacion: "+QVariant(verificado).toString());
+    output_text("Verificacion: "+QVariant(verificado).toString());
     setEnabled(true);
 }
 
@@ -132,6 +148,7 @@ void MainWindow::on_btn_identificar_clicked()
                                                     tr("Open Image"), "../res/",
                                                     tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
     setEnabled(false);
+    output_text("Identificando...");
     QString best_id = "ninguno";
     if(!fileName.isEmpty())
     {
@@ -141,6 +158,9 @@ void MainWindow::on_btn_identificar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
+            //maximo altura 300px
+            double scalefactor = (double)400.0/src.rows;
+            cv::resize(src,src,cv::Size(),scalefactor,scalefactor,cv::INTER_CUBIC);
             ui->lbl_fp_input->setPixmap(fp::cv_mat_to_qpixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
@@ -196,7 +216,7 @@ void MainWindow::on_btn_identificar_clicked()
             }
         }
     }
-    ui->lineEdit_output->setText("Identificacion: " + best_id);
+    output_text("Identificacion: " + best_id);
     setEnabled(true);
 }
 
@@ -258,6 +278,7 @@ void MainWindow::on_btn_demo_clicked()
                                                     tr("Open Image"), "../res/",
                                                     tr("Images (*.jpg *.jpeg *.jpe *.jp2 *.png *.bmp *.dib *.tif);;All Files (*)"));
     setEnabled(false);
+    output_text("Analizando...");
     //ui->lbl_fp_output->clear();
     if(!fileName.isEmpty())
     {
@@ -265,6 +286,9 @@ void MainWindow::on_btn_demo_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
+            //maximo altura
+            double scalefactor = (double)400.0/src.rows;
+            cv::resize(src,src,cv::Size(),scalefactor,scalefactor,cv::INTER_CUBIC);
             ui->lbl_fp_input->setPixmap(fp::cv_mat_to_qpixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
@@ -300,7 +324,7 @@ void MainWindow::on_btn_demo_clicked()
             cv::imwrite("output/sharpened.jpg",pre.grayscale);
         }
     }
-    ui->lineEdit_output->setText("Analisis completo.");
+    output_text("Analisis completo.");
     setEnabled(true);
 }
 
@@ -308,20 +332,55 @@ void MainWindow::on_btn_demo_clicked()
 
 void MainWindow::on_btn_far_clicked()
 {
-    ui->lineEdit_output->setText("Testeando FAR, esto puede tardar varios minutos...");
+    output_text("Testeando FAR, esto puede tardar varios minutos...");
+
     std::vector<double> scores = tester.test_far(db);
     double far = 100 * fp::get_far(scores,app_settings.matcher_threshold);
-    ui->lineEdit_output->setText("Resultado Test FAR: " + QString::number(far,'f',2) + "%");
+    output_text("Resultado Test FAR: " + QString::number(far,'f',2) + "%");
 }
 
 void MainWindow::on_btn_frr_clicked()
 {
-    ui->lineEdit_output->setText("Testeando FRR, esto puede tardar varios minutos...");
+    output_text("Testeando FRR, esto puede tardar varios minutos...");
+
     std::vector<double> scores = tester.test_frr(db);
     double frr = 100 * fp::get_frr(scores,app_settings.matcher_threshold);
-    ui->lineEdit_output->setText("Resultado Test FRR: " + QString::number(frr,'f',2) + "%");
+    output_text("Resultado Test FRR: " + QString::number(frr,'f',2) + "%");
 }
+void MainWindow::load_database(const QString &path)
+{
+    //cargamos las carpetas que contienen huellas
+    //para cada carpeta, cargamos todas las huellas
+    QDir directory(path);
+    QStringList fileNames = directory.entryList(QStringList() << "*.tif",QDir::Files);
+    for(const QString &fileName : fileNames)
+    {
+        //para cada huella, la procesamos y la ingresamos
+        std::string abs_path = (path+"/"+fileName).toStdString();
+        cv::Mat src = cv::imread(abs_path,cv::IMREAD_GRAYSCALE);
+        if(!src.empty())
+        {
+            //maximo altura
+            double scalefactor = (double)400.0/src.rows;
+            cv::resize(src,src,cv::Size(),scalefactor,scalefactor,cv::INTER_CUBIC);
+            //preprocesamos la imagen
+            fp::Preprocessed pre = preprocesser.preprocess(src);
+            //obtenemos los descriptores
+            fp::FingerprintTemplate fp_template = analyzer.analize(pre);
+            //solo admitimos huellas que sean suficientemente buenas
+            if(fp_template.descriptors.rows > 0)
+            {
+                //guardamos el descriptor e ingresamos los descriptores a la base de datos
+                int id;
+                id = fileName.split("_").at(0).toInt();
+                db.ingresar_template(fp_template,QString::number(id));
+                output_text("Ingresada huella " + fileName);
+            }
+        }
+    }
 
+
+}
 void MainWindow::on_btn_db_clicked()
 {
     if (QMessageBox::Yes == QMessageBox::question(this,
@@ -332,19 +391,18 @@ void MainWindow::on_btn_db_clicked()
         dialog.setFileMode(QFileDialog::DirectoryOnly);
         if(dialog.exec() == QDialog::Accepted)
         {
-            ui->lineEdit_output->setText("Cargando DB por lotes, esto puede tardar varios minutos...");
+            output_text("Cargando DB por lotes, esto puede tardar varios minutos...");
+
             QString path = dialog.directory().absolutePath();
-            tester.load_database(db,path);
-            ui->lineEdit_output->setText("Carga DB por lotes completa!");
+            load_database(path);
+            output_text("Carga DB por lotes completa!");
         }
-
     }
-
 }
 
 void MainWindow::on_btn_fullTest_clicked()
 {
-    ui->lineEdit_output->setText("Testeando FAR y FRR, esto puede tardar varios minutos...");
+    output_text("Testeando FAR y FRR, esto puede tardar varios minutos...");
     //creamos la lista de parametros
     std::vector<fp::Tester::TesterParameters> params_list;
 
@@ -358,6 +416,11 @@ void MainWindow::on_btn_fullTest_clicked()
     params_list.push_back(tester_parameters);
 
     tester.perform_tests(params_list, db);
-    ui->lineEdit_output->setText("Test completo, resultados guardados.");
+    output_text("Test completo, resultados guardados.");
     load_settings();
+}
+void MainWindow::output_text(const QString &text)
+{
+    ui->lineEdit_output->setText(text);
+    ui->lineEdit_output->repaint();
 }

@@ -60,6 +60,8 @@ private:
     fp::Comparator comparator;
     fp::Tester tester;
     void load_settings();
+    void load_database(const QString &path);
+    void output_text(const QString &text);
 
 };
 #endif // MAINWINDOW_H

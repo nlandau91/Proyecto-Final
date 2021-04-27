@@ -439,7 +439,7 @@ std::vector<cv::KeyPoint> Analyzer::find_singularities(const Preprocessed &pre)
     return l1_features;
 }
 
-cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPoint> &keypoints)
+cv::Mat Analyzer::calcular_descriptors(const Preprocessed &pre, std::vector<cv::KeyPoint> &keypoints)
 {
     cv::Mat descriptors;
     switch(descriptor_method)
@@ -447,25 +447,25 @@ cv::Mat Analyzer::calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPo
     case ORB:
     {
         cv::Ptr<cv::Feature2D> orb_extractor = cv::ORB::create();
-        orb_extractor->compute(src,keypoints,descriptors);
+        orb_extractor->compute(pre.result,keypoints,descriptors);
         break;
     }
     case BRIEF:
     {
         cv::Ptr<cv::Feature2D> brief_extractor = cv::xfeatures2d::BriefDescriptorExtractor::create();
-        brief_extractor->compute(src,keypoints,descriptors);
+        brief_extractor->compute(pre.result,keypoints,descriptors);
         break;
     }
     case SURF:
     {
         cv::Ptr<cv::Feature2D> surf_extractor = cv::xfeatures2d::SURF::create();
-        surf_extractor->compute(src,keypoints,descriptors);
+        surf_extractor->compute(pre.grayscale,keypoints,descriptors);
         break;
     }
     case SIFT:
     {
         cv::Ptr<cv::Feature2D> sift_extractor = cv::SIFT::create();
-        sift_extractor->compute(src,keypoints,descriptors);
+        sift_extractor->compute(pre.grayscale,keypoints,descriptors);
     }
     default:
         break;
@@ -492,9 +492,7 @@ FingerprintTemplate Analyzer::analize(const Preprocessed &preprocessed)
     fp_template.minutiaes = get_minutiae(preprocessed);
     //calculamos sus descriptores
     qDebug() << "Analizer: calculando descriptores...";
-    fp_template.descriptors = calcular_descriptors(preprocessed.grayscale, fp_template.keypoints);
-    //fp_template.descriptors = calcular_descriptors(preprocessed.original, fp_template.keypoints);
-    //fp_template.descriptors = calcular_descriptors(preprocessed.result, fp_template.keypoints);
+    fp_template.descriptors = calcular_descriptors(preprocessed, fp_template.keypoints);
     qDebug() << "Analizer: listo.";
 
     return fp_template;

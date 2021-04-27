@@ -56,7 +56,7 @@ private:
      * \param keypoints puntos de interes a los que se le calcularan sus descriptores
      * \return Mat que contiene los descriptores
      */
-    cv::Mat calcular_descriptors(const cv::Mat &src, std::vector<cv::KeyPoint> &keypoints);
+    cv::Mat calcular_descriptors(const Preprocessed &pre, std::vector<cv::KeyPoint> &keypoints);
 };
 }
 #endif // ANALYZER_H

@@ -3,7 +3,7 @@
 
 using namespace fp;
 
-void Database::init()
+bool Database::init()
 {
     //database setup
     const QString DRIVER("QSQLITE");
@@ -15,6 +15,7 @@ void Database::init()
         if(!db.open())
         {
             qWarning() << "ERROR: " << db.lastError();
+            return false;
         }
         //creamos una tabla
         QSqlQuery query("CREATE TABLE people (id INTEGER, sample INTEGER, template_path TEXT, PRIMARY KEY(id, sample))");
@@ -24,6 +25,7 @@ void Database::init()
             //qWarning() << "ERROR: " << query.lastError().text();
         }
     }
+    return true;
 }
 
 
@@ -32,9 +34,8 @@ Database::Database()
 
 }
 
-void Database::ingresar_template(const FingerprintTemplate &fp_template, const QString &id) const
+bool Database::ingresar_template(const FingerprintTemplate &fp_template, const QString &id)
 {
-
     //armamos el path
     QDir qdir = QDir::current();
     QString template_path = qdir.path()+"/../db/fp_templates/"+id;
@@ -47,6 +48,7 @@ void Database::ingresar_template(const FingerprintTemplate &fp_template, const Q
     if(!query.exec())
     {
         qWarning() << "ERROR: " << query.lastError().text();
+        return false;
     }
     int sample = 0;
     if(query.first())
@@ -66,8 +68,9 @@ void Database::ingresar_template(const FingerprintTemplate &fp_template, const Q
     if(!query.exec())
     {
         qWarning() << "ERROR: " << query.lastError().text();
+        return false;
     }
-
+    return true;
 }
 
 std::vector<FingerprintTemplate> Database::recuperar_template(const QString &id) const

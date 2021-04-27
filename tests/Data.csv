@@ -1,1 +1,3 @@
 ransac_trans	ransac_thresh	ransac_iter	ransac_conf	median_rat	sing_compare	gen_mean	gen_low	imp_mean	imp_high	eer_pcnt	eer_val	frr	far	time(ms)
+ransac_trans	ransac_thresh	ransac_iter	ransac_conf	median_rat	sing_compare	gen_mean	gen_low	imp_mean	imp_high	eer_pcnt	eer_val	frr	far	time(ms)
+PARTIALAFFINE	3	2000	0.99	2.5	1	0.0793759	0.0167015	0.0153548	0.0215054	0.13	0.0181406	0.463728	0.000598299	286863

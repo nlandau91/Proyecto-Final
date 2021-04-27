@@ -23,14 +23,15 @@ public:
     /*!
      * \brief init inicializa la base de datos
      */
-    void init();
+    bool init();
 
     /*!
      * \brief ingresar_template ingresa un template a la base de datos
      * \param fp_template template a ingresar
      * \param id id asociado al template
+     * \return true si se ingreso correctamente, false en caso contrario
      */
-    void ingresar_template(const FingerprintTemplate &fp_template, const QString &id) const;
+    bool ingresar_template(const FingerprintTemplate &fp_template, const QString &id);
 
     /*!
      * \brief recuperar_template devuelve los templates asociados al id
