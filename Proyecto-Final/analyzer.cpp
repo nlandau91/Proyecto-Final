@@ -30,14 +30,24 @@ std::vector<cv::KeyPoint> kp_harris(const cv::Mat preprocesado, float keypoint_t
     {
         for(int y = 0; y < harris_normalised.rows; y++)
         {
-            if( keypoint_threshold == -1 || (int)harris_normalised.at<float>(y,x) > keypoint_threshold)
-            {
-                //guardamos el keypoint
-                keypoints.push_back(cv::KeyPoint(x,y,5));
-            }
+
+            //guardamos el keypoint
+            keypoints.push_back(cv::KeyPoint(x,y,5,-1,harris_normalised.at<float>(y,x)));
+
         }
     }
-
+    //ordenamos de menor a mayor
+    auto sortRuleLambda = [] (cv::KeyPoint const& s1, cv::KeyPoint const& s2) -> bool
+    {
+        return s1.response < s2.response;
+    };
+    std::sort(keypoints.begin(),keypoints.end(), sortRuleLambda);
+    //nos quedamos con los mejores
+    if(keypoint_threshold > 0 && (int)keypoints.size() > (int)keypoint_threshold)
+    {
+        std::vector<cv::KeyPoint> best_keypoints(keypoints.end()-keypoint_threshold, keypoints.end());
+        keypoints = best_keypoints;
+    }
     return keypoints;
 }
 
@@ -60,13 +70,24 @@ std::vector<cv::KeyPoint> kp_shitomasi(const cv::Mat &src, int keypoint_threshol
 
 //buscamos los keypoints en una imagen con el detector de keypoints SIFT
 //la imagen ya debe estar preprocesada
-std::vector<cv::KeyPoint> kp_sift(const cv::Mat &src)
+std::vector<cv::KeyPoint> kp_sift(const cv::Mat &src, int keypoint_threshold = -1)
 {
 
     cv::Ptr<cv::SIFT> siftPtr = cv::SIFT::create();
     std::vector<cv::KeyPoint> keypoints;
     siftPtr->detect(src, keypoints);
-
+    //ordenamos de menor a mayor
+    auto sortRuleLambda = [] (cv::KeyPoint const& s1, cv::KeyPoint const& s2) -> bool
+    {
+        return s1.response < s2.response;
+    };
+    std::sort(keypoints.begin(),keypoints.end(), sortRuleLambda);
+    //nos quedamos con los mejores
+    if(keypoint_threshold > 0 && (int)keypoints.size() > keypoint_threshold)
+    {
+        std::vector<cv::KeyPoint> best_keypoints(keypoints.end()-keypoint_threshold, keypoints.end());
+        keypoints = best_keypoints;
+    }
     return keypoints;
 }
 
@@ -291,12 +312,12 @@ std::vector<cv::KeyPoint> Analyzer::get_keypoints(const Preprocessed &pre)
     }
     case SURF:
     {
-        keypoints = kp_surf(pre.result);
+        keypoints = kp_surf(pre.grayscale);
         break;
     }
     case SIFT:
     {
-        keypoints = kp_sift(pre.result);
+        keypoints = kp_sift(pre.grayscale, keypoint_threshold);
         break;
     }
     case CN:

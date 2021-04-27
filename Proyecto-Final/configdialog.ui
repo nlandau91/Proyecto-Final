@@ -54,7 +54,7 @@
             <string>Tamaño de bloque utilizado para la segmentacion.</string>
            </property>
            <property name="minimum">
-            <number>1</number>
+            <number>4</number>
            </property>
            <property name="maximum">
             <number>128</number>
@@ -102,7 +102,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tamaño de bloque del mapa de frecuencia.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="minimum">
-            <number>1</number>
+            <number>5</number>
            </property>
            <property name="maximum">
             <number>128</number>
@@ -241,7 +241,7 @@
        <item>
         <widget class="QCheckBox" name="checkBox_seg">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controla si se aplica una mascara de region de interes a la&lt;/p&gt;&lt;p&gt;imagen filtrada.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controla si se aplica una mascara de region de interes a la imagen filtrada.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Segment</string>
@@ -319,7 +319,10 @@
        <item>
         <widget class="QSpinBox" name="spinBox_kpThresh">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controla el umbral que decide si un punto se considera un keypoint.&lt;/p&gt;&lt;p&gt;En el caso de Harris, un valor mayor es mas estricto.&lt;/p&gt;&lt;p&gt;En el caso de Shitomasi, un valor menor es mas estricto.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controla el numero maximo de keypoints.&lt;/p&gt;&lt;p&gt;Si se detectan mas se descartan los de peor calidad primero.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="minimum">
+          <number>5</number>
          </property>
          <property name="maximum">
           <number>999</number>
@@ -334,10 +337,17 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_feat"/>
+        <widget class="QComboBox" name="comboBox_feat">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecciona que tipo de descriptor se utilizara.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_draw">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Establece si se dibuja el analisis sobre la huella que se muestra por pantalla. No afecta al resultado.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Draw Features</string>
          </property>
@@ -390,6 +400,9 @@
        </item>
        <item>
         <widget class="QDoubleSpinBox" name="doubleSpinBox_matchThresh">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decide que nivel de similitud es necesario para que dos muestras sean consideradas un match.&lt;/p&gt;&lt;p&gt;Un valor mas alto es mas estricto, uno mas bajo es mas permisivo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="decimals">
           <number>3</number>
          </property>
@@ -409,7 +422,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_ransacModel"/>
+        <widget class="QComboBox" name="comboBox_ransacModel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decide que modelo de transformacion se utiliza para descartar malos pares de keypoints en el paso de comparacion.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_22">
@@ -419,7 +436,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_ransac"/>
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_ransac">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decide el umbral para que dos puntos sean considerados dentro del modelo en el paso de RANSAC.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer_4">
@@ -442,6 +463,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout_7">
      <item>
       <widget class="QPushButton" name="btn_default">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Carga los valores por defecto.&lt;/p&gt;&lt;p&gt;Estos valores se encuentran en default.ini&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>Default</string>
        </property>
@@ -449,6 +473,9 @@
      </item>
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>

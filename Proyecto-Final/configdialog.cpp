@@ -17,6 +17,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->comboBox_kp->addItem("harris");
     ui->comboBox_kp->addItem("shitomasi");
     ui->comboBox_kp->addItem("surf");
+    ui->comboBox_kp->addItem("sift");
     ui->comboBox_kp->addItem("cn");
 
     ui->comboBox_feat->addItem("orb");
