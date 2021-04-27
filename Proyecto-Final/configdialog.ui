@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>513</width>
-    <height>290</height>
+    <width>540</width>
+    <height>297</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,6 +50,9 @@
          </item>
          <item>
           <widget class="QSpinBox" name="spinBox_segm">
+           <property name="toolTip">
+            <string>Tamaño de bloque utilizado para la segmentacion.</string>
+           </property>
            <property name="minimum">
             <number>1</number>
            </property>
@@ -71,6 +74,9 @@
          </item>
          <item>
           <widget class="QSpinBox" name="spinBox_orient">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tamaño de bloque del mapa de orientacion.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="minimum">
             <number>1</number>
            </property>
@@ -92,6 +98,9 @@
          </item>
          <item>
           <widget class="QSpinBox" name="spinBox_freq">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tamaño de bloque del mapa de frecuencia.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="minimum">
             <number>1</number>
            </property>
@@ -111,6 +120,9 @@
        </item>
        <item>
         <widget class="QDoubleSpinBox" name="doubleSpinBox_roi">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Umbral de variacion para el calculo de la region de interes.&lt;/p&gt;&lt;p&gt;Un valor menor es mas permisivo.&lt;/p&gt;&lt;p&gt;Un valor mayor es mas estricto.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="maximum">
           <double>1.000000000000000</double>
          </property>
@@ -175,6 +187,9 @@
          </item>
          <item>
           <widget class="QDoubleSpinBox" name="doubleSpinBox_kx">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controla el ancho de banda de los filtros de Gabor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="maximum">
             <double>1.000000000000000</double>
            </property>
@@ -196,6 +211,9 @@
          </item>
          <item>
           <widget class="QDoubleSpinBox" name="doubleSpinBox_ky">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controla la selectividad orientacional del filtro de Gabor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="maximum">
             <double>1.000000000000000</double>
            </property>
@@ -214,10 +232,17 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_thi"/>
+        <widget class="QComboBox" name="comboBox_thi">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Metodo de esqueletizacion a utilizar.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_seg">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controla si se aplica una mascara de region de interes a la&lt;/p&gt;&lt;p&gt;imagen filtrada.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Segment</string>
          </property>
@@ -275,7 +300,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_kp"/>
+        <widget class="QComboBox" name="comboBox_kp">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Metodo utilizado para detectar puntos de interes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_6">
@@ -289,6 +318,9 @@
        </item>
        <item>
         <widget class="QSpinBox" name="spinBox_kpThresh">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controla el umbral que decide si un punto se considera un keypoint.&lt;/p&gt;&lt;p&gt;En el caso de Harris, un valor mayor es mas estricto.&lt;/p&gt;&lt;p&gt;En el caso de Shitomasi, un valor menor es mas estricto.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="maximum">
           <number>999</number>
          </property>
