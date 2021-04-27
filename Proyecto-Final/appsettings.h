@@ -2,7 +2,8 @@
 #define APPSETTINGS_H
 
 
-namespace fp{
+namespace fp
+{
 /*!
  * El enum Params define las opciones de configuracion disponibles
  * para los metodos configurables del programa

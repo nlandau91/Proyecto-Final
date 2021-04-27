@@ -93,13 +93,24 @@ std::vector<cv::KeyPoint> kp_sift(const cv::Mat &src, int keypoint_threshold = -
 
 //buscamos los keypoints en una imagen con el detector de keypoints SURF
 //la imagen ya debe estar preprocesada
-std::vector<cv::KeyPoint> kp_surf(const cv::Mat &src, int hessian_threshold = 20000)
+std::vector<cv::KeyPoint> kp_surf(const cv::Mat &src, int keypoint_threshold = -1)
 {
 
-    cv::Ptr<cv::xfeatures2d::SURF> surf = cv::xfeatures2d::SURF::create(hessian_threshold);
+    cv::Ptr<cv::xfeatures2d::SURF> surf = cv::xfeatures2d::SURF::create(500);
     std::vector<cv::KeyPoint> keypoints;
     surf->detect(src,keypoints);
-
+    //ordenamos de menor a mayor
+    auto sortRuleLambda = [] (cv::KeyPoint const& s1, cv::KeyPoint const& s2) -> bool
+    {
+        return s1.response < s2.response;
+    };
+    std::sort(keypoints.begin(),keypoints.end(), sortRuleLambda);
+    //nos quedamos con los mejores
+    if(keypoint_threshold > 0 && (int)keypoints.size() > keypoint_threshold)
+    {
+        std::vector<cv::KeyPoint> best_keypoints(keypoints.end()-keypoint_threshold, keypoints.end());
+        keypoints = best_keypoints;
+    }
     return keypoints;
 }
 
@@ -312,7 +323,7 @@ std::vector<cv::KeyPoint> Analyzer::get_keypoints(const Preprocessed &pre)
     }
     case SURF:
     {
-        keypoints = kp_surf(pre.grayscale);
+        keypoints = kp_surf(pre.grayscale, keypoint_threshold);
         break;
     }
     case SIFT:
@@ -411,7 +422,7 @@ std::vector<cv::KeyPoint> poincare(const cv::Mat orient, const cv::Mat mask, flo
     return keypoints;
 }
 
-std::vector<cv::KeyPoint> Analyzer::find_l1_features(const Preprocessed &pre)
+std::vector<cv::KeyPoint> Analyzer::find_singularities(const Preprocessed &pre)
 {
     std::vector<cv::KeyPoint> l1_features;
     switch(l1_features_method)
@@ -473,7 +484,7 @@ FingerprintTemplate Analyzer::analize(const Preprocessed &preprocessed)
     //cv::bitwise_not(preprocessed.result,inverted);
     //buscamos las features de nivel 1
     qDebug() << "Analyzer: buscando singularidades...";
-    fp_template.singularities = find_l1_features(preprocessed);
+    fp_template.singularities = find_singularities(preprocessed);
     //buscamos los puntos minuciosos (minutae)
     qDebug() << "Analizer: buscando keypoints...";
     fp_template.keypoints = get_keypoints(preprocessed);

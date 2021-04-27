@@ -4,7 +4,8 @@
 
 #include "fingerprinttemplate.h"
 
-namespace fp{
+namespace fp
+{
 
 /*!
  * La clase Comparator se encarga de realizar la comparacion entre

@@ -16,7 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     qDebug("Setting up UI...");
     ui->setupUi(this);
-    ui->lineEdit->setValidator(new QIntValidator(0, INT_MAX, this));
+    ui->lineEdit_id->setValidator(new QIntValidator(0, INT_MAX, this));
+    ui->lineEdit_output->setReadOnly(true);
     qDebug("Initializing db...");
     db.init();
     qDebug("Loading settings...");
@@ -42,7 +43,7 @@ void MainWindow::on_btn_ingresar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
-            ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
+            ui->lbl_fp_input->setPixmap(fp::cv_mat_to_qpixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
@@ -57,12 +58,12 @@ void MainWindow::on_btn_ingresar_clicked()
                 enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.minutiaes);
                 enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
             }
-            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
+            ui->lbl_fp_output->setPixmap(fp::cv_mat_to_qpixmap(enhanced_marked));
             //solo admitimos huellas que sean suficientemente buenas
             if(fp_template.descriptors.rows > 4)
             {
                 //guardamos el descriptor e ingresamos los descriptores a la base de datos
-                QString id = ui->lineEdit->text();
+                QString id = ui->lineEdit_id->text();
                 //db.ingresar_descriptores(analysis.descriptors,id);
                 db.ingresar_template(fp_template,id);
                 accepted_samples++;
@@ -74,7 +75,7 @@ void MainWindow::on_btn_ingresar_clicked()
             }
         }
     }
-    ui->textBrowser_output->setText("Huellas ingresadas: "+QString::number(accepted_samples)+" de "+QString::number(total_samples));
+    ui->lineEdit_output->setText("Huellas ingresadas: "+QString::number(accepted_samples)+" de "+QString::number(total_samples));
     setEnabled(true);
 }
 
@@ -91,7 +92,7 @@ void MainWindow::on_btn_verificar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
-            ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
+            ui->lbl_fp_input->setPixmap(fp::cv_mat_to_qpixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
@@ -105,12 +106,12 @@ void MainWindow::on_btn_verificar_clicked()
                 enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.minutiaes);
                 enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
             }
-            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
+            ui->lbl_fp_output->setPixmap(fp::cv_mat_to_qpixmap(enhanced_marked));
             //solo admitimos huellas que sean suficientemente buenas
             if(fp_template.descriptors.rows > 4)
             {
                 //obtenemos la lista de descriptores de la base de datos
-                QString id = ui->lineEdit->text();
+                QString id = ui->lineEdit_id->text();
                 std::vector<fp::FingerprintTemplate> train_templates = db.recuperar_template(id);
                 //verificamos
                 for(fp::FingerprintTemplate train_template : train_templates)
@@ -121,7 +122,7 @@ void MainWindow::on_btn_verificar_clicked()
 
         }
     }
-    ui->textBrowser_output->setText("Verificacion: "+QVariant(verificado).toString());
+    ui->lineEdit_output->setText("Verificacion: "+QVariant(verificado).toString());
     setEnabled(true);
 }
 
@@ -140,7 +141,7 @@ void MainWindow::on_btn_identificar_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
-            ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
+            ui->lbl_fp_input->setPixmap(fp::cv_mat_to_qpixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
@@ -154,7 +155,7 @@ void MainWindow::on_btn_identificar_clicked()
                 enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.minutiaes);
                 enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
             }
-            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
+            ui->lbl_fp_output->setPixmap(fp::cv_mat_to_qpixmap(enhanced_marked));
             //solo admitimos huellas que sean suficientemente buenas
             if(fp_template.descriptors.rows > 4)
             {
@@ -195,7 +196,7 @@ void MainWindow::on_btn_identificar_clicked()
             }
         }
     }
-    ui->textBrowser_output->setText("Identificacion: " + best_id);
+    ui->lineEdit_output->setText("Identificacion: " + best_id);
     setEnabled(true);
 }
 
@@ -264,7 +265,7 @@ void MainWindow::on_btn_demo_clicked()
         cv::Mat src = cv::imread(fileName.toStdString(),cv::IMREAD_GRAYSCALE);
         if(!src.empty())
         {
-            ui->lbl_fp_input->setPixmap(fp::cvMatToQPixmap(src));
+            ui->lbl_fp_input->setPixmap(fp::cv_mat_to_qpixmap(src));
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
@@ -280,7 +281,7 @@ void MainWindow::on_btn_demo_clicked()
                 enhanced_marked = fp::draw_keypoints(enhanced_marked,fp_template.keypoints);
                 enhanced_marked = fp::draw_singularities(enhanced_marked,fp_template.singularities);
             }
-            ui->lbl_fp_output->setPixmap(fp::cvMatToQPixmap(enhanced_marked));
+            ui->lbl_fp_output->setPixmap(fp::cv_mat_to_qpixmap(enhanced_marked));
             output_window = new OutputWindow();
             output_window->setup(fp_template, pre);
             output_window->show();
@@ -299,6 +300,7 @@ void MainWindow::on_btn_demo_clicked()
             cv::imwrite("output/sharpened.jpg",pre.grayscale);
         }
     }
+    ui->lineEdit_output->setText("Analisis completo.");
     setEnabled(true);
 }
 
@@ -306,18 +308,18 @@ void MainWindow::on_btn_demo_clicked()
 
 void MainWindow::on_btn_far_clicked()
 {
-    ui->textBrowser_output->setText("Testeando FAR, esto puede tardar varios minutos...");
+    ui->lineEdit_output->setText("Testeando FAR, esto puede tardar varios minutos...");
     std::vector<double> scores = tester.test_far(db);
     double far = 100 * fp::get_far(scores,app_settings.matcher_threshold);
-    ui->textBrowser_output->setText("Resultado Test FAR: " + QString::number(far,'f',2) + "%");
+    ui->lineEdit_output->setText("Resultado Test FAR: " + QString::number(far,'f',2) + "%");
 }
 
 void MainWindow::on_btn_frr_clicked()
 {
-    ui->textBrowser_output->setText("Testeando FRR, esto puede tardar varios minutos...");
+    ui->lineEdit_output->setText("Testeando FRR, esto puede tardar varios minutos...");
     std::vector<double> scores = tester.test_frr(db);
     double frr = 100 * fp::get_frr(scores,app_settings.matcher_threshold);
-    ui->textBrowser_output->setText("Resultado Test FRR: " + QString::number(frr,'f',2) + "%");
+    ui->lineEdit_output->setText("Resultado Test FRR: " + QString::number(frr,'f',2) + "%");
 }
 
 void MainWindow::on_btn_db_clicked()
@@ -330,10 +332,10 @@ void MainWindow::on_btn_db_clicked()
         dialog.setFileMode(QFileDialog::DirectoryOnly);
         if(dialog.exec() == QDialog::Accepted)
         {
-            ui->textBrowser_output->setText("Cargando DB por lotes, esto puede tardar varios minutos...");
+            ui->lineEdit_output->setText("Cargando DB por lotes, esto puede tardar varios minutos...");
             QString path = dialog.directory().absolutePath();
             tester.load_database(db,path);
-            ui->textBrowser_output->setText("Carga DB por lotes completa!");
+            ui->lineEdit_output->setText("Carga DB por lotes completa!");
         }
 
     }
@@ -342,7 +344,7 @@ void MainWindow::on_btn_db_clicked()
 
 void MainWindow::on_btn_fullTest_clicked()
 {
-    ui->textBrowser_output->setText("Testeando FAR y FRR, esto puede tardar varios minutos...");
+    ui->lineEdit_output->setText("Testeando FAR y FRR, esto puede tardar varios minutos...");
     //creamos la lista de parametros
     std::vector<fp::Tester::TesterParameters> params_list;
 
@@ -356,6 +358,6 @@ void MainWindow::on_btn_fullTest_clicked()
     params_list.push_back(tester_parameters);
 
     tester.perform_tests(params_list, db);
-    ui->textBrowser_output->setText("Test completo, resultados guardados.");
+    ui->lineEdit_output->setText("Test completo, resultados guardados.");
     load_settings();
 }

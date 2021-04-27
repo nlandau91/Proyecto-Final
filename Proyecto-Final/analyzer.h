@@ -41,7 +41,7 @@ private:
      * \param pre estructura que contiene el preprocesamiento hecho a la huella dactilar
      * \return vector con los keypoints donde se encuentran las singularidades encontradas
      */
-    std::vector<cv::KeyPoint> find_l1_features(const Preprocessed &pre);
+    std::vector<cv::KeyPoint> find_singularities(const Preprocessed &preprocessed);
 
     /*!
      * \brief get_keypoints encuentra puntos de interes en la huella dactilar

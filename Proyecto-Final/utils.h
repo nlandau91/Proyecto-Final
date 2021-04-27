@@ -14,14 +14,14 @@ namespace fp
  * \param inMat imagen de tipo cv::Mat a convertir
  * \return imagen en formato QImage
  */
-QImage cvMatToQImage(const cv::Mat &inMat);
+QImage cv_mat_to_qimage(const cv::Mat &inMat);
 
 /*!
  * \brief cvMatToQPixmap convierte una imagen de tipo cv::Mat a una de tipo QPixmap
  * \param inMat imagen de tipo cv::Mat a convertir
  * \return imagen en formato QPixmap
  */
-QPixmap cvMatToQPixmap(const cv::Mat &inMat );
+QPixmap cv_mat_to_qpixmap(const cv::Mat &inMat );
 
 /*!
  * \brief draw_singularities dibuja sobre la imagen las singularidades pasadas por parametro

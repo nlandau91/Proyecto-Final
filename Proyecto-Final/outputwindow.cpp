@@ -98,7 +98,7 @@ void OutputWindow::set_output()
         output = fp::draw_keypoints(output,fp_template.keypoints);
         output = fp::draw_singularities(output,fp_template.singularities);
     }
-    ui->lbl_output->setPixmap(fp::cvMatToQPixmap(output));
+    ui->lbl_output->setPixmap(fp::cv_mat_to_qpixmap(output));
 }
 
 void OutputWindow::on_radioButton_filtered_clicked()

@@ -7,7 +7,7 @@
  */
 namespace fp{
 
-QImage cvMatToQImage(const cv::Mat &inMat)
+QImage cv_mat_to_qimage(const cv::Mat &inMat)
 {
     switch ( inMat.type() )
     {
@@ -48,9 +48,9 @@ QImage cvMatToQImage(const cv::Mat &inMat)
     return QImage();
 }
 
-QPixmap cvMatToQPixmap( const cv::Mat &inMat )
+QPixmap cv_mat_to_qpixmap( const cv::Mat &inMat )
 {
-    return QPixmap::fromImage( cvMatToQImage( inMat ) );
+    return QPixmap::fromImage( cv_mat_to_qimage( inMat ) );
 }
 
 cv::Mat draw_keypoints( const cv::Mat &src, const std::vector<cv::KeyPoint> &keypoints)
