@@ -1,6 +1,7 @@
 #include "utils.h"
 #include "appsettings.h"
 #include <opencv2/imgproc.hpp>
+#include <iostream>
 /*!
  * El namespace fp contiene todas las clases, structs, enums y funciones
  * que necesita el programa para manejar las huellas dactilares
@@ -140,6 +141,22 @@ cv::Mat visualize_angles( const cv::Mat &im, const cv::Mat &angles)
             }
 
             cv::line(result,begin,end,cv::Scalar(255));
+        }
+    }
+    return result;
+}
+
+cv::Mat visualize_frequencies(const cv::Mat &im, const cv::Mat &frequencies)
+{
+    int W = trunc(im.rows / frequencies.rows);
+    cv::Mat result = cv::Mat::zeros(im.size(),CV_8UC1);
+    for(int j = 0; j < im.rows-W; j+=W)
+    {
+        for(int i = 0; i < im.cols-W; i+=W)
+        {
+            float freq = frequencies.at<float>(trunc(j/W),trunc(i/W));
+            cv::Rect blk(i,j,W,W);
+            result(blk) = (unsigned int)(freq*255);
         }
     }
     return result;

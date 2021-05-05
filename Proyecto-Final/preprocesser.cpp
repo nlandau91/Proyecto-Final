@@ -622,7 +622,7 @@ cv::Mat ridge_freq(const cv::Mat &im, const cv::Mat &angles, int f_blk_sze = -1,
     int o_blk_sze = im.rows / angles.rows;
     int w = f_blk_sze == -1 ? o_blk_sze : f_blk_sze;
     int l = w * 2;
-    cv::Mat freq = cv::Mat::zeros(im.rows/w,im.cols/w,im.type());
+    cv::Mat freq = cv::Mat::zeros(im.rows/w,im.cols/w,CV_32FC1);
 #pragma omp parallel for
     for(int j = w; j < im.rows - w; j+=w)
     {
@@ -760,7 +760,7 @@ Preprocessed Preprocesser::preprocess(const cv::Mat &src)
 
     //todo, mapa de frecuencia
     qDebug() << "Preprocesser: calculando mapa de frecuencias...";
-    cv::Mat freq = ridge_freq(norm_req,angles,blk_freq,5,15,mask,true);
+    cv::Mat freq = ridge_freq(norm_req,angles,blk_freq,5,15,mask,false);
     //filtro
     qDebug() << "Preprocesser: armando y aplicando filtros orientados de Gabor...";
     cv::Mat filtered;

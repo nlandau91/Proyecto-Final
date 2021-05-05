@@ -251,9 +251,9 @@ void MainWindow::load_settings()
     comparator.match_threshold = app_settings.matcher_threshold;
     comparator.ransac_model = app_settings.ransac_model;
     comparator.ransac_threshold = app_settings.ransac_threshold;
-    comparator.median_threshold = 2.5;
-    comparator.ransac_conf = 0.99;
-    comparator.ransac_iter = 2000;
+    comparator.median_threshold = app_settings.median_threshold;
+    comparator.ransac_conf = app_settings.ransac_conf;
+    comparator.ransac_iter = app_settings.ransac_iter;
     comparator.sing_compare = true;
 
     tester.preprocesser = preprocesser;
@@ -316,7 +316,7 @@ void MainWindow::on_btn_demo_clicked()
             cv::imwrite("output/normalized.jpg",pre.normalized);
             cv::imwrite("output/roi.jpg",pre.roi);
             cv::imwrite("output/orientation.jpg",fp::visualize_angles(pre.result,pre.orientation));
-            cv::imwrite("output/frequency.jpg",pre.frequency * 255);
+            cv::imwrite("output/frequency.jpg",fp::visualize_frequencies(pre.result,pre.frequency));
             cv::imwrite("output/filtered.jpg",pre.filtered);
             cv::imwrite("output/thinned.jpg",pre.thinned);
             cv::imwrite("output/preprocessed.jpg",pre.result);
@@ -361,8 +361,8 @@ void MainWindow::load_database(const QString &path)
         if(!src.empty())
         {
             //maximo altura
-            double scalefactor = (double)400.0/src.rows;
-            cv::resize(src,src,cv::Size(),scalefactor,scalefactor,cv::INTER_CUBIC);
+            //double scalefactor = (double)400.0/src.rows;
+            //cv::resize(src,src,cv::Size(),scalefactor,scalefactor,cv::INTER_CUBIC);
             //preprocesamos la imagen
             fp::Preprocessed pre = preprocesser.preprocess(src);
             //obtenemos los descriptores
@@ -407,11 +407,11 @@ void MainWindow::on_btn_fullTest_clicked()
     std::vector<fp::Tester::TesterParameters> params_list;
 
     fp::Tester::TesterParameters tester_parameters;
-    tester_parameters.med_th=2.5;
+    tester_parameters.med_th=app_settings.median_threshold;
     tester_parameters.ran_trans=app_settings.ransac_model;
     tester_parameters.ran_th=app_settings.ransac_threshold;
-    tester_parameters.ran_conf=0.99;
-    tester_parameters.ran_iter=2000;
+    tester_parameters.ran_conf=app_settings.ransac_conf;
+    tester_parameters.ran_iter=app_settings.ransac_iter;
     tester_parameters.match_threshold=app_settings.matcher_threshold;
     params_list.push_back(tester_parameters);
 

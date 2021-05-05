@@ -46,9 +46,9 @@ std::vector<double> get_eer(std::vector<double> scores1, std::vector<double> sco
     std::sort(scores1.begin(),scores1.end());
     std::sort(scores2.begin(),scores2.end());
     double min_dif = 1.0;
-    for(int i = 0; i <= 100; i++)
+    for(unsigned int i = 0; i < std::max(scores1.size(), scores2.size()); i++)
     {
-        double frr_pcnt = (double)i / 100.0;
+        double frr_pcnt = (double)i / (std::max(scores1.size(), scores2.size())-1);
         double far_pcnt = 1 - frr_pcnt;
         int index1 = std::trunc((scores1.size() -1) * frr_pcnt);
         int index2 = std::trunc((scores2.size() -1) * far_pcnt);
@@ -84,6 +84,16 @@ double get_far(const std::vector<double> &scores, double threshold)
 
 double get_frr(const std::vector<double> &scores, double threshold)
 {
-    return 1.0 - get_far(scores, threshold);
+    double frr = 1.0;
+    int rejected = 0;
+    for(double score : scores)
+    {
+        if(score < threshold)
+        {
+            rejected++;
+        }
+    }
+    frr = (double)rejected / (double)scores.size();
+    return frr;
 }
 }

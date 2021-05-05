@@ -221,7 +221,7 @@ double Comparator::compare(const FingerprintTemplate &query_template, const Fing
         //        });
         //limpiamos los outliers
         std::vector<cv::DMatch> inliners_median;
-        inliners_median = remove_outliers_median(matches,2.5);
+        inliners_median = remove_outliers_median(matches,median_threshold);
         if(inliners_median.size() > 4)
         {
             std::vector<cv::DMatch> inliners_ransac;

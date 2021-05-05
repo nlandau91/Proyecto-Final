@@ -75,6 +75,9 @@ public:
     double matcher_threshold;
     double ransac_threshold;
     int ransac_model;
+    double median_threshold;
+    double ransac_conf;
+    int ransac_iter;
 
     bool draw_over_output;
 

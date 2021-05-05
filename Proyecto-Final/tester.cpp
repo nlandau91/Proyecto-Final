@@ -192,6 +192,7 @@ void Tester::perform_tests(const std::vector<TesterParameters> &params_list, Dat
         comparator.ransac_conf = ran_conf;
         comparator.ransac_iter = ran_iter;
         comparator.match_threshold = match_threshold;
+        comparator.sing_compare = true;
 
         QElapsedTimer timer;
         timer.start();

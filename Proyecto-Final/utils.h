@@ -54,7 +54,13 @@ cv::Mat mat_cos(const cv::Mat &src);
  */
 cv::Mat visualize_angles(const cv::Mat &im, const cv::Mat &angles);
 
-
+/*!
+ * \brief visualize_frequencies arma una imagen a partir del mapa de frecuencias
+ * \param im imagen original
+ * \param frequencies mapa de frecuencias
+ * \return imagen donde se visualizan las frecuencias
+ */
+cv::Mat visualize_frequencies(const cv::Mat &im, const cv::Mat &frequencies);
 
 }
 

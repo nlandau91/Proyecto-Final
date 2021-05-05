@@ -323,12 +323,12 @@ std::vector<cv::KeyPoint> Analyzer::get_keypoints(const Preprocessed &pre)
     }
     case SURF:
     {
-        keypoints = kp_surf(pre.grayscale, keypoint_threshold);
+        keypoints = kp_surf(pre.result, keypoint_threshold);
         break;
     }
     case SIFT:
     {
-        keypoints = kp_sift(pre.grayscale, keypoint_threshold);
+        keypoints = kp_sift(pre.result, keypoint_threshold);
         break;
     }
     case CN:
