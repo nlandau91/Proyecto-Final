@@ -124,7 +124,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Umbral de variacion para el calculo de la region de interes.&lt;/p&gt;&lt;p&gt;Un valor menor es mas permisivo.&lt;/p&gt;&lt;p&gt;Un valor mayor es mas estricto.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="maximum">
-          <double>1.000000000000000</double>
+          <double>0.450000000000000</double>
          </property>
          <property name="singleStep">
           <double>0.010000000000000</double>

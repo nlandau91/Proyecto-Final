@@ -45,7 +45,7 @@ void AppSettings::load_settings()
     matcher_threshold = settings.value("match_thresh").toDouble();
     ransac_threshold = settings.value("ransac_threshold").toDouble();
     ransac_model = string_to_enum(settings.value("ransac_model").toString());
-    median_threshold = 2.5;
+    median_threshold = 2.0;
     ransac_conf = 0.995;
     ransac_iter = 2000;
 

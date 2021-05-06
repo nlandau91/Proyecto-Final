@@ -100,14 +100,14 @@ std::vector<QString> Database::obtener_lista_id() const
     std::vector<QString> lista_id;
     QSqlQuery query;
     query.prepare("SELECT DISTINCT id FROM people");
-    if(!query.exec())
+    if(query.exec())
     {
+        while(query.next())
+        {
+            QString id = query.value(0).toString();
+            lista_id.push_back(id);
+        }
+    }
 
-    }
-    while(query.next())
-    {
-        QString id = query.value(0).toString();
-        lista_id.push_back(id);
-    }
     return lista_id;
 }

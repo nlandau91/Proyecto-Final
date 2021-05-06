@@ -2,6 +2,7 @@
 #include "appsettings.h"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/ximgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <QDebug>
 
 using namespace fp;
@@ -753,6 +754,8 @@ Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     cv::Mat norm_m0d1;
     //norm_m0d1 = normalize2(norm_req,0,1);
     norm_m0d1 = normalize(norm_req,0,1,mask);
+    cv::imwrite("norm_m0d1.jpg",norm_m0d1);
+    cv::imwrite("mask.jpg",mask);
 
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
