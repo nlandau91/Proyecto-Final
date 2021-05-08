@@ -754,8 +754,8 @@ Preprocessed Preprocesser::preprocess(const cv::Mat &src)
     cv::Mat norm_m0d1;
     //norm_m0d1 = normalize2(norm_req,0,1);
     norm_m0d1 = normalize(norm_req,0,1,mask);
-    cv::imwrite("norm_m0d1.jpg",norm_m0d1);
-    cv::imwrite("mask.jpg",mask);
+    //cv::imwrite("norm_m0d1.jpg",norm_m0d1);
+    //cv::imwrite("mask.jpg",mask);
 
     //estimacion de la orientacion local
     qDebug() << "Preprocesser: calculando mapa de orientacion...";
