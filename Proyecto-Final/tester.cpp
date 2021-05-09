@@ -239,7 +239,7 @@ void Tester::perform_tests(const std::vector<TesterParameters> &params_list, Dat
                        << ran_iter<<"\t"
                        << ran_conf<<"\t"
                        << med_th<<"\t"
-                       << "250"<<"\t"
+                       << "999"<<"\t"
                        << gen_mean<<"\t"
                        << gen_lo<<"\t"
                        << imp_mean<<"\t"

@@ -229,8 +229,8 @@ double Comparator::compare(const FingerprintTemplate &query_template, const Fing
             std::vector<cv::DMatch> good_matches = inliners_ransac;
 
             //metodo basico de matching, utilizando simplemente la cantidad de matches encontrados entre minutiae
-            //score = (double)good_matches.size()/std::max(query_template.descriptors.rows,train_template.descriptors.rows);
-            score = (double)good_matches.size()/((double)(query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
+            score = (double)good_matches.size()/std::max(query_template.descriptors.rows,train_template.descriptors.rows);
+            //score = (double)good_matches.size()/((double)(query_template.descriptors.rows+train_template.descriptors.rows)/2.0);
             qDebug() << "Comparator: score: " << score;
             //qDebug() << "Comparator: score2: " << score2;
         }
